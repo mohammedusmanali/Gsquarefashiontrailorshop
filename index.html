@@ -1,48 +1,1121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>G Square Fashion</title>
-</head>
-<body>
-  <div id="root"></div>
+import { useState, useEffect } from "react";
 
-  <!-- React + Babel from CDN (no install needed) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+const DB_KEY = "tailor_shop_orders";
+const loadOrders = () => { try { return JSON.parse(localStorage.getItem(DB_KEY) || "[]"); } catch { return []; } };
+const saveOrders = (orders) => localStorage.setItem(DB_KEY, JSON.stringify(orders));
 
-  <script type="text/babel">
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport"https://nodejs.org/en content="width=device-width, initial-scale=1.0"/>
-  <title>G Square Fashion</title>
-</head>
-<body>
-  <div id="root"></div>
+const DESIGNS = [
+  { id:"D001", name:"Classic Katan Silk",  style:"Traditional", img:"https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&q=80", desc:"Elegant boat neck with delicate zari work" },
+  { id:"D002", name:"Princess Cut",         style:"Modern",      img:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=300&q=80", desc:"Structured seams with contemporary silhouette" },
+  { id:"D003", name:"Peplum Style",         style:"Fusion",      img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?w=300&q=80", desc:"Flared bottom with mirror embroidery" },
+  { id:"D004", name:"Deep Back Blouse",     style:"Bridal",      img:"https://images.unsplash.com/photo-1617627143233-5e8f7fc2e7a7?w=300&q=80", desc:"Intricate back design with tassel strings" },
+  { id:"D005", name:"Halter Neck",          style:"Party",       img:"https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80", desc:"Open shoulder halter with bead work" },
+  { id:"D006", name:"High Neck Victorian",  style:"Heritage",    img:"https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80", desc:"High collar with lace trim detailing" },
+];
 
-  <!-- React + Babel from CDN (no install needed) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+const STAGES = [
+  { id:0,  key:"intake",        label:"Customer Intake",   icon:"👤", color:"#888" },
+  { id:1,  key:"design",        label:"Design Selection",  icon:"🎨", color:"#f4c060" },
+  { id:2,  key:"measurement",   label:"Measurements",      icon:"📏", color:"#60b4f4" },
+  { id:3,  key:"tailor_queue",  label:"Tailor Queue",      icon:"🧵", color:"#a0e080" },
+  { id:4,  key:"senior_review", label:"Senior Review",     icon:"🔍", color:"#e0a060" },
+  { id:5,  key:"ready_notify",  label:"Notified",          icon:"📲", color:"#f4c060" },
+  { id:6,  key:"trial_room",    label:"Trial Room",        icon:"👗", color:"#c060f4" },
+  { id:7,  key:"billing",       label:"Billing",           icon:"🧾", color:"#e06060" },
+  { id:8,  key:"correction",    label:"Correction",        icon:"✂️", color:"#f46060" },
+  { id:9,  key:"payment",       label:"Payment",           icon:"💳", color:"#60e0a0" },
+  { id:10, key:"review",        label:"Review",            icon:"⭐", color:"#ffd700" },
+  { id:11, key:"completed",     label:"Completed",         icon:"✅", color:"#4caf50" },
+];
 
-  <script type="text/babel">
-    // ── PASTE THE ENTIRE ARTIFACT CODE HERE ──
-  </script>
+const genToken    = () => String(Math.floor(10000 + Math.random() * 90000));
+const fmtDate     = (d) => new Date(d).toLocaleString("en-IN", { dateStyle:"medium", timeStyle:"short" });
+const fmtDateShort= (d) => new Date(d).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+const fmtDateInput= (d) => { const dt=new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`; };
+const WHATSAPP    = (mobile, msg) => `https://wa.me/91${mobile}?text=${encodeURIComponent(msg)}`;
+const stageInfo   = (id) => STAGES[id] || STAGES[0];
+const getRoute    = () => { const h=window.location.hash; if(h.startsWith("#/staff"))return"staff"; if(h.startsWith("#/customer"))return"customer"; return"denied"; };
+const STAFF_PIN   = "1234";
 
-  <script>
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(TailorShop));
-  </script>
-</body>
-</html>  </script>
+// ── Due date helpers ─────────────────────────────────────────────────────────
+const daysUntilDue = (dueDate) => {
+  if (!dueDate) return null;
+  const now  = new Date(); now.setHours(0,0,0,0);
+  const due  = new Date(dueDate); due.setHours(0,0,0,0);
+  return Math.round((due - now) / 86400000);
+};
+const dueBadge = (dueDate, isStaff) => {
+  const d = daysUntilDue(dueDate);
+  if (d === null) return null;
+  if (d < 0)  return { label:`Overdue by ${Math.abs(d)}d`, color:"#ff4444", bg:"#ff444422", icon:"🚨" };
+  if (d === 0) return { label:"Due Today!", color:"#ff8800", bg:"#ff880022", icon:"⚠️" };
+  if (isStaff && d <= 2) return { label:`Due in ${d}d`, color:"#f4c060", bg:"#f4c06022", icon:"🔔" };
+  if (!isStaff && d <= 1) return { label:`Due Tomorrow`, color:"#f4c060", bg:"#f4c06022", icon:"🔔" };
+  return { label:`Due ${fmtDateShort(dueDate)}`, color:"#4caf50", bg:"#4caf5015", icon:"📅" };
+};
 
-  <script>
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(TailorShop));
-  </script>
-</body>
-</html>
+// ── Notification banner logic (shown on load if reminders are due) ───────────
+const getDueReminders = (orders, isStaff) =>
+  orders.filter(o => o.stage < 11 && o.dueDate).filter(o => {
+    const d = daysUntilDue(o.dueDate);
+    if (d === null) return false;
+    if (isStaff) return d <= 2;
+    return d <= 1;
+  }).sort((a,b) => daysUntilDue(a.dueDate) - daysUntilDue(b.dueDate));
+
+// ═══════════════════════════════════════════════════════════════════════════
+export default function TailorShop() {
+  const [route,         setRoute]         = useState(getRoute);
+  const [orders,        setOrders]        = useState(loadOrders);
+  const [activeOrder,   setActiveOrder]   = useState(null);
+  const [customerToken, setCustomerToken] = useState("");
+  const [toast,         setToast]         = useState(null);
+  const [staffAuthed,   setStaffAuthed]   = useState(()=>sessionStorage.getItem("staff_auth")==="yes");
+
+  useEffect(()=>{ const fn=()=>setRoute(getRoute()); window.addEventListener("hashchange",fn); return()=>window.removeEventListener("hashchange",fn); },[]);
+
+  // Sync across tabs — listen for localStorage changes made by the other portal
+  useEffect(()=>{
+    const onStorage=(e)=>{
+      if(e.key===DB_KEY && e.newValue){
+        try {
+          const updated = JSON.parse(e.newValue);
+          setOrders(updated);
+          // Keep activeOrder fresh if it's open
+          setActiveOrder(prev=> prev ? (updated.find(o=>o.token===prev.token)||prev) : null);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return()=>window.removeEventListener("storage", onStorage);
+  },[]);
+
+  // Also poll every 3s as fallback (same-tab iframes or embedded contexts)
+  useEffect(()=>{
+    const id = setInterval(()=>{
+      const fresh = loadOrders();
+      setOrders(prev=>{
+        // Only update if data actually changed (avoid needless re-renders)
+        if(JSON.stringify(prev)===JSON.stringify(fresh)) return prev;
+        setActiveOrder(ao=> ao ? (fresh.find(o=>o.token===ao.token)||ao) : null);
+        return fresh;
+      });
+    }, 3000);
+    return()=>clearInterval(id);
+  },[]);
+
+  useEffect(()=>{ saveOrders(orders); },[orders]);
+
+  const showToast   = (msg,type="success")=>{ setToast({msg,type}); setTimeout(()=>setToast(null),3500); };
+  const updateOrder = (token,patch)=>{
+    setOrders(prev=>prev.map(o=>o.token===token?{...o,...patch,updatedAt:Date.now()}:o));
+    if(activeOrder?.token===token) setActiveOrder(prev=>({...prev,...patch,updatedAt:Date.now()}));
+  };
+  const navigate    = (path)=>{ window.location.hash=path; };
+  const staffLogout = ()=>{ sessionStorage.removeItem("staff_auth"); setStaffAuthed(false); navigate("/staff"); };
+
+  if(route==="denied")  return <AccessDenied navigate={navigate}/>;
+  if(route==="staff"){
+    if(!staffAuthed) return <StaffLanding onAuth={()=>{ sessionStorage.setItem("staff_auth","yes"); setStaffAuthed(true); }}/>;
+    return <StaffPanel orders={orders} setOrders={setOrders} activeOrder={activeOrder} setActiveOrder={setActiveOrder} updateOrder={updateOrder} showToast={showToast} toast={toast} onLogout={staffLogout}/>;
+  }
+  if(route==="customer") return <CustomerPortal orders={orders} customerToken={customerToken} setCustomerToken={setCustomerToken} updateOrder={updateOrder} showToast={showToast} toast={toast}/>;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACCESS DENIED
+// ═══════════════════════════════════════════════════════════════════════════
+function AccessDenied({ navigate }) {
+  return (
+    <div style={base.centerPage}>
+      <div style={{fontSize:60,marginBottom:16}}>✂️</div>
+      <h1 style={{color:"#fff",fontWeight:800,fontSize:32,margin:"0 0 8px"}}>G Square <span style={{color:"#f4c060"}}>Fashion</span></h1>
+      <p style={{color:"#666",marginBottom:40}}>Premium Blouse Boutique · Track Every Stitch</p>
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"}}>
+        <button style={base.bigCard("#f4c060")} onClick={()=>navigate("/staff")}>🧵<br/><b>Staff Portal</b><br/><small style={{color:"#aaa"}}>#/staff</small></button>
+        <button style={base.bigCard("#4caf50")} onClick={()=>navigate("/customer")}>👗<br/><b>Customer Portal</b><br/><small style={{color:"#aaa"}}>#/customer</small></button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STAFF LANDING
+// ═══════════════════════════════════════════════════════════════════════════
+function StaffLanding({ onAuth }) {
+  const [pin,setPin]=useState(""); const [err,setErr]=useState(""); const [shake,setShake]=useState(false);
+  const attempt=()=>{ if(pin===STAFF_PIN){onAuth();}else{setErr("Incorrect PIN");setPin("");setShake(true);setTimeout(()=>setShake(false),500);} };
+  const pipeline=[{icon:"👤",label:"Intake"},{icon:"🎨",label:"Design"},{icon:"📏",label:"Measure"},{icon:"🧵",label:"Tailor"},{icon:"🔍",label:"Review"},{icon:"📲",label:"Notify"},{icon:"👗",label:"Trial"},{icon:"🧾",label:"Bill"},{icon:"💳",label:"Pay"},{icon:"✅",label:"Done"}];
+  const feats=[{icon:"📋",t:"Live Pipeline",d:"Track every order across 12 stages in real time."},{icon:"📅",t:"Due Dates",d:"Set delivery due dates and get reminders 2 days before."},{icon:"📲",t:"WhatsApp Notify",d:"One-tap customer notifications when blouse is ready."},{icon:"🔍",t:"Quality Review",d:"Built-in senior tailor checkpoint before delivery."},{icon:"🧾",t:"Billing",d:"Generate bills and collect UPI payments directly."},{icon:"⭐",t:"Reviews",d:"Collect star ratings automatically after every order."}];
+  return (
+    <div style={{background:"#080808",minHeight:"100vh",fontFamily:"'Segoe UI',sans-serif",color:"#eee"}}>
+      <style>{`@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-8px)}50%{transform:translateX(8px)}} @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}} .ph:focus{outline:none;border-color:#f4c060!important;box-shadow:0 0 0 3px rgba(244,192,96,0.15)!important;} .hov:hover{transform:translateY(-3px)!important;border-color:rgba(244,192,96,0.35)!important;}`}</style>
+      <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 48px",borderBottom:"1px solid #111",background:"rgba(8,8,8,0.95)",position:"sticky",top:0,zIndex:100}}>
+        <div style={{fontWeight:800,fontSize:20,letterSpacing:1}}>✂️ <span style={{color:"#f4c060"}}>G Square Fashion</span></div>
+        <span style={{fontSize:12,color:"#f4c060",border:"1px solid rgba(244,192,96,0.3)",padding:"5px 14px",borderRadius:20}}>🔒 Staff Portal</span>
+      </nav>
+      <div style={{position:"relative",background:"linear-gradient(135deg,#050010 0%,#100a00 55%,#001005 100%)",overflow:"hidden",minHeight:"92vh",display:"flex",alignItems:"center"}}>
+        <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,192,96,0.09) 0%,transparent 65%)",top:"-20%",right:"-5%",pointerEvents:"none"}}/>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:72,padding:"80px 60px",flexWrap:"wrap",width:"100%",maxWidth:1200,margin:"0 auto",boxSizing:"border-box",zIndex:2,position:"relative"}}>
+          <div style={{flex:"1 1 400px",maxWidth:520}}>
+            <div style={{display:"inline-block",background:"rgba(244,192,96,0.08)",border:"1px solid rgba(244,192,96,0.2)",color:"#f4c060",padding:"6px 18px",borderRadius:20,fontSize:12,fontWeight:700,letterSpacing:2,marginBottom:24}}>✂️ TAILOR MANAGEMENT SYSTEM</div>
+            <h1 style={{fontSize:"clamp(34px,5vw,62px)",fontWeight:900,color:"#fff",margin:"0 0 20px",lineHeight:1.1,letterSpacing:-1}}>Run Your Boutique<br/><span style={{color:"#f4c060"}}>Like a Pro</span></h1>
+            <p style={{color:"#666",fontSize:17,lineHeight:1.7,marginBottom:44,maxWidth:460}}>Complete order management for G Square Fashion — track blouses from intake to delivery, set due dates, get reminders, and manage billing all in one place.</p>
+            <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+              {[{icon:"👗",v:"2,400+",l:"Blouses Crafted"},{icon:"⭐",v:"4.9",l:"Avg Rating"},{icon:"⚡",v:"3 Days",l:"Turnaround"},{icon:"💎",v:"8 Yrs",l:"Experience"}].map(st=>(
+                <div key={st.l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:14,padding:"14px 18px",textAlign:"center",minWidth:80}}>
+                  <div style={{fontSize:20}}>{st.icon}</div>
+                  <div style={{fontSize:20,fontWeight:800,color:"#f4c060",lineHeight:1.2,marginTop:4}}>{st.v}</div>
+                  <div style={{fontSize:11,color:"#555",marginTop:3}}>{st.l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{flex:"0 0 360px",animation:shake?"shake 0.4s ease":"none"}}>
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(244,192,96,0.18)",borderRadius:24,overflow:"hidden"}}>
+              <div style={{background:"linear-gradient(135deg,rgba(244,192,96,0.09),rgba(244,192,96,0.02))",padding:"32px 36px 24px",textAlign:"center",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                <div style={{fontSize:52}}>🔐</div>
+                <h2 style={{color:"#fff",fontWeight:800,fontSize:22,margin:"12px 0 6px"}}>Staff Login</h2>
+                <p style={{color:"#555",fontSize:13,margin:0}}>Secure access to the management dashboard</p>
+              </div>
+              <div style={{padding:"28px 36px 32px"}}>
+                <label style={{display:"block",color:"#888",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>PIN Code</label>
+                <input className="ph" style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"#fff",padding:"16px",borderRadius:12,fontSize:24,fontWeight:700,letterSpacing:12,textAlign:"center",boxSizing:"border-box",transition:"all .2s"}} type="password" maxLength={6} value={pin} onChange={e=>{setPin(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&attempt()} placeholder="••••" autoFocus/>
+                {err&&<p style={{color:"#f46060",fontSize:13,textAlign:"center",margin:"8px 0 0"}}>{err}</p>}
+                <button style={{width:"100%",background:"linear-gradient(135deg,#f4c060,#c87820)",color:"#000",border:"none",padding:"15px",borderRadius:12,fontSize:16,fontWeight:800,cursor:"pointer",marginTop:16}} onClick={attempt}>Unlock Dashboard →</button>
+                <p style={{color:"#333",fontSize:11,textAlign:"center",marginTop:12}}>Demo PIN: <b style={{color:"#555"}}>1234</b></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0}}><svg viewBox="0 0 1440 70" preserveAspectRatio="none" style={{width:"100%",height:70,display:"block"}}><path d="M0,0 C480,70 960,0 1440,50 L1440,70 L0,70 Z" fill="#080808"/></svg></div>
+      </div>
+      {/* PIPELINE */}
+      <div style={{background:"#060606",borderTop:"1px solid #111",padding:"28px 48px"}}>
+        <p style={{color:"#444",fontSize:11,letterSpacing:3,fontWeight:700,textAlign:"center",marginBottom:20,textTransform:"uppercase"}}>12-Stage Order Pipeline</p>
+        <div style={{display:"flex",alignItems:"center",overflowX:"auto",maxWidth:1100,margin:"0 auto"}}>
+          {pipeline.map((p,i)=>(
+            <div key={p.label} style={{display:"flex",alignItems:"center",flex:i<pipeline.length-1?1:0}}>
+              <div className="hov" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5,padding:"10px 14px",borderRadius:12,border:"1px solid #151515",background:"#0f0f0f",flexShrink:0,transition:"all .2s",cursor:"default"}}>
+                <span style={{fontSize:20}}>{p.icon}</span>
+                <span style={{fontSize:10,color:"#555",whiteSpace:"nowrap"}}>{p.label}</span>
+              </div>
+              {i<pipeline.length-1&&<div style={{height:2,flex:1,minWidth:10,background:"linear-gradient(90deg,#1a1a1a,#111)"}}/>}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* FEATURES */}
+      <div style={{padding:"80px 48px",maxWidth:1100,margin:"0 auto"}}>
+        <h2 style={{fontSize:"clamp(22px,3.5vw,38px)",fontWeight:800,color:"#fff",textAlign:"center",margin:"0 0 10px"}}>Everything You Need</h2>
+        <p style={{color:"#555",textAlign:"center",marginBottom:52,fontSize:16}}>Built for blouse boutiques. Simple, powerful, complete.</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:20}}>
+          {feats.map(f=>(
+            <div className="hov" key={f.t} style={{background:"#0f0f0f",border:"1px solid #161616",borderRadius:18,padding:28,transition:"all .2s"}}>
+              <div style={{fontSize:36,marginBottom:14}}>{f.icon}</div>
+              <h4 style={{color:"#f4c060",fontWeight:700,fontSize:16,margin:"0 0 8px"}}>{f.t}</h4>
+              <p style={{color:"#555",fontSize:14,lineHeight:1.6,margin:0}}>{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <footer style={{background:"#040404",borderTop:"1px solid #0f0f0f",padding:"36px 48px",textAlign:"center"}}>
+        <div style={{color:"#f4c060",fontWeight:700,fontSize:18,marginBottom:6}}>✂️ G Square Fashion</div>
+        <p style={{color:"#333",fontSize:13,margin:0}}>Staff Management Portal · © 2026 All Rights Reserved</p>
+      </footer>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STAFF PANEL — dashboard
+// ═══════════════════════════════════════════════════════════════════════════
+function StaffPanel({ orders, setOrders, activeOrder, setActiveOrder, updateOrder, showToast, toast, onLogout }) {
+  const [view,  setView]  = useState("dashboard");
+  const [form,  setForm]  = useState({name:"",mobile:"",notes:"",dueDate:""});
+  const [search,setSearch]= useState("");
+
+  const createOrder=()=>{
+    if(!form.name||!form.mobile||form.mobile.length!==10){showToast("Enter valid name & 10-digit mobile","error");return;}
+    if(!form.dueDate){showToast("Please set a due date for this order","error");return;}
+    const token=genToken();
+    const order={token,name:form.name,mobile:form.mobile,notes:form.notes,dueDate:form.dueDate,stage:1,createdAt:Date.now(),updatedAt:Date.now(),design:null,measurements:{},tailorNote:"",seniorNote:"",trialFeedback:"",correctionNote:"",amount:"",paymentMethod:"",rating:0,comment:"",history:[{stage:0,label:"Intake Created",at:Date.now()}]};
+    setOrders(prev=>[order,...prev]);
+    setForm({name:"",mobile:"",notes:"",dueDate:""});
+    showToast(`Token ${token} created · Due ${fmtDateShort(form.dueDate)}`);
+    setView("dashboard");
+  };
+
+  const reminders = getDueReminders(orders, true);
+  const filtered  = orders.filter(o=>
+    o.name.toLowerCase().includes(search.toLowerCase())||
+    o.token.includes(search)||o.mobile.includes(search)
+  );
+  const stageCounts   = STAGES.reduce((acc,st)=>{ acc[st.id]=orders.filter(o=>o.stage===st.id).length; return acc; },{});
+  const totalRevenue  = orders.filter(o=>o.amount).reduce((s,o)=>s+(parseFloat(o.amount)||0),0);
+  const overdueCount  = orders.filter(o=>{ const d=daysUntilDue(o.dueDate); return d!==null&&d<0&&o.stage<11; }).length;
+
+  return (
+    <div style={{background:"#080808",minHeight:"100vh",fontFamily:"'Segoe UI',sans-serif",color:"#eee"}}>
+      <Toast toast={toast}/>
+      <style>{`.hov:hover{background:#111!important;} .row-hov:hover{background:#0f0f0f!important;border-color:#2a2a2a!important;}`}</style>
+      <nav style={{display:"flex",alignItems:"center",gap:14,padding:"14px 32px",background:"#0a0a0a",borderBottom:"1px solid #111",position:"sticky",top:0,zIndex:100,flexWrap:"wrap"}}>
+        <div style={{fontWeight:800,fontSize:18,color:"#f4c060",letterSpacing:1,marginRight:8}}>✂️ G Square</div>
+        {["dashboard","new"].map(v=>(
+          <button key={v} className="hov" onClick={()=>{ setActiveOrder(null); setView(v); }} style={{background:view===v?"rgba(244,192,96,0.12)":"transparent",border:view===v?"1px solid rgba(244,192,96,0.3)":"1px solid transparent",color:view===v?"#f4c060":"#666",padding:"7px 18px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:600,transition:"all .2s"}}>
+            {v==="dashboard"?"📋 Orders":"➕ New Order"}
+          </button>
+        ))}
+        {activeOrder&&(
+          <button className="hov" onClick={()=>setView("order")} style={{background:"rgba(244,192,96,0.12)",border:"1px solid rgba(244,192,96,0.3)",color:"#f4c060",padding:"7px 18px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:600}}>
+            📄 #{activeOrder.token}
+          </button>
+        )}
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:12}}>
+          {overdueCount>0&&<span style={{background:"#ff444422",border:"1px solid #ff444466",color:"#ff6666",padding:"5px 12px",borderRadius:20,fontSize:12,fontWeight:700}}>🚨 {overdueCount} Overdue</span>}
+          <span style={{color:"#555",fontSize:13}}>{orders.length} orders</span>
+          <button onClick={onLogout} style={{background:"transparent",border:"1px solid #222",color:"#666",padding:"7px 14px",borderRadius:10,cursor:"pointer",fontSize:13}}>🔒 Logout</button>
+        </div>
+      </nav>
+
+      {/* ── REMINDER BANNER ── */}
+      {view==="dashboard"&&reminders.length>0&&(
+        <div style={{background:"linear-gradient(135deg,#1a0f00,#0f1a00)",borderBottom:"1px solid #f4c06033",padding:"14px 32px"}}>
+          <div style={{maxWidth:1200,margin:"0 auto"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+              <span style={{fontSize:18}}>🔔</span>
+              <span style={{color:"#f4c060",fontWeight:700,fontSize:14}}>Upcoming Due Dates — Action Required</span>
+              <span style={{color:"#666",fontSize:12}}>({reminders.length} order{reminders.length>1?"s":""})</span>
+            </div>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              {reminders.map(o=>{
+                const b=dueBadge(o.dueDate,true);
+                return(
+                  <div key={o.token} onClick={()=>{ setActiveOrder(o); setView("order"); }} style={{background:"#111",border:`1px solid ${b.color}44`,borderRadius:12,padding:"10px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                    <span style={{fontSize:16}}>{b.icon}</span>
+                    <div>
+                      <div style={{color:"#eee",fontWeight:700,fontSize:13}}>{o.name} <span style={{color:"#666",fontSize:11}}>#{o.token}</span></div>
+                      <div style={{color:b.color,fontSize:12,fontWeight:600}}>{b.label} · {stageInfo(o.stage).label}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DASHBOARD */}
+      {view==="dashboard"&&(
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 32px"}}>
+          {/* KPIs */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:14,marginBottom:28}}>
+            {[
+              {icon:"📦",label:"Total Orders",   value:orders.length,            color:"#f4c060"},
+              {icon:"🧵",label:"In Production",  value:orders.filter(o=>o.stage>=2&&o.stage<=5).length, color:"#60b4f4"},
+              {icon:"👗",label:"Trial Pending",  value:orders.filter(o=>o.stage===6).length,  color:"#c060f4"},
+              {icon:"✅",label:"Completed",       value:orders.filter(o=>o.stage===11).length, color:"#4caf50"},
+              {icon:"💰",label:"Revenue",         value:`₹${totalRevenue.toLocaleString("en-IN")}`, color:"#ffd700"},
+              {icon:"🚨",label:"Overdue",         value:overdueCount,             color:"#ff4444"},
+            ].map(k=>(
+              <div key={k.label} style={{background:"#0f0f0f",border:"1px solid #161616",borderRadius:16,padding:"18px 20px"}}>
+                <div style={{fontSize:24,marginBottom:8}}>{k.icon}</div>
+                <div style={{fontSize:24,fontWeight:800,color:k.color,lineHeight:1}}>{k.value}</div>
+                <div style={{fontSize:12,color:"#555",marginTop:5}}>{k.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Stage pills */}
+          <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:14,padding:"16px 22px",marginBottom:24}}>
+            <p style={{color:"#444",fontSize:11,letterSpacing:2,textTransform:"uppercase",margin:"0 0 14px",fontWeight:700}}>Orders by Stage</p>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              {STAGES.filter((_,i)=>i>0).map(st=>(
+                <div key={st.id} style={{display:"flex",alignItems:"center",gap:7,background:"#111",border:`1px solid ${stageCounts[st.id]>0?st.color+"44":"#161616"}`,borderRadius:20,padding:"5px 13px"}}>
+                  <span style={{fontSize:13}}>{st.icon}</span>
+                  <span style={{fontSize:12,color:stageCounts[st.id]>0?st.color:"#444"}}>{st.label}</span>
+                  <span style={{background:stageCounts[st.id]>0?st.color:"#1a1a1a",color:stageCounts[st.id]>0?"#000":"#333",borderRadius:20,padding:"1px 7px",fontSize:11,fontWeight:700}}>{stageCounts[st.id]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:18,overflow:"hidden"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px",borderBottom:"1px solid #111",flexWrap:"wrap"}}>
+              <h3 style={{color:"#eee",fontWeight:700,fontSize:16,margin:0,flex:1}}>All Orders</h3>
+              <input style={{background:"#111",border:"1px solid #1e1e1e",color:"#eee",padding:"8px 14px",borderRadius:10,fontSize:13,width:210,boxSizing:"border-box"}} placeholder="🔍 Name, token, mobile…" value={search} onChange={e=>setSearch(e.target.value)}/>
+              <button style={{background:"linear-gradient(135deg,#f4c060,#c87820)",color:"#000",border:"none",padding:"9px 18px",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}} onClick={()=>setView("new")}>➕ New</button>
+            </div>
+            {filtered.length===0&&<p style={{color:"#444",textAlign:"center",padding:40}}>No orders found.</p>}
+            {filtered.map(o=>{
+              const st=stageInfo(o.stage);
+              const db=dueBadge(o.dueDate,true);
+              return(
+                <div key={o.token} className="row-hov" style={{display:"grid",gridTemplateColumns:"76px 1fr 130px 140px 100px 80px 36px",alignItems:"center",gap:10,padding:"12px 24px",borderBottom:"1px solid #0f0f0f",cursor:"pointer",transition:"all .15s"}}
+                  onClick={()=>{ setActiveOrder(o); setView("order"); }}>
+                  <span style={{background:"rgba(244,192,96,0.1)",color:"#f4c060",border:"1px solid rgba(244,192,96,0.2)",padding:"3px 0",borderRadius:8,fontWeight:700,fontSize:12,textAlign:"center"}}>#{o.token}</span>
+                  <div>
+                    <div style={{color:"#eee",fontWeight:600,fontSize:14}}>{o.name}</div>
+                    <div style={{color:"#555",fontSize:11,marginTop:2}}>📱 {o.mobile}</div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{fontSize:14}}>{st.icon}</span>
+                    <span style={{fontSize:11,color:st.color,fontWeight:600}}>{st.label}</span>
+                  </div>
+                  <div>
+                    {db?(
+                      <span style={{background:db.bg,color:db.color,border:`1px solid ${db.color}44`,borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>
+                        {db.icon} {db.label}
+                      </span>
+                    ):<span style={{color:"#333",fontSize:12}}>No due date</span>}
+                  </div>
+                  <div style={{color:o.amount?"#4caf50":"#333",fontSize:13,fontWeight:700}}>{o.amount?`₹${o.amount}`:"—"}</div>
+                  <div style={{color:"#444",fontSize:11}}>{fmtDateShort(o.updatedAt)}</div>
+                  <div style={{color:"#555",fontSize:18}}>›</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* NEW ORDER */}
+      {view==="new"&&(
+        <div style={{maxWidth:600,margin:"48px auto",padding:"0 24px"}}>
+          <button style={{background:"transparent",border:"1px solid #222",color:"#888",padding:"8px 16px",borderRadius:8,cursor:"pointer",fontSize:13,marginBottom:24}} onClick={()=>setView("dashboard")}>← Back</button>
+          <div style={{background:"#0a0a0a",border:"1px solid #161616",borderRadius:20,overflow:"hidden"}}>
+            <div style={{background:"linear-gradient(135deg,rgba(244,192,96,0.07),transparent)",padding:"26px 32px",borderBottom:"1px solid #111"}}>
+              <h2 style={{color:"#f4c060",fontWeight:800,fontSize:22,margin:0}}>➕ New Customer Intake</h2>
+              <p style={{color:"#555",fontSize:14,margin:"6px 0 0"}}>Register a new customer and set their order due date</p>
+            </div>
+            <div style={{padding:"26px 32px"}}>
+              <FInput label="Customer Name" value={form.name} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="e.g. Priya Sharma"/>
+              <FInput label="Mobile Number" value={form.mobile} onChange={v=>setForm(p=>({...p,mobile:v}))} type="tel" maxLength={10} placeholder="10-digit number"/>
+              {/* DUE DATE */}
+              <div style={{marginBottom:16}}>
+                <label style={{display:"block",color:"#666",fontSize:11,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:6}}>📅 Due Date <span style={{color:"#f46060"}}>*</span></label>
+                <input style={{width:"100%",background:"#111",border:"1px solid #1e1e1e",color:"#eee",padding:"11px 14px",borderRadius:10,fontSize:14,boxSizing:"border-box"}} type="date" value={form.dueDate} min={fmtDateInput(Date.now())} onChange={e=>setForm(p=>({...p,dueDate:e.target.value}))}/>
+                <p style={{color:"#555",fontSize:11,margin:"5px 0 0"}}>Staff will be reminded 2 days before · Customer reminded 1 day before</p>
+              </div>
+              <FInput label="Notes (optional)" value={form.notes} onChange={v=>setForm(p=>({...p,notes:v}))} placeholder="Special requirements…"/>
+              <button style={{width:"100%",background:"linear-gradient(135deg,#f4c060,#c87820)",color:"#000",border:"none",padding:"14px",borderRadius:12,fontSize:16,fontWeight:800,cursor:"pointer",marginTop:8}} onClick={createOrder}>Generate Token & Start Order 🎟️</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ORDER DETAIL */}
+      {view==="order"&&activeOrder&&(
+        <OrderDetailPage order={activeOrder} updateOrder={updateOrder} showToast={showToast} isStaff={true} onBack={()=>setView("dashboard")}/>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ORDER DETAIL PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+function OrderDetailPage({ order, updateOrder, showToast, isStaff, onBack }) {
+  const [meas,setMeas]                   = useState(order.measurements||{});
+  const [trialFeedback,setTrialFeedback] = useState(order.trialFeedback||"");
+  const [corrNote,setCorrNote]           = useState(order.correctionNote||"");
+  const [tailorNote,setTailorNote]       = useState(order.tailorNote||"");
+  const [seniorNote,setSeniorNote]       = useState(order.seniorNote||"");
+  const [amount,setAmount]               = useState(order.amount||"");
+  const [rating,setRating]               = useState(order.rating||0);
+  const [comment,setComment]             = useState(order.comment||"");
+  const [selDesign,setSelDesign]         = useState(order.design||null);
+  const [editDue,setEditDue]             = useState(false);
+  const [newDue,setNewDue]               = useState(order.dueDate||"");
+
+  const advance=(nextStage,patch={})=>{
+    const h={stage:nextStage,label:STAGES[nextStage]?.label,at:Date.now()};
+    updateOrder(order.token,{stage:nextStage,history:[...(order.history||[]),h],...patch});
+    showToast(`Moved to: ${STAGES[nextStage]?.label}`);
+  };
+  const stage=order.stage;
+  const st=stageInfo(stage);
+  const db=dueBadge(order.dueDate, isStaff);
+
+  return (
+    <div style={{background:"#080808",minHeight:"100vh",fontFamily:"'Segoe UI',sans-serif"}}>
+      {/* STICKY NAV */}
+      <div style={{background:"#0a0a0a",borderBottom:"1px solid #111",padding:"13px 32px",display:"flex",alignItems:"center",gap:14,flexWrap:"wrap",position:"sticky",top:0,zIndex:50}}>
+        <button onClick={onBack} style={{background:"transparent",border:"1px solid #222",color:"#888",padding:"7px 15px",borderRadius:8,cursor:"pointer",fontSize:13}}>← {isStaff?"All Orders":"Back"}</button>
+        <span style={{background:"rgba(244,192,96,0.1)",color:"#f4c060",border:"1px solid rgba(244,192,96,0.25)",padding:"5px 14px",borderRadius:20,fontWeight:800,fontSize:14}}>#{order.token}</span>
+        <span style={{color:"#eee",fontWeight:700,fontSize:15}}>{order.name}</span>
+        {db&&(
+          <span style={{background:db.bg,color:db.color,border:`1px solid ${db.color}44`,borderRadius:20,padding:"5px 13px",fontSize:12,fontWeight:700}}>
+            {db.icon} {db.label}
+          </span>
+        )}
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8,background:`${st.color}18`,border:`1px solid ${st.color}44`,borderRadius:20,padding:"6px 14px"}}>
+          <span style={{fontSize:15}}>{st.icon}</span>
+          <span style={{color:st.color,fontWeight:700,fontSize:13}}>{st.label}</span>
+        </div>
+      </div>
+
+      {/* DUE DATE REMINDER BANNER (visible when due soon) */}
+      {db && (db.label.includes("Overdue")||db.label.includes("Today")||(isStaff&&daysUntilDue(order.dueDate)<=2)||((!isStaff)&&daysUntilDue(order.dueDate)<=1)) && order.stage<11 && (
+        <div style={{background:`linear-gradient(135deg,${db.color}14,transparent)`,borderBottom:`1px solid ${db.color}33`,padding:"14px 32px",display:"flex",alignItems:"center",gap:12}}>
+          <span style={{fontSize:22}}>{db.icon}</span>
+          <div>
+            <div style={{color:db.color,fontWeight:700,fontSize:14}}>
+              {db.label.includes("Overdue") ? `⚠️ This order is overdue! Due date was ${fmtDateShort(order.dueDate)}.`
+               : db.label.includes("Today") ? `⚠️ This order is due today (${fmtDateShort(order.dueDate)})!`
+               : isStaff ? `🔔 Reminder: This order is due on ${fmtDateShort(order.dueDate)} — please ensure it's completed in time.`
+               : `🔔 Your blouse is due tomorrow (${fmtDateShort(order.dueDate)}) — we'll have it ready for you!`}
+            </div>
+            <div style={{color:"#666",fontSize:12,marginTop:2}}>
+              {isStaff ? "Staff reminder: 2 days before due date" : "Customer reminder: 1 day before due date"}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 32px"}}>
+        {/* HERO CARD */}
+        <div style={{background:`linear-gradient(135deg,${st.color}0e,#0a0a0a)`,border:`1px solid ${st.color}28`,borderRadius:20,padding:"26px 30px",marginBottom:24,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+          <div>
+            <div style={{fontSize:11,color:"#555",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Order Details</div>
+            <h2 style={{color:"#fff",fontWeight:900,fontSize:26,margin:"0 0 6px"}}>{order.name}</h2>
+            <div style={{display:"flex",gap:20,flexWrap:"wrap",marginTop:10}}>
+              {[{l:"Token",v:`#${order.token}`},{l:"Mobile",v:order.mobile},{l:"Created",v:fmtDateShort(order.createdAt)},{l:"Design",v:order.design?.name||"Pending"},{l:"Amount",v:order.amount?`₹${order.amount}`:"Pending"}].map(x=>(
+                <div key={x.l} style={{minWidth:80}}>
+                  <div style={{color:"#555",fontSize:10,fontWeight:600,letterSpacing:1,textTransform:"uppercase"}}>{x.l}</div>
+                  <div style={{color:"#eee",fontWeight:700,fontSize:13,marginTop:2}}>{x.v}</div>
+                </div>
+              ))}
+              {/* DUE DATE inline display / edit */}
+              <div style={{minWidth:120}}>
+                <div style={{color:"#555",fontSize:10,fontWeight:600,letterSpacing:1,textTransform:"uppercase"}}>Due Date</div>
+                {!editDue ? (
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
+                    <span style={{color:db?db.color:"#eee",fontWeight:700,fontSize:13}}>{order.dueDate?fmtDateShort(order.dueDate):"Not set"}</span>
+                    {isStaff&&<button onClick={()=>setEditDue(true)} style={{background:"transparent",border:"1px solid #333",color:"#888",padding:"2px 8px",borderRadius:6,cursor:"pointer",fontSize:10}}>✏️ Edit</button>}
+                  </div>
+                ):(
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
+                    <input type="date" value={newDue} min={fmtDateInput(Date.now())} onChange={e=>setNewDue(e.target.value)} style={{background:"#111",border:"1px solid #333",color:"#eee",padding:"4px 8px",borderRadius:6,fontSize:12}}/>
+                    <button onClick={()=>{ updateOrder(order.token,{dueDate:newDue}); setEditDue(false); showToast("Due date updated"); }} style={{background:"#f4c060",color:"#000",border:"none",padding:"4px 10px",borderRadius:6,cursor:"pointer",fontSize:11,fontWeight:700}}>Save</button>
+                    <button onClick={()=>setEditDue(false)} style={{background:"transparent",border:"1px solid #333",color:"#888",padding:"4px 8px",borderRadius:6,cursor:"pointer",fontSize:11}}>✕</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6}}>
+            <div style={{fontSize:44}}>{st.icon}</div>
+            <div style={{color:st.color,fontWeight:800,fontSize:15}}>{st.label}</div>
+            <div style={{color:"#555",fontSize:12}}>Stage {stage} of 11</div>
+          </div>
+        </div>
+
+        {/* PIPELINE PROGRESS */}
+        <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:16,padding:"18px 22px",marginBottom:24}}>
+          <p style={{color:"#555",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",margin:"0 0 14px"}}>Order Progress</p>
+          <div style={{display:"flex",alignItems:"center",overflowX:"auto",paddingBottom:4}}>
+            {STAGES.map((s,i)=>(
+              <div key={s.id} style={{display:"flex",alignItems:"center",flex:i<STAGES.length-1?1:0}}>
+                <div title={s.label} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0,padding:"2px 0"}}>
+                  <div style={{width:30,height:30,borderRadius:"50%",background:s.id<stage?"#4caf50":s.id===stage?st.color:"#1a1a1a",border:`2px solid ${s.id<stage?"#4caf50":s.id===stage?st.color:"#222"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,transform:s.id===stage?"scale(1.2)":"scale(1)",transition:"all .3s",flexShrink:0}}>
+                    {s.id<stage?"✓":s.icon}
+                  </div>
+                  {s.id===stage&&<div style={{fontSize:9,color:st.color,fontWeight:700,whiteSpace:"nowrap",marginTop:2}}>{s.label}</div>}
+                </div>
+                {i<STAGES.length-1&&<div style={{height:3,flex:1,minWidth:6,background:s.id<stage?"#4caf5055":"#1a1a1a",margin:"0 2px",marginBottom:s.id===stage?14:0,transition:"all .3s"}}/>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:22,alignItems:"start"}}>
+          {/* LEFT: ACTION */}
+          <div>
+            <div style={{background:"#0a0a0a",border:`1px solid ${st.color}28`,borderRadius:18,overflow:"hidden",marginBottom:18}}>
+              <div style={{background:`linear-gradient(135deg,${st.color}0d,transparent)`,padding:"16px 22px",borderBottom:`1px solid ${st.color}18`,display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:20}}>{st.icon}</span>
+                <div>
+                  <h3 style={{color:st.color,fontWeight:800,fontSize:15,margin:0}}>Current Stage: {st.label}</h3>
+                  <p style={{color:"#555",fontSize:12,margin:"3px 0 0"}}>{isStaff?"Staff action required":"Awaiting your action"}</p>
+                </div>
+              </div>
+              <div style={{padding:"20px 22px"}}>
+                <StageActions stage={stage} order={order} isStaff={isStaff} meas={meas} setMeas={setMeas} tailorNote={tailorNote} setTailorNote={setTailorNote} seniorNote={seniorNote} setSeniorNote={setSeniorNote} trialFeedback={trialFeedback} setTrialFeedback={setTrialFeedback} corrNote={corrNote} setCorrNote={setCorrNote} amount={amount} setAmount={setAmount} rating={rating} setRating={setRating} comment={comment} setComment={setComment} selDesign={selDesign} setSelDesign={setSelDesign} advance={advance} updateOrder={updateOrder} showToast={showToast}/>
+              </div>
+            </div>
+
+            {order.measurements&&Object.keys(order.measurements).length>0&&(
+              <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:16,padding:"18px 22px",marginBottom:18}}>
+                <h4 style={{color:"#f4c060",fontWeight:700,margin:"0 0 14px",fontSize:14}}>📏 Measurements</h4>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10}}>
+                  {Object.entries(order.measurements).map(([k,v])=>(
+                    <div key={k} style={{background:"#111",border:"1px solid #1a1a1a",borderRadius:10,padding:"10px 12px"}}>
+                      <div style={{color:"#555",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase"}}>{k}</div>
+                      <div style={{color:"#f4c060",fontWeight:800,fontSize:18,marginTop:3}}>{v}<span style={{color:"#666",fontSize:11,fontWeight:400}}>"</span></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {order.design&&(
+              <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:16,padding:"18px 22px"}}>
+                <h4 style={{color:"#f4c060",fontWeight:700,margin:"0 0 12px",fontSize:14}}>🎨 Selected Design</h4>
+                <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
+                  <img src={order.design.img} alt={order.design.name} style={{width:96,height:66,objectFit:"cover",borderRadius:10,flexShrink:0}} onError={e=>e.target.src="https://via.placeholder.com/96x66?text=Design"}/>
+                  <div>
+                    <div style={{color:"#fff",fontWeight:700,fontSize:15}}>{order.design.name}</div>
+                    <div style={{color:"#f4c060",fontSize:12,marginTop:3}}>{order.design.style}</div>
+                    <div style={{color:"#666",fontSize:13,marginTop:3}}>{order.design.desc}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: SIDEBAR */}
+          <div>
+            {/* SUMMARY */}
+            <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:16,padding:"18px 20px",marginBottom:16}}>
+              <h4 style={{color:"#eee",fontWeight:700,margin:"0 0 14px",fontSize:14}}>📋 Order Summary</h4>
+              {[
+                {l:"Token",    v:`#${order.token}`},
+                {l:"Customer", v:order.name},
+                {l:"Mobile",   v:order.mobile},
+                {l:"Created",  v:fmtDate(order.createdAt)},
+                {l:"Due Date", v:order.dueDate?fmtDateShort(order.dueDate):"Not set", special: db},
+                {l:"Stage",    v:st.label},
+                {l:"Amount",   v:order.amount?`₹${order.amount}`:"Not billed"},
+                {l:"Payment",  v:order.paymentMethod||"Pending"},
+                {l:"Bill Sent",v:order.billSent?"✅ WhatsApp Sent":"Not yet"},
+                {l:"Rating",   v:order.rating?`${order.rating}/5 ⭐`:"Not rated"},
+              ].map(x=>(
+                <div key={x.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid #0f0f0f"}}>
+                  <span style={{color:"#555",fontSize:12}}>{x.l}</span>
+                  <span style={{color:x.special?x.special.color:"#eee",fontSize:12,fontWeight:600,textAlign:"right",maxWidth:160}}>{x.v}</span>
+                </div>
+              ))}
+              {order.notes&&<div style={{marginTop:10,background:"#111",borderRadius:8,padding:"9px 11px"}}><div style={{color:"#555",fontSize:10,marginBottom:3}}>NOTES</div><div style={{color:"#aaa",fontSize:12}}>{order.notes}</div></div>}
+            </div>
+
+            {/* TIMELINE */}
+            <div style={{background:"#0a0a0a",border:"1px solid #111",borderRadius:16,padding:"18px 20px"}}>
+              <h4 style={{color:"#eee",fontWeight:700,margin:"0 0 14px",fontSize:14}}>📜 Timeline</h4>
+              {(order.history||[]).map((h,i)=>{
+                const hst=stageInfo(h.stage);
+                return(
+                  <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",paddingBottom:i<(order.history.length-1)?14:0}}>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                      <div style={{width:26,height:26,borderRadius:"50%",background:`${hst.color}1a`,border:`1px solid ${hst.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12}}>{hst.icon}</div>
+                      {i<(order.history.length-1)&&<div style={{width:1,flex:1,background:"#161616",minHeight:10,marginTop:3}}/>}
+                    </div>
+                    <div style={{paddingTop:3}}>
+                      <div style={{color:hst.color,fontWeight:600,fontSize:12}}>{h.label}</div>
+                      <div style={{color:"#444",fontSize:11,marginTop:1}}>{fmtDate(h.at)}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Stage Actions
+function StageActions({ stage, order, isStaff, meas, setMeas, tailorNote, setTailorNote, seniorNote, setSeniorNote, trialFeedback, setTrialFeedback, corrNote, setCorrNote, amount, setAmount, rating, setRating, comment, setComment, selDesign, setSelDesign, advance, updateOrder, showToast }) {
+  if(stage===1) return(<>
+    <p style={{color:"#888",fontSize:13,marginBottom:14}}>{isStaff?"Help the customer pick a design:":"Choose your blouse design:"}</p>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10,marginBottom:14}}>
+      {DESIGNS.map(d=>(<div key={d.id} onClick={()=>setSelDesign(d)} style={{background:"#111",border:`2px solid ${selDesign?.id===d.id?"#f4c060":"#1a1a1a"}`,borderRadius:12,overflow:"hidden",cursor:"pointer",transform:selDesign?.id===d.id?"scale(1.03)":"scale(1)",transition:"all .2s",position:"relative"}}>
+        <img src={d.img} alt={d.name} style={{width:"100%",height:84,objectFit:"cover",display:"block"}} onError={e=>e.target.src="https://via.placeholder.com/130x84?text=Design"}/>
+        <div style={{padding:"7px 9px"}}><div style={{color:"#eee",fontWeight:600,fontSize:11}}>{d.name}</div><div style={{color:"#888",fontSize:10}}>{d.style}</div></div>
+        {selDesign?.id===d.id&&<div style={{position:"absolute",top:5,right:5,background:"#f4c060",color:"#000",borderRadius:20,padding:"1px 6px",fontSize:9,fontWeight:800}}>✓</div>}
+      </div>))}
+    </div>
+    {selDesign&&<ActionBtn onClick={()=>{updateOrder(order.token,{design:selDesign});advance(2,{design:selDesign});}}>Confirm: {selDesign.name} →</ActionBtn>}
+  </>);
+
+  if(stage===2) return isStaff?(<>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:14}}>
+      {["Bust","Waist","Hip","Shoulder","Sleeve Length","Back Length","Front Length","Neck Depth"].map(f=>(<div key={f}><label style={{color:"#666",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:4}}>{f}</label><input style={{width:"100%",background:"#111",border:"1px solid #1e1e1e",color:"#eee",padding:"8px 10px",borderRadius:8,fontSize:13,boxSizing:"border-box"}} type="number" step="0.5" placeholder='0.0"' value={meas[f]||""} onChange={e=>setMeas(p=>({...p,[f]:e.target.value}))}/></div>))}
+    </div>
+    <FInput label="Notes" value={tailorNote} onChange={setTailorNote} placeholder="Notes for tailor…"/>
+    <ActionBtn onClick={()=>advance(3,{measurements:meas,tailorNote})}>Save & Queue →</ActionBtn>
+  </>):<WaitBox icon="⏳" msg="Staff is taking your measurements."/>;
+
+  if(stage===3) return isStaff?(<>
+    <FInput label="Tailor Notes" value={tailorNote} onChange={setTailorNote} placeholder="Progress notes…"/>
+    <ActionBtn onClick={()=>advance(4,{tailorNote})}>Done — Senior Review →</ActionBtn>
+  </>):<WaitBox icon="🧵" msg="Our tailor is crafting your blouse with care."/>;
+
+  if(stage===4) return isStaff?(<>
+    <FInput label="Review Comments" value={seniorNote} onChange={setSeniorNote} placeholder="Quality observations…"/>
+    <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:8}}>
+      <ActionBtn onClick={()=>advance(5,{seniorNote})}>✅ Approve & Notify</ActionBtn>
+      <ActionBtn color="#c0392b" onClick={()=>advance(8,{seniorNote,correctionNote:seniorNote})}>✂️ Send for Correction</ActionBtn>
+    </div>
+  </>):<WaitBox icon="🔍" msg="Senior tailor reviewing your blouse for quality."/>;
+
+  if(stage===5) return isStaff?(<>
+    <div style={{background:"#0d1a0d",border:"1px solid #2c4",borderRadius:10,padding:"11px 14px",marginBottom:12,color:"#aaa",fontSize:13}}>Blouse approved! Send WhatsApp to customer.</div>
+    <a href={WHATSAPP(order.mobile,`Dear ${order.name}, 🎉 Your blouse (Token #${order.token}) is ready for trial at G Square Fashion! Due: ${fmtDateShort(order.dueDate)}. Please visit us soon.`)} target="_blank" rel="noreferrer" style={{display:"inline-block",background:"#25d366",color:"#fff",padding:"10px 20px",borderRadius:10,fontWeight:700,fontSize:13,textDecoration:"none",marginRight:10,marginBottom:10}}>📲 Send WhatsApp</a>
+    <ActionBtn onClick={()=>advance(6)}>Mark Notified →</ActionBtn>
+  </>):<WaitBox icon="📲" msg="Sending you a WhatsApp notification — check your phone!"/>;
+
+  if(stage===6) return !isStaff?(<>
+    <FInput label="Feedback" value={trialFeedback} onChange={setTrialFeedback} placeholder="How does it fit?"/>
+    <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:8}}>
+      <ActionBtn onClick={()=>advance(7,{trialFeedback,customerApproved:true})}>✅ Happy — Billing</ActionBtn>
+      <ActionBtn color="#c0392b" onClick={()=>{if(!trialFeedback){showToast("Describe the correction","error");return;}advance(8,{trialFeedback,correctionNote:trialFeedback,customerApproved:false});}}>✂️ Needs Correction</ActionBtn>
+    </div>
+  </>):<WaitBox icon="👗" msg="Customer is in the trial room."/>;
+
+  if(stage===7) return isStaff?(<>
+    <div style={{background:"#0d1a0d",border:"1px solid #2c4",borderRadius:10,padding:"11px 14px",marginBottom:12,color:"#aaa",fontSize:13}}>Customer approved ✅ · Feedback: {order.trialFeedback||"All good!"}</div>
+    <FInput label="Bill Amount (₹)" value={amount} onChange={setAmount} type="number" placeholder="Enter amount"/>
+    <ActionBtn onClick={()=>{if(!amount){showToast("Enter bill amount","error");return;}advance(9,{amount});}}>Generate Bill →</ActionBtn>
+  </>):<WaitBox icon="🧾" msg="Generating your bill at the counter."/>;
+
+  if(stage===8) return isStaff?(<>
+    <div style={{background:"#1a0d0d",border:"1px solid #c44",borderRadius:10,padding:"11px 14px",marginBottom:12}}>
+      <div style={{color:"#888",fontSize:10,fontWeight:700,letterSpacing:1,marginBottom:3}}>CORRECTION NEEDED</div>
+      <div style={{color:"#f46060",fontWeight:600,fontSize:13}}>{order.correctionNote||order.trialFeedback||"Correction required"}</div>
+    </div>
+    <FInput label="Correction Notes" value={corrNote} onChange={setCorrNote} placeholder="What was corrected…"/>
+    <ActionBtn onClick={()=>advance(4,{correctionNote:corrNote})}>Done — Back to Review →</ActionBtn>
+  </>):<WaitBox icon="✂️" msg="Our tailor is making the corrections you requested."/>;
+
+  if(stage===9) return <BillingStage order={order} isStaff={isStaff} advance={advance} updateOrder={updateOrder} showToast={showToast}/>;
+
+  if(stage===10) return !isStaff?(<>
+    <p style={{color:"#888",fontSize:13,marginBottom:12}}>How was your experience at G Square Fashion?</p>
+    <div style={{display:"flex",gap:8,marginBottom:16}}>{[1,2,3,4,5].map(n=>(<span key={n} style={{fontSize:38,cursor:"pointer",color:n<=rating?"#ffd700":"#2a2a2a",transition:"color .15s"}} onClick={()=>setRating(n)}>★</span>))}</div>
+    <FInput label="Comments (optional)" value={comment} onChange={setComment} placeholder="Share your thoughts…"/>
+    <ActionBtn onClick={()=>{if(!rating){showToast("Please select a rating","error");return;}advance(11,{rating,comment});}}>Submit Review 🎉</ActionBtn>
+  </>):<WaitBox icon="⭐" msg="Customer is leaving a review."/>;
+
+  if(stage===11) return(
+    <div style={{textAlign:"center",padding:"18px 0"}}>
+      <div style={{fontSize:60,marginBottom:10}}>🎉</div>
+      <h3 style={{color:"#4caf50",fontWeight:800,fontSize:22,margin:"0 0 6px"}}>Order Complete!</h3>
+      <p style={{color:"#888",fontSize:14,margin:"0 0 14px"}}>Thank you, {order.name}!</p>
+      {order.rating>0&&(<div style={{background:"#0f0f0f",border:"1px solid #1a1a1a",borderRadius:12,padding:"14px 18px",display:"inline-block"}}>
+        <div style={{color:"#ffd700",fontSize:26,marginBottom:3}}>{"★".repeat(order.rating)}{"☆".repeat(5-order.rating)}</div>
+        {order.comment&&<p style={{color:"#aaa",fontStyle:"italic",fontSize:13,margin:0}}>"{order.comment}"</p>}
+      </div>)}
+    </div>
+  );
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CUSTOMER PORTAL
+// ═══════════════════════════════════════════════════════════════════════════
+function CustomerPortal({ orders, customerToken, setCustomerToken, updateOrder, showToast, toast }) {
+  const [input,setInput]=useState("");
+  const order=orders.find(o=>o.token===customerToken);
+  const lookup=()=>{ const f=orders.find(o=>o.token===input.trim()); if(f)setCustomerToken(f.token); else showToast("Token not found. Check with shop staff.","error"); };
+
+  if(customerToken&&order) return(
+    <div style={{background:"#080808",minHeight:"100vh",fontFamily:"'Segoe UI',sans-serif"}}>
+      <Toast toast={toast}/>
+      <div style={{background:"#0a0a0a",borderBottom:"1px solid #111",padding:"13px 32px",display:"flex",alignItems:"center",gap:14,flexWrap:"wrap",position:"sticky",top:0,zIndex:50}}>
+        <div style={{fontWeight:800,fontSize:17,color:"#f4c060"}}>✂️ G Square Fashion</div>
+        <button style={{background:"transparent",border:"1px solid #222",color:"#888",padding:"7px 14px",borderRadius:8,cursor:"pointer",fontSize:13,marginLeft:"auto"}} onClick={()=>setCustomerToken("")}>← Track Another</button>
+      </div>
+      <OrderDetailPage order={order} updateOrder={updateOrder} showToast={showToast} isStaff={false} onBack={()=>setCustomerToken("")}/>
+    </div>
+  );
+
+  const reminders=getDueReminders(orders.filter(o=>o.token===input.trim()),false);
+
+  return(
+    <div style={{background:"#0d0d0d",minHeight:"100vh",fontFamily:"'Segoe UI',sans-serif",color:"#eee"}}>
+      <Toast toast={toast}/>
+      <div style={{position:"relative",background:"linear-gradient(135deg,#0a0018,#1a0a0e 40%,#0a1a10)",minHeight:"100vh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 60% 40%,rgba(244,192,96,0.08) 0%,transparent 60%)",pointerEvents:"none"}}/>
+        <nav style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 40px",position:"relative",zIndex:10}}>
+          <span style={{fontSize:18,fontWeight:700,color:"#f4c060"}}>✂️ G Square Fashion</span>
+          <span style={{fontSize:12,color:"#666",border:"1px solid #222",padding:"4px 12px",borderRadius:20}}>Premium Boutique</span>
+        </nav>
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px 80px",position:"relative",zIndex:10,textAlign:"center"}}>
+          <div style={{fontSize:76,marginBottom:20}}>👗</div>
+          <h1 style={{fontSize:"clamp(32px,6vw,64px)",fontWeight:800,color:"#fff",margin:"0 0 14px",letterSpacing:-1,lineHeight:1.1}}>Track Your Blouse</h1>
+          <p style={{fontSize:"clamp(13px,2vw,17px)",color:"#777",maxWidth:480,lineHeight:1.6,marginBottom:40}}>Enter your token for live updates on your order — from design to delivery.</p>
+          <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(244,192,96,0.2)",borderRadius:20,padding:"26px 34px",width:"100%",maxWidth:440,boxSizing:"border-box"}}>
+            <p style={{color:"#f4c060",fontWeight:700,fontSize:14,margin:"0 0 14px"}}>🎟️ Your Order Token</p>
+            <div style={{display:"flex",gap:10}}>
+              <input style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.14)",color:"#fff",padding:"13px 16px",borderRadius:12,fontSize:20,fontWeight:700,letterSpacing:6,textAlign:"center",outline:"none"}} type="text" placeholder="48291" maxLength={5} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&lookup()}/>
+              <button style={{background:"linear-gradient(135deg,#f4c060,#e09020)",color:"#000",border:"none",padding:"13px 20px",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer",whiteSpace:"nowrap"}} onClick={lookup}>Track →</button>
+            </div>
+            <p style={{color:"#444",fontSize:12,margin:"10px 0 0"}}>Token was given at the shop counter</p>
+          </div>
+        </div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0}}><svg viewBox="0 0 1440 70" preserveAspectRatio="none" style={{width:"100%",height:70,display:"block"}}><path d="M0,40 C360,70 1080,0 1440,40 L1440,70 L0,70 Z" fill="#0d0d0d"/></svg></div>
+      </div>
+      <div style={{padding:"64px 40px",maxWidth:960,margin:"0 auto"}}>
+        <h2 style={{fontSize:"clamp(20px,3vw,34px)",fontWeight:800,color:"#fff",textAlign:"center",margin:"0 0 8px"}}>How It Works</h2>
+        <p style={{color:"#555",textAlign:"center",marginBottom:40,fontSize:14}}>Your blouse journey from start to finish</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:16}}>
+          {[{icon:"👤",n:"01",t:"Intake",d:"Staff registers you and gives your token."},{icon:"🎨",n:"02",t:"Design",d:"Choose from 6 signature blouse styles."},{icon:"📏",n:"03",t:"Measurements",d:"Precise measurements by our staff."},{icon:"🧵",n:"04",t:"Tailoring",d:"Expert tailors craft your blouse."},{icon:"🔍",n:"05",t:"Quality Check",d:"Senior review before notifying you."},{icon:"👗",n:"06",t:"Trial & Pay",d:"Try it on, approve, pay securely."}].map(x=>(
+            <div key={x.n} style={{background:"#111",border:"1px solid #1a1a1a",borderRadius:14,padding:20,textAlign:"center"}}>
+              <div style={{color:"#f4c060",fontSize:10,fontWeight:700,letterSpacing:3,marginBottom:8}}>{x.n}</div>
+              <div style={{fontSize:28,marginBottom:8}}>{x.icon}</div>
+              <h4 style={{color:"#fff",fontWeight:700,fontSize:14,margin:"0 0 5px"}}>{x.t}</h4>
+              <p style={{color:"#555",fontSize:12,lineHeight:1.5,margin:0}}>{x.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <footer style={{background:"#060606",borderTop:"1px solid #111",padding:"28px 40px",textAlign:"center"}}>
+        <div style={{color:"#f4c060",fontWeight:700,fontSize:15,marginBottom:4}}>✂️ G Square Fashion</div>
+        <p style={{color:"#333",fontSize:12,margin:0}}>Premium Blouse Boutique · © 2026</p>
+      </footer>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BILLING STAGE — Boutique Bill Book style (matches Vyapar format)
+// ═══════════════════════════════════════════════════════════════════════════
+const GST_NUMBER = "29AABCG1234F1Z5";
+const SHOP_NAME  = "G Square Fashion";
+const SHOP_ADDR  = "No. 12, Silk Street, T. Nagar, Chennai – 600017";
+const SHOP_PHONE = "+91 98765 43210";
+const SHOP_EMAIL = "gsquarefashion@gmail.com";
+const GST_RATE   = 5;
+const DECLARATION= "We declare that this invoice shows the actual price of the goods/services described and that all particulars are true and correct.";
+
+function BillingStage({ order, isStaff, advance, updateOrder, showToast }) {
+  const def = order.billItems || [{ sl:1, desc: order.design?.name||"Blouse Stitching", unit:"Pcs", color:"", qty:1, price:"", gstPct:GST_RATE, hsn:"9988" }];
+  const [items,   setItems]   = useState(def);
+  const [discount,setDiscount]= useState(order.discount||"0");
+  const [payMode, setPayMode] = useState(order.paymentMethod||"");
+  const [notes,   setNotes]   = useState(order.billNotes||"");
+  const [saved,   setSaved]   = useState(!!order.billItems);
+
+  const updItem=(i,f,v)=>setItems(p=>p.map((it,x)=>x===i?{...it,[f]:v}:it));
+  const addItem =()=>setItems(p=>[...p,{sl:p.length+1,desc:"",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}]);
+  const delItem =(i)=>setItems(p=>p.filter((_,x)=>x!==i).map((it,x)=>({...it,sl:x+1})));
+
+  const lineAmt =(it)=>parseFloat(it.price||0)*parseInt(it.qty||1);
+  const lineGst =(it)=>lineAmt(it)*(parseFloat(it.gstPct||0)/100);
+  const subTotal= items.reduce((s,it)=>s+lineAmt(it),0);
+  const totalGst= items.reduce((s,it)=>s+lineGst(it),0);
+  const discAmt = parseFloat(discount||0);
+  const finalAmt= subTotal+totalGst-discAmt;
+
+  const billNo   = `GSF/${new Date(order.createdAt).getFullYear()}/${order.token}`;
+  const billDate = new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+  const orderDate= fmtDateShort(order.createdAt);
+  const dueDate  = order.dueDate?fmtDateShort(order.dueDate):"—";
+
+  // measurements shorthand for bill
+  const meas = order.measurements||{};
+  const measKeys = Object.keys(meas);
+
+  const saveBill=()=>{
+    if(items.some(it=>!it.desc||!it.price)){showToast("Fill description & price for all items","error");return;}
+    updateOrder(order.token,{billItems:items,amount:finalAmt.toFixed(2),discount,billNotes:notes,billSaved:true});
+    setSaved(true);
+    showToast("Bill saved ✅");
+  };
+
+  const waMsg=()=>`🧾 *BOUTIQUE BILL*
+✂️ *${SHOP_NAME}*
+📍 ${SHOP_ADDR}
+📞 ${SHOP_PHONE}  ✉️ ${SHOP_EMAIL}
+GSTIN: ${GST_NUMBER}
+━━━━━━━━━━━━━━━━━━━━━━━━
+*Bill No :* ${billNo}
+*Bill Date:* ${billDate}
+*Order Date:* ${orderDate}
+*Due Date :* ${dueDate}
+━━━━━━━━━━━━━━━━━━━━━━━━
+*BILL TO*
+Name   : ${order.name}
+Phone  : ${order.mobile}
+Token  : #${order.token}
+Design : ${order.design?.name||"Custom"}
+━━━━━━━━━━━━━━━━━━━━━━━━
+${measKeys.length?`*MEASUREMENTS*\n${measKeys.map(k=>`${k}: ${meas[k]}"`).join(" | ")}\n━━━━━━━━━━━━━━━━━━━━━━━━\n`:""}*ITEMS*
+${items.map(it=>`${it.sl}. ${it.desc}${it.color?` [${it.color}]`:""} (${it.unit})
+   HSN:${it.hsn} | Qty:${it.qty} × ₹${parseFloat(it.price||0).toFixed(2)} | GST:${it.gstPct}% | ₹${(lineAmt(it)+lineGst(it)).toFixed(2)}`).join("\n")}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Sub Total : ₹${subTotal.toFixed(2)}
+GST Total : ₹${totalGst.toFixed(2)}
+Discount  : ₹${discAmt.toFixed(2)}
+━━━━━━━━━━━━━━━━━━━━━━━━
+*FINAL AMOUNT: ₹${finalAmt.toFixed(2)}*
+Payment: ${payMode||order.paymentMethod||"—"}
+${order.paidAt?`✅ Paid on: ${fmtDate(order.paidAt)}`:""}
+━━━━━━━━━━━━━━━━━━━━━━━━
+${notes?`📝 ${notes}\n━━━━━━━━━━━━━━━━━━━━━━━━\n`:""}Thanks for business with us!!! Please visit us again !!!
+_${SHOP_NAME}_`;
+
+  const handlePaid=(method)=>{
+    if(!method){showToast("Select payment method","error");return;}
+    advance(10,{paymentMethod:method,paidAt:Date.now(),billSent:true,amount:finalAmt.toFixed(2),billItems:items,discount,billNotes:notes});
+    window.open(WHATSAPP(order.mobile,waMsg()),"_blank");
+  };
+
+  // ── BILL PRINT LAYOUT ──────────────────────────────────────────────────
+  const Bill=()=>(
+    <div id="gsf-bill" style={{background:"#fff",border:"2px solid #222",borderRadius:4,fontFamily:"Arial,sans-serif",color:"#111",fontSize:12,maxWidth:680,margin:"0 auto",overflow:"hidden"}}>
+      {/* Title bar */}
+      <div style={{background:"#111",color:"#fff",textAlign:"center",padding:"7px 0",fontWeight:800,fontSize:15,letterSpacing:1}}>Boutique Bill Book</div>
+      {/* Company name bar */}
+      <div style={{background:"#ffe600",color:"#111",textAlign:"center",padding:"6px 0",fontWeight:900,fontSize:17,letterSpacing:1,borderBottom:"2px solid #222"}}>
+        {SHOP_NAME}
+      </div>
+
+      {/* Company info + Bill details */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:"1px solid #ccc"}}>
+        {/* Left: company */}
+        <div style={{padding:"10px 14px",borderRight:"1px solid #ccc"}}>
+          <div style={{marginBottom:4}}><b>Address:</b> {SHOP_ADDR}</div>
+          <div><b>Phone No.:</b> {SHOP_PHONE}</div>
+          <div><b>Email ID:</b> {SHOP_EMAIL}</div>
+          <div><b>GSTIN:</b> {GST_NUMBER}</div>
+        </div>
+        {/* Right: bill details */}
+        <div style={{padding:"10px 14px"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <tbody>
+              {[["Bill No.",billNo],["Date:",billDate],["Order Date:",orderDate],["Payment Due Date:",dueDate],["Valid for:","30 Days"]].map(([l,v])=>(
+                <tr key={l}><td style={{color:"#555",paddingRight:8,paddingBottom:3,whiteSpace:"nowrap"}}>{l}</td><td style={{fontWeight:700}}>{v}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Bill To */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:"1px solid #ccc"}}>
+        <div style={{padding:"10px 14px",borderRight:"1px solid #ccc"}}>
+          <div style={{background:"#333",color:"#fff",fontWeight:700,padding:"3px 8px",marginBottom:6,fontSize:11}}>Bill To:</div>
+          <div><b>Name:</b> {order.name}</div>
+          <div><b>Phone No.:</b> {order.mobile}</div>
+          <div><b>Token:</b> #{order.token}</div>
+          <div><b>Design:</b> {order.design?.name||"Custom"}</div>
+        </div>
+        <div style={{padding:"10px 14px"}}>
+          <div style={{background:"#333",color:"#fff",fontWeight:700,padding:"3px 8px",marginBottom:6,fontSize:11}}>Bill Details:</div>
+          <div><b>Bill No:</b> {billNo}</div>
+          <div><b>Date:</b> {billDate}</div>
+          <div><b>Payment Due:</b> {dueDate}</div>
+          <div><b>Payment Mode:</b> {payMode||order.paymentMethod||"—"}</div>
+        </div>
+      </div>
+
+      {/* Measurements */}
+      {measKeys.length>0&&(
+        <>
+          <div style={{background:"#ffe600",color:"#111",textAlign:"center",fontWeight:700,padding:"4px 0",fontSize:11,letterSpacing:1,borderBottom:"1px solid #ccc"}}>Measurement Details</div>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,borderBottom:"1px solid #ccc"}}>
+            <thead>
+              <tr style={{background:"#f5f5f5"}}>
+                <th style={th}>Item</th>
+                {measKeys.map(k=><th key={k} style={th}>{k}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={td}>{order.design?.name||"Blouse"}</td>
+                {measKeys.map(k=><td key={k} style={{...td,textAlign:"center"}}>{meas[k]}"</td>)}
+              </tr>
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Items table */}
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,borderBottom:"1px solid #ccc",marginTop:2}}>
+        <thead>
+          <tr style={{background:"#222",color:"#fff"}}>
+            {["Sl. No.","Description","Color / Fabric","Unit","Qty","Price/Unit","GST %","Amount"].map(h=>(
+              <th key={h} style={{padding:"6px 8px",textAlign:["Qty","Price/Unit","GST %","Amount"].includes(h)?"right":"left",fontWeight:700,fontSize:10,letterSpacing:.5,border:"1px solid #444"}}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((it,i)=>{
+            const amt=lineAmt(it)+lineGst(it);
+            return(
+              <tr key={i} style={{background:i%2===0?"#fff":"#fafafa"}}>
+                <td style={td}>{it.sl}</td>
+                <td style={{...td,fontWeight:600}}>{it.desc||"—"}</td>
+                <td style={td}>{it.color||"—"}</td>
+                <td style={td}>{it.unit}</td>
+                <td style={{...td,textAlign:"right"}}>{it.qty}</td>
+                <td style={{...td,textAlign:"right"}}>₹{parseFloat(it.price||0).toFixed(2)}</td>
+                <td style={{...td,textAlign:"right"}}>{it.gstPct}%</td>
+                <td style={{...td,textAlign:"right",fontWeight:700}}>₹{amt.toFixed(2)}</td>
+              </tr>
+            );
+          })}
+          {/* empty rows */}
+          {Array.from({length:Math.max(0,4-items.length)}).map((_,i)=>(
+            <tr key={`e${i}`} style={{background:i%2===0?"#fafafa":"#fff"}}>
+              {Array(8).fill(0).map((_,j)=><td key={j} style={{...td,height:22}}>&nbsp;</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Totals + notes */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:"1px solid #ccc"}}>
+        {/* Left: notes */}
+        <div style={{borderRight:"1px solid #ccc"}}>
+          <div style={{background:"#111",color:"#fff",fontWeight:700,padding:"4px 10px",fontSize:11}}>Special notes and instructions</div>
+          <div style={{padding:"8px 10px",minHeight:48,color:"#555",fontSize:11,lineHeight:1.6}}>{notes||"—"}</div>
+          <div style={{borderTop:"1px solid #ccc",padding:"6px 10px",display:"flex",justifyContent:"flex-end"}}>
+            <div style={{background:"#ffe600",padding:"3px 16px",fontWeight:700,fontSize:11}}>Seal &amp; Signature</div>
+          </div>
+        </div>
+        {/* Right: totals */}
+        <div style={{padding:0}}>
+          {[["Sub Total",`₹${subTotal.toFixed(2)}`],["GST Total",`₹${totalGst.toFixed(2)}`],["Discount",`₹${discAmt.toFixed(2)}`]].map(([l,v])=>(
+            <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"6px 14px",borderBottom:"1px solid #eee"}}>
+              <span style={{color:"#555"}}>{l}</span><span style={{fontWeight:700}}>{v}</span>
+            </div>
+          ))}
+          <div style={{display:"flex",justifyContent:"space-between",padding:"8px 14px",background:"#ffe600",fontWeight:900,fontSize:14}}>
+            <span>Final Amount:</span><span>₹{finalAmt.toFixed(2)}</span>
+          </div>
+          {order.paidAt&&(
+            <div style={{display:"flex",justifyContent:"center",padding:"6px",borderTop:"1px solid #ccc"}}>
+              <div style={{border:"3px solid #4caf50",borderRadius:4,padding:"3px 14px",color:"#4caf50",fontWeight:900,fontSize:16,letterSpacing:3,transform:"rotate(-6deg)",display:"inline-block"}}>PAID ✓</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Declaration */}
+      <div style={{background:"#111",color:"#fff",fontWeight:700,padding:"4px 10px",fontSize:11}}>Declaration:</div>
+      <div style={{padding:"6px 10px",fontSize:10,color:"#666",lineHeight:1.5,borderBottom:"1px solid #ccc"}}>{DECLARATION}</div>
+
+      {/* Footer */}
+      <div style={{background:"#ffe600",color:"#111",textAlign:"center",padding:"7px 0",fontWeight:800,fontSize:12}}>
+        Thanks for business with us!!! Please visit us again !!!
+      </div>
+    </div>
+  );
+
+  const th={padding:"5px 8px",border:"1px solid #ccc",fontWeight:700,fontSize:10,textAlign:"center",background:"#f0f0f0"};
+  const td={padding:"5px 8px",border:"1px solid #eee",fontSize:11};
+
+  return (
+    <div>
+      {/* ── STAFF EDITOR ── */}
+      {isStaff&&!order.paidAt&&(
+        <div style={{background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:14,padding:"18px 20px",marginBottom:18}}>
+          <h4 style={{color:"#f4c060",fontWeight:700,fontSize:14,margin:"0 0 14px"}}>📝 Build Bill</h4>
+          {/* item rows */}
+          <div style={{overflowX:"auto",marginBottom:10}}>
+            <table style={{width:"100%",borderCollapse:"collapse",minWidth:600}}>
+              <thead>
+                <tr style={{background:"#111"}}>
+                  {["#","Description","Color/Fabric","Unit","Qty","Price/Unit","GST%","HSN",""].map(h=>(
+                    <th key={h} style={{padding:"6px 8px",color:"#888",fontSize:10,fontWeight:700,letterSpacing:1,textAlign:"left",borderBottom:"1px solid #222"}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((it,i)=>(
+                  <tr key={i}>
+                    <td style={{padding:"5px 6px",color:"#666",fontSize:12}}>{it.sl}</td>
+                    <td style={{padding:"3px 4px"}}><input style={iS} value={it.desc} onChange={e=>updItem(i,"desc",e.target.value)} placeholder="Blouse Stitching"/></td>
+                    <td style={{padding:"3px 4px"}}><input style={iS} value={it.color} onChange={e=>updItem(i,"color",e.target.value)} placeholder="Red Silk"/></td>
+                    <td style={{padding:"3px 4px"}}><input style={{...iS,width:52}} value={it.unit} onChange={e=>updItem(i,"unit",e.target.value)}/></td>
+                    <td style={{padding:"3px 4px"}}><input style={{...iS,width:44,textAlign:"center"}} type="number" min="1" value={it.qty} onChange={e=>updItem(i,"qty",e.target.value)}/></td>
+                    <td style={{padding:"3px 4px"}}><input style={{...iS,width:72,textAlign:"right"}} type="number" min="0" step="0.01" value={it.price} onChange={e=>updItem(i,"price",e.target.value)} placeholder="0.00"/></td>
+                    <td style={{padding:"3px 4px"}}><input style={{...iS,width:44,textAlign:"center"}} type="number" min="0" max="28" value={it.gstPct} onChange={e=>updItem(i,"gstPct",e.target.value)}/></td>
+                    <td style={{padding:"3px 4px"}}><input style={{...iS,width:54}} value={it.hsn} onChange={e=>updItem(i,"hsn",e.target.value)}/></td>
+                    <td style={{padding:"3px 4px"}}><button onClick={()=>delItem(i)} style={{background:"transparent",border:"none",color:"#f46060",cursor:"pointer",fontSize:15,lineHeight:1}}>✕</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <button onClick={addItem} style={{background:"transparent",border:"1px dashed #333",color:"#666",padding:"5px 14px",borderRadius:8,cursor:"pointer",fontSize:12,marginBottom:14}}>＋ Add Item</button>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div>
+              <label style={{color:"#666",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:5}}>Discount (₹)</label>
+              <input style={iS} type="number" min="0" value={discount} onChange={e=>setDiscount(e.target.value)} placeholder="0"/>
+            </div>
+            <div>
+              <label style={{color:"#666",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:5}}>Special Notes</label>
+              <input style={iS} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. Alterations included"/>
+            </div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+            <div style={{color:"#f4c060",fontWeight:800,fontSize:18}}>Final: ₹{finalAmt.toFixed(2)}</div>
+            <button onClick={saveBill} style={{background:"linear-gradient(135deg,#f4c060,#c87820)",color:"#000",border:"none",padding:"10px 22px",borderRadius:10,fontSize:13,fontWeight:800,cursor:"pointer"}}>💾 Save Bill</button>
+          </div>
+        </div>
+      )}
+
+      {/* ── BILL PREVIEW ── */}
+      <div style={{marginBottom:16}}><Bill/></div>
+
+      {/* ── CUSTOMER PAYMENT ── */}
+      {!isStaff&&!order.paidAt&&(
+        <>
+          <p style={{color:"#888",fontSize:13,marginBottom:10}}>Choose payment method:</p>
+          <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:14}}>
+            {["GPay","PhonePe","Cash"].map(m=>(
+              <button key={m} onClick={()=>setPayMode(m)}
+                style={{background:payMode===m?"#ffe600":"#111",color:payMode===m?"#111":"#888",border:`1px solid ${payMode===m?"#ffe600":"#222"}`,padding:"10px 20px",borderRadius:10,cursor:"pointer",fontWeight:700,fontSize:13}}>
+                {m==="GPay"?"💙 GPay":m==="PhonePe"?"💜 PhonePe":"💵 Cash"}
+              </button>
+            ))}
+          </div>
+          {payMode&&payMode!=="Cash"&&(
+            <div style={{marginBottom:12}}>
+              <a href={`upi://pay?pa=${payMode==="GPay"?"gsquarefashion@okaxis":"gsquarefashion@ybl"}&pn=G+Square+Fashion&am=${finalAmt.toFixed(2)}&tn=Token+${order.token}`}
+                style={{display:"inline-block",background:payMode==="GPay"?"#1a73e8":"#6739b7",color:"#fff",padding:"11px 22px",borderRadius:10,fontWeight:700,fontSize:14,textDecoration:"none"}}>
+                {payMode==="GPay"?"💙 Open GPay":"💜 Open PhonePe"}
+              </a>
+            </div>
+          )}
+          {payMode&&(
+            <>
+              <ActionBtn onClick={()=>handlePaid(payMode)}>✅ Confirm Payment & Send Bill on WhatsApp →</ActionBtn>
+              <p style={{color:"#555",fontSize:11,marginTop:6}}>📲 Bill will be sent to {order.mobile}</p>
+            </>
+          )}
+        </>
+      )}
+
+      {/* ── STAFF ACTIONS ── */}
+      {isStaff&&(
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:6}}>
+          {!order.paidAt&&<WaitBox icon="💳" msg="Waiting for customer payment."/>}
+          <a href={WHATSAPP(order.mobile,waMsg())} target="_blank" rel="noreferrer"
+            style={{display:"inline-block",background:"#25d366",color:"#fff",padding:"10px 22px",borderRadius:10,fontWeight:700,fontSize:13,textDecoration:"none",marginTop:8}}>
+            📲 {order.paidAt?"Resend":"Send"} Bill on WhatsApp
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const iS={width:"100%",background:"#0d0d0d",border:"1px solid #1e1e1e",color:"#eee",padding:"6px 8px",borderRadius:6,fontSize:12,boxSizing:"border-box"};
+
+
+function FInput({label,value,onChange,type="text",maxLength,placeholder}){return(<div style={{marginBottom:13}}><label style={{display:"block",color:"#666",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:5}}>{label}</label><input style={{width:"100%",background:"#111",border:"1px solid #1e1e1e",color:"#eee",padding:"10px 13px",borderRadius:10,fontSize:14,boxSizing:"border-box"}} type={type} value={value} maxLength={maxLength} placeholder={placeholder} onChange={e=>onChange&&onChange(e.target.value)}/></div>);}
+function ActionBtn({onClick,children,color="#f4c060"}){return(<button style={{background:color==="#f4c060"?"linear-gradient(135deg,#f4c060,#c87820)":color,color:color==="#f4c060"?"#000":"#fff",border:"none",padding:"11px 20px",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer",marginTop:4}} onClick={onClick}>{children}</button>);}
+function WaitBox({icon,msg}){return(<div style={{background:"#060606",border:"1px solid #161616",borderRadius:12,padding:"22px",textAlign:"center",color:"#555",fontSize:13}}><div style={{fontSize:34,marginBottom:8}}>{icon}</div>{msg}</div>);}
+function Toast({toast}){if(!toast)return null;return(<div style={{position:"fixed",top:20,right:20,padding:"12px 22px",borderRadius:10,color:"#fff",fontWeight:700,zIndex:9999,fontSize:13,boxShadow:"0 4px 20px rgba(0,0,0,0.5)",background:toast.type==="error"?"#c0392b":"#2c7"}}>{toast.msg}</div>);}
+
+const base={
+  centerPage:{background:"#080808",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:32,fontFamily:"'Segoe UI',sans-serif",color:"#eee",textAlign:"center"},
+  bigCard:(c)=>({background:"#0f0f0f",border:`1px solid ${c}44`,borderRadius:20,padding:"32px 40px",cursor:"pointer",fontSize:20,lineHeight:1.8,color:"#eee",minWidth:180,textAlign:"center"}),
+};
