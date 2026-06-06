@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>G Square Fashion</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080808;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100vh}
+input,button,select,textarea{font-family:inherit}
+button{cursor:pointer}
+a{text-decoration:none}
+
+/* NAV */
+.nav{display:flex;align-items:center;gap:12px;padding:14px 32px;background:#0a0a0a;border-bottom:1px solid #111;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.nav-brand{font-weight:800;font-size:18px;color:#f4c060;letter-spacing:1px;margin-right:8px}
+.nav-btn{background:transparent;border:1px solid transparent;color:#666;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;transition:all .2s}
+.nav-btn.active{background:rgba(244,192,96,0.12);border-color:rgba(244,192,96,0.3);color:#f4c060}
+.nav-btn:hover{background:#111}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+/* TOAST */
+#toast{position:fixed;top:20px;right:20px;padding:12px 22px;border-radius:10px;color:#fff;font-weight:700;z-index:9999;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.5);display:none;max-width:300px}
+
+/* CARD */
+.card{background:#0a0a0a;border:1px solid #161616;border-radius:18px;overflow:hidden;margin-bottom:18px}
+.card-header{padding:16px 22px;border-bottom:1px solid #111;display:flex;align-items:center;gap:10px}
+.card-body{padding:20px 22px}
+
+/* FORM */
+.flabel{display:block;color:#666;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.finput{width:100%;background:#111;border:1px solid #1e1e1e;color:#eee;padding:10px 13px;border-radius:10px;font-size:14px;transition:all .2s}
+.finput:focus{outline:none;border-color:#f4c060;box-shadow:0 0 0 3px rgba(244,192,96,.12)}
+.fgroup{margin-bottom:14px}
+
+/* BUTTONS */
+.btn{border:none;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,#f4c060,#c87820);color:#000}
+.btn-gold:hover{opacity:.9}
+.btn-red{background:#c0392b;color:#fff}
+.btn-green{background:#25d366;color:#fff}
+.btn-ghost{background:transparent;border:1px solid #222;color:#888}
+.btn-ghost:hover{background:#111}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700}
+
+/* TABLE ROW */
+.order-row{display:grid;grid-template-columns:80px 1fr 140px 150px 90px 80px 30px;align-items:center;gap:10px;padding:12px 24px;border-bottom:1px solid #0f0f0f;cursor:pointer;transition:background .15s}
+.order-row:hover{background:#0f0f0f}
+
+/* GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.kpi-card{background:#0f0f0f;border:1px solid #161616;border-radius:16px;padding:18px 20px}
+
+/* PROGRESS BAR */
+.stage-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s;border:2px solid #222}
+.stage-line{height:3px;flex:1;min-width:6px;background:#1a1a1a;transition:all .3s}
+
+/* DESIGN GRID */
+.design-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.design-card{background:#111;border:2px solid #1a1a1a;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+.design-card.selected{border-color:#f4c060;transform:scale(1.03)}
+.design-card img{width:100%;height:84px;object-fit:cover;display:block}
+.design-card-info{padding:7px 9px}
+
+/* MEAS GRID */
+.meas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.meas-box{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:10px 12px}
+
+/* TIMELINE */
+.timeline-item{display:flex;gap:10px;align-items:flex-start;padding-bottom:14px}
+.timeline-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.timeline-line{width:1px;flex:1;background:#161616;min-height:10px;margin-top:3px;margin-left:13px}
+
+/* BILL TABLE */
+.bill-table{width:100%;border-collapse:collapse;font-size:12px}
+.bill-table th{background:#222;color:#fff;padding:6px 8px;text-align:left;border:1px solid #444;font-size:10px;letter-spacing:.5px}
+.bill-table td{padding:6px 8px;border:1px solid #eee;font-size:12px}
+
+/* STARS */
+.star{font-size:38px;cursor:pointer;color:#2a2a2a;transition:color .15s}
+.star.lit{color:#ffd700}
+
+/* REMINDER BANNER */
+.reminder-banner{background:linear-gradient(135deg,#1a0f00,#0f1a00);border-bottom:1px solid #f4c06033;padding:14px 32px}
+
+/* LANDING HERO */
+.hero{position:relative;background:linear-gradient(135deg,#050010,#100a00 55%,#001005);overflow:hidden;min-height:92vh;display:flex;align-items:center;justify-content:center}
+.hero-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(244,192,96,0.09),transparent 65%);top:-20%;right:-5%;pointer-events:none}
+
+/* PAYMENT METHODS */
+.pay-btn{background:#111;border:1px solid #222;color:#888;padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px;transition:all .2s}
+.pay-btn.selected{background:#ffe600;border-color:#ffe600;color:#111}
+
+/* UTIL */
+.flex{display:flex}.flex-wrap{flex-wrap:wrap}.gap-8{gap:8px}.gap-10{gap:10px}.gap-12{gap:12px}.gap-16{gap:16px}
+.center{text-align:center}.w-full{width:100%}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.hidden{display:none!important}
+.page{display:none;min-height:100vh}.page.active{display:block}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
+
+/* BILL PRINT */
+@media print{
+  body *{visibility:hidden}
+  #print-bill,#print-bill *{visibility:visible}
+  #print-bill{position:fixed;left:0;top:0;width:100%;background:#fff!important;color:#111!important}
+}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .order-row{grid-template-columns:70px 1fr 100px 30px;gap:6px}
+  .order-row .hide-mobile{display:none}
+  .nav{padding:10px 16px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE: LANDING -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+  <div style="background:#080808;min-height:100vh">
+    <div style="text-align:center;padding:80px 24px 60px">
+      <div style="font-size:64px;margin-bottom:16px">✂️</div>
+      <h1 style="font-size:clamp(32px,6vw,64px);font-weight:900;color:#fff;margin-bottom:10px">G Square <span style="color:#f4c060">Fashion</span></h1>
+      <p style="color:#555;font-size:16px;margin-bottom:48px">Premium Blouse Boutique · Track Every Stitch</p>
+      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" style="background:#0f0f0f;border:1px solid rgba(244,192,96,.4);color:#eee;padding:28px 40px;border-radius:20px;font-size:18px;line-height:2" onclick="goStaff()">
+          🧵<br/><b>Staff Portal</b><br/><small style="color:#666;font-size:12px">Manage Orders</small>
+        </button>
+        <button class="btn" style="background:#0f0f0f;border:1px solid rgba(76,175,80,.4);color:#eee;padding:28px 40px;border-radius:20px;font-size:18px;line-height:2" onclick="showPage('customer')">
+          👗<br/><b>Customer Portal</b><br/><small style="color:#666;font-size:12px">Track Your Order</small>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE: STAFF LOGIN -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="page-stafflogin" class="page">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px">
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(244,192,96,.18);border-radius:24px;overflow:hidden;width:100%;max-width:380px">
+      <div style="background:linear-gradient(135deg,rgba(244,192,96,.09),rgba(244,192,96,.02));padding:32px 36px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div style="font-size:52px">🔐</div>
+        <h2 style="color:#fff;font-weight:800;font-size:22px;margin:12px 0 6px">Staff Login</h2>
+        <p style="color:#555;font-size:13px">G Square Fashion · Management</p>
+      </div>
+      <div style="padding:28px 36px 32px">
+        <div class="fgroup">
+          <label class="flabel">PIN Code</label>
+          <input class="finput" id="staff-pin" type="password" maxlength="6" placeholder="••••" style="font-size:24px;font-weight:700;letter-spacing:12px;text-align:center" onkeydown="if(event.key==='Enter')staffLogin()"/>
+        </div>
+        <div id="pin-err" style="color:#f46060;font-size:13px;text-align:center;margin-bottom:8px;display:none">Incorrect PIN</div>
+        <button class="btn btn-gold w-full" style="font-size:16px;padding:14px" onclick="staffLogin()">Unlock Dashboard →</button>
+        <p style="color:#333;font-size:11px;text-align:center;margin-top:12px">Demo PIN: <b style="color:#555">1234</b></p>
+        <button class="btn btn-ghost w-full mt-8" onclick="showPage('landing')">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE: STAFF DASHBOARD -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="page-staff" class="page">
+  <nav class="nav">
+    <span class="nav-brand">✂️ G Square</span>
+    <button class="nav-btn active" id="nav-orders" onclick="staffTab('dashboard')">📋 Orders</button>
+    <button class="nav-btn" id="nav-new" onclick="staffTab('new')">➕ New Order</button>
+    <button class="nav-btn hidden" id="nav-order-detail" onclick="staffTab('detail')">📄 <span id="nav-token-label">#—</span></button>
+    <div class="nav-right">
+      <span id="overdue-badge" class="badge hidden" style="background:#ff444422;border:1px solid #ff444466;color:#ff6666"></span>
+      <span id="staff-order-count" style="color:#555;font-size:13px"></span>
+      <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px" onclick="staffLogout()">🔒 Logout</button>
+    </div>
+  </nav>
+
+  <!-- REMINDER BANNER -->
+  <div id="reminder-banner" class="reminder-banner hidden">
+    <div style="max-width:1200px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:18px">🔔</span>
+        <span style="color:#f4c060;font-weight:700;font-size:14px">Upcoming Due Dates — Action Required</span>
+        <span id="reminder-count" style="color:#666;font-size:12px"></span>
+      </div>
+      <div id="reminder-items" class="flex flex-wrap gap-10"></div>
+    </div>
+  </div>
+
+  <!-- TAB: DASHBOARD -->
+  <div id="tab-dashboard" style="max-width:1200px;margin:0 auto;padding:28px 32px">
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <!-- Stage pills -->
+    <div class="card" style="margin-bottom:24px">
+      <div style="padding:16px 22px">
+        <p style="color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:700">Orders by Stage</p>
+        <div id="stage-pills" class="flex flex-wrap gap-8"></div>
+      </div>
+    </div>
+    <!-- Orders Table -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid #111;flex-wrap:wrap">
+        <h3 style="color:#eee;font-weight:700;font-size:16px;flex:1;margin:0">All Orders</h3>
+        <input class="finput" id="search-input" style="width:210px;padding:8px 14px;font-size:13px" placeholder="🔍 Name, token, mobile…" oninput="renderTable()"/>
+        <button class="btn btn-gold" style="font-size:13px;padding:9px 18px" onclick="staffTab('new')">➕ New</button>
+      </div>
+      <div id="orders-table"></div>
+    </div>
+  </div>
+
+  <!-- TAB: NEW ORDER -->
+  <div id="tab-new" class="hidden" style="max-width:600px;margin:48px auto;padding:0 24px">
+    <button class="btn btn-ghost" style="margin-bottom:24px;font-size:13px;padding:8px 16px" onclick="staffTab('dashboard')">← Back</button>
+    <div class="card">
+      <div style="background:linear-gradient(135deg,rgba(244,192,96,.07),transparent);padding:26px 32px;border-bottom:1px solid #111">
+        <h2 style="color:#f4c060;font-weight:800;font-size:22px;margin:0">➕ New Customer Intake</h2>
+        <p style="color:#555;font-size:14px;margin:6px 0 0">Register a new customer and set their order due date</p>
+      </div>
+      <div style="padding:26px 32px">
+        <div class="fgroup"><label class="flabel">Customer Name</label><input class="finput" id="new-name" placeholder="e.g. Priya Sharma"/></div>
+        <div class="fgroup"><label class="flabel">Mobile Number</label><input class="finput" id="new-mobile" type="tel" maxlength="10" placeholder="10-digit number"/></div>
+        <div class="fgroup">
+          <label class="flabel">📅 Due Date <span style="color:#f46060">*</span></label>
+          <input class="finput" id="new-due" type="date"/>
+          <p style="color:#555;font-size:11px;margin-top:5px">Staff alerted 2 days before · Customer alerted 1 day before</p>
+        </div>
+        <div class="fgroup"><label class="flabel">Notes (optional)</label><input class="finput" id="new-notes" placeholder="Special requirements…"/></div>
+        <button class="btn btn-gold w-full" style="font-size:16px;padding:14px;margin-top:8px" onclick="createOrder()">Generate Token & Start Order 🎟️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ORDER DETAIL -->
+  <div id="tab-detail" class="hidden"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE: CUSTOMER PORTAL -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="page-customer" class="page">
+  <div id="customer-lookup">
+    <div style="background:#0d0d0d;min-height:100vh">
+      <nav style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid #111">
+        <span style="font-size:18px;font-weight:700;color:#f4c060">✂️ G Square Fashion</span>
+        <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px" onclick="showPage('landing')">← Home</button>
+      </nav>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center">
+        <div style="font-size:76px;margin-bottom:20px">👗</div>
+        <h1 style="font-size:clamp(32px,6vw,56px);font-weight:800;color:#fff;margin-bottom:14px">Track Your Blouse</h1>
+        <p style="color:#777;max-width:480px;line-height:1.6;margin-bottom:40px;font-size:16px">Enter your token for live updates — from design to delivery.</p>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(244,192,96,.2);border-radius:20px;padding:26px 34px;width:100%;max-width:420px">
+          <p style="color:#f4c060;font-weight:700;font-size:14px;margin-bottom:14px">🎟️ Your Order Token</p>
+          <div style="display:flex;gap:10px">
+            <input class="finput" id="cust-token-input" maxlength="5" placeholder="48291" style="font-size:20px;font-weight:700;letter-spacing:6px;text-align:center;flex:1" onkeydown="if(event.key==='Enter')lookupOrder()"/>
+            <button class="btn btn-gold" style="white-space:nowrap;padding:13px 20px" onclick="lookupOrder()">Track →</button>
+          </div>
+          <p style="color:#444;font-size:12px;margin-top:10px">Token given at the shop counter</p>
+        </div>
+      </div>
+      <!-- How it works -->
+      <div style="padding:40px;max-width:900px;margin:0 auto">
+        <h2 style="text-align:center;font-size:28px;font-weight:800;margin-bottom:32px">How It Works</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px">
+          ${[["👤","01","Intake","Staff registers you and gives a token."],["🎨","02","Design","Choose from 6 signature blouse styles."],["📏","03","Measurements","Precise measurements by our staff."],["🧵","04","Tailoring","Expert tailors craft your blouse."],["🔍","05","Quality Check","Senior review before notifying you."],["👗","06","Trial & Pay","Try on, approve, pay securely."]].map(([ic,n,t,d])=>`<div style="background:#111;border:1px solid #1a1a1a;border-radius:14px;padding:18px;text-align:center"><div style="color:#f4c060;font-size:10px;font-weight:700;letter-spacing:3px;margin-bottom:8px">${n}</div><div style="font-size:26px;margin-bottom:8px">${ic}</div><h4 style="color:#fff;font-size:13px;margin-bottom:5px">${t}</h4><p style="color:#555;font-size:11px;line-height:1.5">${d}</p></div>`).join("")}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="customer-detail" class="hidden"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PRINT BILL AREA -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="print-bill" style="display:none"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════════
+const STAFF_PIN  = "1234";
+const DB_KEY     = "gsf_orders_v2";
+const SHOP       = { name:"G Square Fashion", addr:"No. 12, Silk Street, T. Nagar, Chennai – 600017", phone:"+91 98765 43210", email:"gsquarefashion@gmail.com", gst:"29AABCG1234F1Z5" };
+const GST_RATE   = 5;
+
+const STAGES = [
+  {id:0,  key:"intake",       label:"Customer Intake",  icon:"👤", color:"#888"},
+  {id:1,  key:"design",       label:"Design Selection", icon:"🎨", color:"#f4c060"},
+  {id:2,  key:"measurement",  label:"Measurements",     icon:"📏", color:"#60b4f4"},
+  {id:3,  key:"tailor_queue", label:"Tailor Queue",     icon:"🧵", color:"#a0e080"},
+  {id:4,  key:"senior",       label:"Senior Review",    icon:"🔍", color:"#e0a060"},
+  {id:5,  key:"notify",       label:"Notified",         icon:"📲", color:"#f4c060"},
+  {id:6,  key:"trial",        label:"Trial Room",       icon:"👗", color:"#c060f4"},
+  {id:7,  key:"billing",      label:"Billing",          icon:"🧾", color:"#e06060"},
+  {id:8,  key:"correction",   label:"Correction",       icon:"✂️", color:"#f46060"},
+  {id:9,  key:"payment",      label:"Payment",          icon:"💳", color:"#60e0a0"},
+  {id:10, key:"review",       label:"Review",           icon:"⭐", color:"#ffd700"},
+  {id:11, key:"completed",    label:"Completed",        icon:"✅", color:"#4caf50"},
+];
+
+const DESIGNS = [
+  {id:"D1",name:"Classic Katan Silk", style:"Traditional",img:"https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&q=80",desc:"Elegant boat neck with zari work"},
+  {id:"D2",name:"Princess Cut",       style:"Modern",      img:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=300&q=80",desc:"Structured seams, contemporary silhouette"},
+  {id:"D3",name:"Peplum Style",       style:"Fusion",      img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?w=300&q=80",desc:"Flared bottom with mirror embroidery"},
+  {id:"D4",name:"Deep Back Blouse",   style:"Bridal",      img:"https://images.unsplash.com/photo-1617627143233-5e8f7fc2e7a7?w=300&q=80",desc:"Intricate back with tassel strings"},
+  {id:"D5",name:"Halter Neck",        style:"Party",       img:"https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80",desc:"Open shoulder with bead work"},
+  {id:"D6",name:"High Neck Victorian",style:"Heritage",    img:"https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80",desc:"High collar with lace trim"},
+];
+
+const MEAS_FIELDS = ["Bust","Waist","Hip","Shoulder","Sleeve Length","Back Length","Front Length","Neck Depth"];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let orders       = [];
+let staffAuthed  = false;
+let currentPage  = "landing";
+let activeOrder  = null;
+let staffTabView = "dashboard";
+
+// ══════════════════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════════════════
+function loadOrders(){ try{ return JSON.parse(localStorage.getItem(DB_KEY)||"[]"); }catch{ return []; } }
+function saveOrders(){ localStorage.setItem(DB_KEY, JSON.stringify(orders)); }
+
+// ══════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════
+let _toastTimer;
+function toast(msg, type="success"){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.background = type==="error" ? "#c0392b" : "#2c7";
+  el.style.display = "block";
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>el.style.display="none", 3500);
+}
+
+// ══════════════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════════════
+function daysUntilDue(dueDate){
+  if(!dueDate) return null;
+  const now=new Date(); now.setHours(0,0,0,0);
+  const due=new Date(dueDate); due.setHours(0,0,0,0);
+  return Math.round((due-now)/86400000);
+}
+function dueBadge(dueDate, isStaff){
+  const d=daysUntilDue(dueDate);
+  if(d===null) return null;
+  if(d<0)  return {label:`Overdue by ${Math.abs(d)}d`, color:"#ff4444", bg:"#ff444422", icon:"🚨"};
+  if(d===0) return {label:"Due Today!", color:"#ff8800", bg:"#ff880022", icon:"⚠️"};
+  if(isStaff&&d<=2) return {label:`Due in ${d}d`, color:"#f4c060", bg:"#f4c06022", icon:"🔔"};
+  if(!isStaff&&d<=1) return {label:"Due Tomorrow", color:"#f4c060", bg:"#f4c06022", icon:"🔔"};
+  return {label:`Due ${fmtShort(dueDate)}`, color:"#4caf50", bg:"#4caf5015", icon:"📅"};
+}
+function fmtShort(d){ return new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
+function fmtFull(d){ return new Date(d).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}); }
+function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function genToken(){ return String(Math.floor(10000+Math.random()*90000)); }
+function stageInfo(id){ return STAGES[id]||STAGES[0]; }
+function waURL(mobile,msg){ return `https://wa.me/91${mobile}?text=${encodeURIComponent(msg)}`; }
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function showPage(p){
+  currentPage=p;
+  document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));
+  document.getElementById("page-"+p).classList.add("active");
+}
+function goStaff(){
+  if(staffAuthed){ showPage("staff"); renderStaff(); }
+  else showPage("stafflogin");
+}
+
+// ══════════════════════════════════════════════════════════
+// STAFF LOGIN
+// ══════════════════════════════════════════════════════════
+function staffLogin(){
+  const pin = document.getElementById("staff-pin").value;
+  const err = document.getElementById("pin-err");
+  if(pin===STAFF_PIN){
+    staffAuthed=true; err.style.display="none";
+    document.getElementById("staff-pin").value="";
+    showPage("staff"); renderStaff();
+  } else {
+    err.style.display="block";
+    document.getElementById("staff-pin").value="";
+  }
+}
+function staffLogout(){
+  staffAuthed=false; activeOrder=null;
+  showPage("landing");
+}
+
+// ══════════════════════════════════════════════════════════
+// STAFF TABS
+// ══════════════════════════════════════════════════════════
+function staffTab(tab){
+  staffTabView=tab;
+  ["dashboard","new","detail"].forEach(t=>{
+    const el=document.getElementById("tab-"+t);
+    if(el) el.classList.toggle("hidden", t!==tab);
+  });
+  document.getElementById("nav-orders").classList.toggle("active", tab==="dashboard");
+  document.getElementById("nav-new").classList.toggle("active", tab==="new");
+  document.getElementById("nav-order-detail").classList.toggle("active", tab==="detail");
+  if(tab==="dashboard") renderTable();
+  if(tab==="new"){ document.getElementById("new-due").min=todayStr(); }
+  if(tab==="detail"&&activeOrder) renderDetailPage(activeOrder,true);
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER STAFF DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderStaff(){
+  renderKPIs();
+  renderStagePills();
+  renderTable();
+  renderReminderBanner();
+  const od=document.getElementById("nav-order-detail");
+  od.classList.toggle("hidden",!activeOrder);
+  if(activeOrder) document.getElementById("nav-token-label").textContent="#"+activeOrder.token;
+}
+
+function renderKPIs(){
+  const totalRevenue=orders.filter(o=>o.amount).reduce((s,o)=>s+(parseFloat(o.amount)||0),0);
+  const overdue=orders.filter(o=>{ const d=daysUntilDue(o.dueDate); return d!==null&&d<0&&o.stage<11; }).length;
+  const kpis=[
+    {icon:"📦",label:"Total Orders",  value:orders.length,          color:"#f4c060"},
+    {icon:"🧵",label:"In Production", value:orders.filter(o=>o.stage>=2&&o.stage<=5).length, color:"#60b4f4"},
+    {icon:"👗",label:"Trial Pending", value:orders.filter(o=>o.stage===6).length, color:"#c060f4"},
+    {icon:"✅",label:"Completed",      value:orders.filter(o=>o.stage===11).length, color:"#4caf50"},
+    {icon:"💰",label:"Revenue",        value:`₹${totalRevenue.toLocaleString("en-IN")}`, color:"#ffd700"},
+    {icon:"🚨",label:"Overdue",        value:overdue, color:"#ff4444"},
+  ];
+  document.getElementById("kpi-grid").innerHTML=kpis.map(k=>`
+    <div class="kpi-card">
+      <div style="font-size:24px;margin-bottom:8px">${k.icon}</div>
+      <div style="font-size:24px;font-weight:800;color:${k.color};line-height:1">${k.value}</div>
+      <div style="font-size:12px;color:#555;margin-top:5px">${k.label}</div>
+    </div>`).join("");
+
+  const ob=document.getElementById("overdue-badge");
+  if(overdue>0){ ob.textContent=`🚨 ${overdue} Overdue`; ob.classList.remove("hidden"); }
+  else ob.classList.add("hidden");
+  document.getElementById("staff-order-count").textContent=orders.length+" orders";
+}
+
+function renderStagePills(){
+  const pills=STAGES.filter((_,i)=>i>0).map(st=>{
+    const cnt=orders.filter(o=>o.stage===st.id).length;
+    return `<div style="display:flex;align-items:center;gap:7px;background:#111;border:1px solid ${cnt>0?st.color+"44":"#161616"};border-radius:20px;padding:5px 13px">
+      <span style="font-size:13px">${st.icon}</span>
+      <span style="font-size:12px;color:${cnt>0?st.color:"#444"}">${st.label}</span>
+      <span style="background:${cnt>0?st.color:"#1a1a1a"};color:${cnt>0?"#000":"#333"};border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700">${cnt}</span>
+    </div>`;
+  }).join("");
+  document.getElementById("stage-pills").innerHTML=pills;
+}
+
+function renderReminderBanner(){
+  const reminders=orders.filter(o=>o.stage<11&&o.dueDate).filter(o=>{ const d=daysUntilDue(o.dueDate); return d!==null&&d<=2; }).sort((a,b)=>daysUntilDue(a.dueDate)-daysUntilDue(b.dueDate));
+  const banner=document.getElementById("reminder-banner");
+  if(reminders.length===0){ banner.classList.add("hidden"); return; }
+  banner.classList.remove("hidden");
+  document.getElementById("reminder-count").textContent=`(${reminders.length} order${reminders.length>1?"s":""})`;
+  document.getElementById("reminder-items").innerHTML=reminders.map(o=>{
+    const b=dueBadge(o.dueDate,true);
+    return `<div onclick="openOrder('${o.token}',true)" style="background:#111;border:1px solid ${b.color}44;border-radius:12px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px">
+      <span style="font-size:16px">${b.icon}</span>
+      <div><div style="color:#eee;font-weight:700;font-size:13px">${o.name} <span style="color:#666;font-size:11px">#${o.token}</span></div>
+      <div style="color:${b.color};font-size:12px;font-weight:600">${b.label} · ${stageInfo(o.stage).label}</div></div>
+    </div>`;
+  }).join("");
+}
+
+function renderTable(){
+  const q=(document.getElementById("search-input")||{value:""}).value.toLowerCase();
+  const filtered=orders.filter(o=>o.name.toLowerCase().includes(q)||o.token.includes(q)||o.mobile.includes(q));
+  const tb=document.getElementById("orders-table");
+  if(!tb) return;
+  if(filtered.length===0){ tb.innerHTML=`<p style="color:#444;text-align:center;padding:40px">No orders found.</p>`; return; }
+  tb.innerHTML=filtered.map(o=>{
+    const st=stageInfo(o.stage);
+    const db=dueBadge(o.dueDate,true);
+    const dbHtml=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}44">${db.icon} ${db.label}</span>`:`<span style="color:#333;font-size:12px">No due date</span>`;
+    return `<div class="order-row" onclick="openOrder('${o.token}',true)">
+      <span style="background:rgba(244,192,96,.1);color:#f4c060;border:1px solid rgba(244,192,96,.2);padding:3px 0;border-radius:8px;font-weight:700;font-size:12px;text-align:center">#${o.token}</span>
+      <div><div style="color:#eee;font-weight:600;font-size:14px">${o.name}</div><div style="color:#555;font-size:11px;margin-top:2px">📱 ${o.mobile}</div></div>
+      <div style="display:flex;align-items:center;gap:5px" class="hide-mobile"><span>${st.icon}</span><span style="font-size:11px;color:${st.color};font-weight:600">${st.label}</span></div>
+      <div class="hide-mobile">${dbHtml}</div>
+      <div style="color:${o.amount?"#4caf50":"#333"};font-size:13px;font-weight:700" class="hide-mobile">${o.amount?`₹${o.amount}`:"—"}</div>
+      <div style="color:#444;font-size:11px" class="hide-mobile">${fmtShort(o.updatedAt)}</div>
+      <div style="color:#555;font-size:18px">›</div>
+    </div>`;
+  }).join("");
+}
+
+// ══════════════════════════════════════════════════════════
+// CREATE ORDER
+// ══════════════════════════════════════════════════════════
+function createOrder(){
+  const name   = document.getElementById("new-name").value.trim();
+  const mobile = document.getElementById("new-mobile").value.trim();
+  const due    = document.getElementById("new-due").value;
+  const notes  = document.getElementById("new-notes").value.trim();
+  if(!name||mobile.length!==10){ toast("Enter valid name & 10-digit mobile","error"); return; }
+  if(!due){ toast("Please set a due date","error"); return; }
+  const token=genToken();
+  const order={token,name,mobile,dueDate:due,notes,stage:1,createdAt:Date.now(),updatedAt:Date.now(),
+    design:null,measurements:{},tailorNote:"",seniorNote:"",trialFeedback:"",correctionNote:"",
+    amount:"",paymentMethod:"",paidAt:null,rating:0,comment:"",billItems:null,discount:"0",billNotes:"",
+    history:[{stage:0,label:"Intake Created",at:Date.now()}]};
+  orders.unshift(order);
+  saveOrders();
+  document.getElementById("new-name").value="";
+  document.getElementById("new-mobile").value="";
+  document.getElementById("new-due").value="";
+  document.getElementById("new-notes").value="";
+  toast(`Token ${token} created · Due ${fmtShort(due)}`);
+  staffTab("dashboard");
+  renderStaff();
+}
+
+// ══════════════════════════════════════════════════════════
+// UPDATE ORDER
+// ══════════════════════════════════════════════════════════
+function updateOrder(token,patch){
+  orders=orders.map(o=>o.token===token?{...o,...patch,updatedAt:Date.now()}:o);
+  if(activeOrder?.token===token) activeOrder={...activeOrder,...patch,updatedAt:Date.now()};
+  saveOrders();
+  renderStaff();
+}
+function advanceOrder(token,nextStage,patch={}){
+  const h={stage:nextStage,label:STAGES[nextStage]?.label||"",at:Date.now()};
+  const o=orders.find(x=>x.token===token);
+  const hist=[...(o?.history||[]),h];
+  updateOrder(token,{stage:nextStage,history:hist,...patch});
+  toast(`Moved to: ${STAGES[nextStage]?.label}`);
+  const fresh=orders.find(x=>x.token===token);
+  activeOrder=fresh;
+  renderDetailPage(fresh, staffTabView==="detail"||currentPage==="staff");
+}
+
+// ══════════════════════════════════════════════════════════
+// OPEN ORDER
+// ══════════════════════════════════════════════════════════
+function openOrder(token, isStaff){
+  const o=orders.find(x=>x.token===token);
+  if(!o) return;
+  activeOrder=o;
+  if(isStaff){
+    document.getElementById("nav-order-detail").classList.remove("hidden");
+    document.getElementById("nav-token-label").textContent="#"+o.token;
+    staffTab("detail");
+  } else {
+    document.getElementById("customer-lookup").classList.add("hidden");
+    document.getElementById("customer-detail").classList.remove("hidden");
+    renderDetailPage(o,false);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// CUSTOMER LOOKUP
+// ══════════════════════════════════════════════════════════
+function lookupOrder(){
+  // Reload from storage fresh before searching
+  orders = loadOrders();
+  const t=document.getElementById("cust-token-input").value.trim();
+  const o=orders.find(x=>x.token===t);
+  if(o){ openOrder(t,false); }
+  else toast("Token not found. Check with shop staff.","error");
+}
+
+// ══════════════════════════════════════════════════════════
+// DETAIL PAGE RENDERER
+// ══════════════════════════════════════════════════════════
+function renderDetailPage(order, isStaff){
+  const container=isStaff?document.getElementById("tab-detail"):document.getElementById("customer-detail");
+  if(!container) return;
+  const st=stageInfo(order.stage);
+  const db=dueBadge(order.dueDate,isStaff);
+  const dbBadgeHtml=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}44">${db.icon} ${db.label}</span>`:"";
+
+  // Due reminder banner
+  const d=daysUntilDue(order.dueDate);
+  let reminderHtml="";
+  if(db && order.stage<11 && d!==null && ((isStaff&&d<=2)||(!isStaff&&d<=1))){
+    const msg=d<0?`⚠️ This order is overdue! Due date was ${fmtShort(order.dueDate)}.`
+              :d===0?`⚠️ This order is due today (${fmtShort(order.dueDate)})!`
+              :isStaff?`🔔 Reminder: Due on ${fmtShort(order.dueDate)} — ensure it's completed in time.`
+              :`🔔 Your blouse is due tomorrow (${fmtShort(order.dueDate)}) — we'll have it ready!`;
+    reminderHtml=`<div style="background:linear-gradient(135deg,${db.color}14,transparent);border-bottom:1px solid ${db.color}33;padding:14px 32px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:22px">${db.icon}</span>
+      <div><div style="color:${db.color};font-weight:700;font-size:14px">${msg}</div>
+      <div style="color:#666;font-size:12px;margin-top:2px">${isStaff?"Staff reminder: 2 days before due date":"Customer reminder: 1 day before due date"}</div></div>
+    </div>`;
+  }
+
+  // Progress bar
+  const progressHtml=`<div style="display:flex;align-items:center;overflow-x:auto;padding-bottom:4px">
+    ${STAGES.map((s,i)=>`
+      <div title="${s.label}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;padding:2px 0">
+        <div class="stage-dot" style="background:${s.id<order.stage?"#4caf50":s.id===order.stage?st.color:"#1a1a1a"};border-color:${s.id<order.stage?"#4caf50":s.id===order.stage?st.color:"#222"};transform:${s.id===order.stage?"scale(1.2)":"scale(1)"}">
+          ${s.id<order.stage?"✓":s.icon}
+        </div>
+        ${s.id===order.stage?`<div style="font-size:9px;color:${st.color};font-weight:700;white-space:nowrap;margin-top:2px">${s.label}</div>`:""}
+      </div>
+      ${i<STAGES.length-1?`<div class="stage-line" style="background:${s.id<order.stage?"#4caf5055":"#1a1a1a"};margin-bottom:${s.id===order.stage?"14px":"0"}"></div>`:""}`).join("")}
+  </div>`;
+
+  // Measurements
+  const measKeys=Object.keys(order.measurements||{});
+  const measHtml=measKeys.length>0?`<div class="card"><div class="card-body">
+    <h4 style="color:#f4c060;font-weight:700;margin-bottom:14px;font-size:14px">📏 Measurements</h4>
+    <div class="meas-grid">${measKeys.map(k=>`<div class="meas-box"><div style="color:#555;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase">${k}</div><div style="color:#f4c060;font-weight:800;font-size:18px;margin-top:3px">${order.measurements[k]}<span style="color:#666;font-size:11px;font-weight:400">"</span></div></div>`).join("")}
+    </div></div></div>`:"";
+
+  // Design
+  const designHtml=order.design?`<div class="card"><div class="card-body">
+    <h4 style="color:#f4c060;font-weight:700;margin-bottom:12px;font-size:14px">🎨 Selected Design</h4>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <img src="${order.design.img}" style="width:96px;height:66px;object-fit:cover;border-radius:10px" onerror="this.src='https://via.placeholder.com/96x66?text=Design'"/>
+      <div><div style="color:#fff;font-weight:700;font-size:15px">${order.design.name}</div>
+      <div style="color:#f4c060;font-size:12px;margin-top:3px">${order.design.style}</div>
+      <div style="color:#666;font-size:13px;margin-top:3px">${order.design.desc}</div></div>
+    </div></div></div>`:"";
+
+  // Timeline
+  const timelineHtml=`<div class="card"><div class="card-body">
+    <h4 style="color:#eee;font-weight:700;margin-bottom:14px;font-size:14px">📜 Timeline</h4>
+    ${(order.history||[]).map((h,i)=>{
+      const hs=stageInfo(h.stage);
+      return `<div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+          <div class="timeline-dot" style="background:${hs.color}1a;border:1px solid ${hs.color}44">${hs.icon}</div>
+          ${i<order.history.length-1?`<div class="timeline-line"></div>`:""}
+        </div>
+        <div style="padding-top:3px"><div style="color:${hs.color};font-weight:600;font-size:12px">${h.label}</div>
+        <div style="color:#444;font-size:11px;margin-top:1px">${fmtFull(h.at)}</div></div>
+      </div>`;
+    }).join("")}
+  </div></div>`;
+
+  // Summary card
+  const editDueHtml=isStaff?`<button onclick="toggleDueEdit()" style="background:transparent;border:1px solid #333;color:#888;padding:2px 8px;border-radius:6px;font-size:10px;margin-left:6px">✏️</button>`:"";
+  const summaryRows=[
+    ["Token",`#${order.token}`],["Customer",order.name],["Mobile",order.mobile],
+    ["Created",fmtFull(order.createdAt)],
+    ["Due Date", order.dueDate?`<span style="color:${db?db.color:"#eee"}">${fmtShort(order.dueDate)}</span>`+"<span id='due-edit-btn'>"+editDueHtml+"</span>"+"<div id='due-edit-form' style='display:none;margin-top:6px'><div style='display:flex;gap:6px;align-items:center'><input type='date' id='new-due-val' value='"+order.dueDate+"' min='"+todayStr()+"' style='background:#111;border:1px solid #333;color:#eee;padding:4px 8px;border-radius:6px;font-size:12px'/><button onclick='saveDue()' style='background:#f4c060;color:#000;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer'>Save</button><button onclick='toggleDueEdit()' style='background:transparent;border:1px solid #333;color:#888;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer'>✕</button></div></div>":`Not set${editDueHtml}`],
+    ["Stage",st.label],["Amount",order.amount?`₹${order.amount}`:"Not billed"],
+    ["Payment",order.paymentMethod||"Pending"],["Bill",order.billSaved?"✅ Saved":"Not yet"],
+    ["Rating",order.rating?`${order.rating}/5 ⭐`:"Not rated"],
+  ];
+  const summaryHtml=`<div class="card" style="margin-bottom:16px"><div class="card-body">
+    <h4 style="color:#eee;font-weight:700;margin-bottom:14px;font-size:14px">📋 Order Summary</h4>
+    ${summaryRows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #0f0f0f">
+      <span style="color:#555;font-size:12px;flex-shrink:0">${l}</span>
+      <span style="color:#eee;font-size:12px;font-weight:600;text-align:right;max-width:200px">${v}</span>
+    </div>`).join("")}
+    ${order.notes?`<div style="margin-top:10px;background:#111;border-radius:8px;padding:9px 11px"><div style="color:#555;font-size:10px;margin-bottom:3px">NOTES</div><div style="color:#aaa;font-size:12px">${order.notes}</div></div>`:""}
+  </div></div>`;
+
+  // Stage action
+  const stageHtml=buildStageActions(order,isStaff);
+
+  const backBtn=isStaff
+    ?`<button class="btn btn-ghost" style="font-size:13px;padding:7px 15px" onclick="staffTab('dashboard')">← All Orders</button>`
+    :`<button class="btn btn-ghost" style="font-size:13px;padding:7px 15px" onclick="custBack()">← Track Another</button>`;
+
+  container.innerHTML=`
+    <!-- Sticky nav -->
+    <div style="background:#0a0a0a;border-bottom:1px solid #111;padding:13px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50">
+      ${backBtn}
+      <span class="badge" style="background:rgba(244,192,96,.1);color:#f4c060;border:1px solid rgba(244,192,96,.25);font-size:14px;font-weight:800">#${order.token}</span>
+      <span style="color:#eee;font-weight:700;font-size:15px">${order.name}</span>
+      ${dbBadgeHtml}
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;background:${st.color}18;border:1px solid ${st.color}44;border-radius:20px;padding:6px 14px">
+        <span style="font-size:15px">${st.icon}</span>
+        <span style="color:${st.color};font-weight:700;font-size:13px">${st.label}</span>
+      </div>
+    </div>
+
+    ${reminderHtml}
+
+    <div style="max-width:1100px;margin:0 auto;padding:28px 32px">
+      <!-- Hero card -->
+      <div style="background:linear-gradient(135deg,${st.color}0e,#0a0a0a);border:1px solid ${st.color}28;border-radius:20px;padding:26px 30px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+        <div>
+          <div style="font-size:11px;color:#555;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Order Details</div>
+          <h2 style="color:#fff;font-weight:900;font-size:26px;margin-bottom:6px">${order.name}</h2>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:10px">
+            ${[["Token","#"+order.token],["Mobile",order.mobile],["Created",fmtShort(order.createdAt)],["Design",order.design?.name||"Pending"],["Amount",order.amount?`₹${order.amount}`:"Pending"]].map(([l,v])=>`<div><div style="color:#555;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase">${l}</div><div style="color:#eee;font-weight:700;font-size:13px;margin-top:2px">${v}</div></div>`).join("")}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div style="font-size:44px">${st.icon}</div>
+          <div style="color:${st.color};font-weight:800;font-size:15px">${st.label}</div>
+          <div style="color:#555;font-size:12px">Stage ${order.stage} of 11</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="card" style="margin-bottom:24px"><div style="padding:18px 22px">
+        <p style="color:#555;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Order Progress</p>
+        ${progressHtml}
+      </div></div>
+
+      <!-- 2-col layout -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start">
+        <div>
+          <!-- Stage action -->
+          <div class="card" style="border-color:${st.color}28">
+            <div style="background:linear-gradient(135deg,${st.color}0d,transparent);padding:16px 22px;border-bottom:1px solid ${st.color}18;display:flex;align-items:center;gap:10px">
+              <span style="font-size:20px">${st.icon}</span>
+              <div>
+                <h3 style="color:${st.color};font-weight:800;font-size:15px;margin:0">Current Stage: ${st.label}</h3>
+                <p style="color:#555;font-size:12px;margin:3px 0 0">${isStaff?"Staff action required":"Awaiting your action"}</p>
+              </div>
+            </div>
+            <div id="stage-action" style="padding:20px 22px">${stageHtml}</div>
+          </div>
+          ${measHtml}
+          ${designHtml}
+        </div>
+        <div>
+          ${summaryHtml}
+          ${timelineHtml}
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleDueEdit(){
+  const form=document.getElementById("due-edit-form");
+  const btn=document.getElementById("due-edit-btn");
+  if(form) form.style.display=form.style.display==="none"?"block":"none";
+}
+function saveDue(){
+  const v=document.getElementById("new-due-val")?.value;
+  if(!v||!activeOrder) return;
+  updateOrder(activeOrder.token,{dueDate:v});
+  toast("Due date updated ✅");
+  const fresh=orders.find(o=>o.token===activeOrder.token);
+  activeOrder=fresh;
+  renderDetailPage(fresh, staffTabView==="detail");
+}
+function custBack(){
+  document.getElementById("customer-detail").classList.add("hidden");
+  document.getElementById("customer-lookup").classList.remove("hidden");
+  document.getElementById("cust-token-input").value="";
+  activeOrder=null;
+}
+
+// ══════════════════════════════════════════════════════════
+// STAGE ACTIONS
+// ══════════════════════════════════════════════════════════
+function buildStageActions(order, isStaff){
+  const stage=order.stage;
+  const tok=order.token;
+  const waitBox=(icon,msg)=>`<div style="background:#060606;border:1px solid #161616;border-radius:12px;padding:22px;text-align:center;color:#555;font-size:13px"><div style="font-size:34px;margin-bottom:8px">${icon}</div>${msg}</div>`;
+  const aBtn=(label,style,fn)=>`<button class="btn ${style}" style="margin-top:4px" onclick="${fn}">${label}</button>`;
+
+  if(stage===1) return `
+    <p style="color:#888;font-size:13px;margin-bottom:14px">${isStaff?"Help the customer pick a design:":"Choose your blouse design:"}</p>
+    <div class="design-grid" id="design-grid-${tok}">
+      ${DESIGNS.map(d=>`<div class="design-card${order.design?.id===d.id?" selected":""}" onclick="selectDesign('${tok}','${d.id}')">
+        <img src="${d.img}" onerror="this.src='https://via.placeholder.com/130x84?text=Design'"/>
+        <div class="design-card-info">
+          <div style="color:#eee;font-weight:600;font-size:11px">${d.name}</div>
+          <div style="color:#888;font-size:10px">${d.style}</div>
+        </div>
+        ${order.design?.id===d.id?`<div style="position:relative"><div style="position:absolute;top:-84px;right:5px;background:#f4c060;color:#000;border-radius:20px;padding:1px 6px;font-size:9px;font-weight:800">✓</div></div>`:""}
+      </div>`).join("")}
+    </div>
+    ${order.design?aBtn(`Confirm: ${order.design.name} →`,"btn-gold",`confirmDesign('${tok}')`):""}`;
+
+  if(stage===2) return isStaff?`
+    <div class="meas-grid" style="margin-bottom:14px">
+      ${MEAS_FIELDS.map(f=>`<div>
+        <label class="flabel">${f}</label>
+        <input class="finput" id="meas-${f.replace(/ /g,'_')}" type="number" step="0.5" placeholder='0.0"' value="${order.measurements?.[f]||""}" style="padding:8px 10px;font-size:13px"/>
+      </div>`).join("")}
+    </div>
+    <div class="fgroup"><label class="flabel">Tailor Notes</label><input class="finput" id="tailor-note" value="${order.tailorNote||""}" placeholder="Notes…"/></div>
+    ${aBtn("Save & Queue →","btn-gold",`saveMeasurements('${tok}')`)}
+  `:waitBox("⏳","Staff is taking your measurements.");
+
+  if(stage===3) return isStaff?`
+    <div class="fgroup"><label class="flabel">Tailor Notes</label><input class="finput" id="tailor-note2" value="${order.tailorNote||""}" placeholder="Progress notes…"/></div>
+    ${aBtn("Done — Senior Review →","btn-gold",`advanceOrder('${tok}',4,{tailorNote:document.getElementById('tailor-note2').value})`)}
+  `:waitBox("🧵","Our tailor is crafting your blouse with care.");
+
+  if(stage===4) return isStaff?`
+    <div class="fgroup"><label class="flabel">Review Comments</label><input class="finput" id="senior-note" value="${order.seniorNote||""}" placeholder="Quality observations…"/></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      ${aBtn("✅ Approve & Notify","btn-gold",`seniorApprove('${tok}')`)}
+      ${aBtn("✂️ Send for Correction","btn-red",`seniorReject('${tok}')`)}
+    </div>
+  `:waitBox("🔍","Senior tailor reviewing your blouse for quality.");
+
+  if(stage===5) return isStaff?`
+    <div style="background:#0d1a0d;border:1px solid #2c4;border-radius:10px;padding:11px 14px;margin-bottom:12px;color:#aaa;font-size:13px">Blouse approved! Send WhatsApp to customer.</div>
+    <a href="${waURL(order.mobile,`Dear ${order.name}, 🎉 Your blouse (Token #${order.token}) is ready for trial at G Square Fashion! Due: ${fmtShort(order.dueDate)}. Please visit us soon.`)}" target="_blank" class="btn btn-green" style="display:inline-block;margin-bottom:10px">📲 Send WhatsApp</a><br/>
+    ${aBtn("Mark Notified →","btn-gold",`advanceOrder('${tok}',6)`)}
+  `:waitBox("📲","We're sending you a WhatsApp notification — check your phone!");
+
+  if(stage===6) return !isStaff?`
+    <div class="fgroup"><label class="flabel">Feedback</label><input class="finput" id="trial-fb" value="${order.trialFeedback||""}" placeholder="How does it fit?"/></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      ${aBtn("✅ Happy — Billing","btn-gold",`trialApprove('${tok}')`)}
+      ${aBtn("✂️ Needs Correction","btn-red",`trialReject('${tok}')`)}
+    </div>
+  `:waitBox("👗","Customer is in the trial room.");
+
+  if(stage===7) return isStaff?`
+    <div style="background:#0d1a0d;border:1px solid #2c4;border-radius:10px;padding:11px 14px;margin-bottom:12px;color:#aaa;font-size:13px">Customer approved ✅ · Feedback: ${order.trialFeedback||"All good!"}</div>
+    ${buildBillingEditor(order)}
+  `:waitBox("🧾","Generating your bill at the counter.");
+
+  if(stage===8) return isStaff?`
+    <div style="background:#1a0d0d;border:1px solid #c44;border-radius:10px;padding:11px 14px;margin-bottom:12px">
+      <div style="color:#888;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:3px">CORRECTION NEEDED</div>
+      <div style="color:#f46060;font-weight:600;font-size:13px">${order.correctionNote||order.trialFeedback||"Correction required"}</div>
+    </div>
+    <div class="fgroup"><label class="flabel">Correction Notes</label><input class="finput" id="corr-note" value="${order.correctionNote||""}" placeholder="What was corrected…"/></div>
+    ${aBtn("Done — Back to Review →","btn-gold",`advanceOrder('${tok}',4,{correctionNote:document.getElementById('corr-note').value})`)}
+  `:waitBox("✂️","Our tailor is making the corrections you requested.");
+
+  if(stage===9) return buildPaymentStage(order,isStaff);
+
+  if(stage===10) return !isStaff?`
+    <p style="color:#888;font-size:13px;margin-bottom:12px">How was your experience at G Square Fashion?</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px" id="stars-${tok}">
+      ${[1,2,3,4,5].map(n=>`<span class="star${order.rating>=n?" lit":""}" onclick="setRating('${tok}',${n})">★</span>`).join("")}
+    </div>
+    <div class="fgroup"><label class="flabel">Comments (optional)</label><input class="finput" id="review-comment" value="${order.comment||""}" placeholder="Share your thoughts…"/></div>
+    ${aBtn("Submit Review 🎉","btn-gold",`submitReview('${tok}')`)}
+  `:waitBox("⭐","Customer is leaving a review.");
+
+  if(stage===11) return `
+    <div style="text-align:center;padding:18px 0">
+      <div style="font-size:60px;margin-bottom:10px">🎉</div>
+      <h3 style="color:#4caf50;font-weight:800;font-size:22px;margin-bottom:6px">Order Complete!</h3>
+      <p style="color:#888;font-size:14px;margin-bottom:14px">Thank you, ${order.name}!</p>
+      ${order.rating>0?`<div style="background:#0f0f0f;border:1px solid #1a1a1a;border-radius:12px;padding:14px 18px;display:inline-block">
+        <div style="color:#ffd700;font-size:26px;margin-bottom:3px">${"★".repeat(order.rating)}${"☆".repeat(5-order.rating)}</div>
+        ${order.comment?`<p style="color:#aaa;font-style:italic;font-size:13px;margin:0">"${order.comment}"</p>`:""}
+      </div>`:""}
+    </div>`;
+  return "";
+}
+
+// ══════════════════════════════════════════════════════════
+// STAGE HANDLERS
+// ══════════════════════════════════════════════════════════
+function selectDesign(token,designId){
+  const d=DESIGNS.find(x=>x.id===designId);
+  updateOrder(token,{design:d});
+  const fresh=orders.find(o=>o.token===token); activeOrder=fresh;
+  renderDetailPage(fresh, staffTabView==="detail"||currentPage==="staff");
+}
+function confirmDesign(token){
+  const o=orders.find(x=>x.token===token);
+  if(!o?.design){ toast("Select a design first","error"); return; }
+  advanceOrder(token,2,{design:o.design});
+}
+function saveMeasurements(token){
+  const meas={};
+  MEAS_FIELDS.forEach(f=>{ const v=document.getElementById("meas-"+f.replace(/ /g,"_"))?.value; if(v) meas[f]=v; });
+  const tn=document.getElementById("tailor-note")?.value||"";
+  advanceOrder(token,3,{measurements:meas,tailorNote:tn});
+}
+function seniorApprove(token){
+  const sn=document.getElementById("senior-note")?.value||"";
+  advanceOrder(token,5,{seniorNote:sn});
+}
+function seniorReject(token){
+  const sn=document.getElementById("senior-note")?.value||"";
+  advanceOrder(token,8,{seniorNote:sn,correctionNote:sn});
+}
+function trialApprove(token){
+  const fb=document.getElementById("trial-fb")?.value||"All good!";
+  advanceOrder(token,7,{trialFeedback:fb,customerApproved:true});
+}
+function trialReject(token){
+  const fb=document.getElementById("trial-fb")?.value||"";
+  if(!fb){ toast("Describe the correction needed","error"); return; }
+  advanceOrder(token,8,{trialFeedback:fb,correctionNote:fb,customerApproved:false});
+}
+function setRating(token,n){
+  updateOrder(token,{rating:n});
+  document.querySelectorAll(`#stars-${token} .star`).forEach((s,i)=>s.classList.toggle("lit",i<n));
+}
+function submitReview(token){
+  const r=orders.find(o=>o.token===token)?.rating||0;
+  if(!r){ toast("Please select a rating","error"); return; }
+  const c=document.getElementById("review-comment")?.value||"";
+  advanceOrder(token,11,{rating:r,comment:c});
+}
+
+// ══════════════════════════════════════════════════════════
+// BILLING
+// ══════════════════════════════════════════════════════════
+function buildBillingEditor(order){
+  const tok=order.token;
+  const items=order.billItems||[{sl:1,desc:order.design?.name||"Blouse Stitching",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}];
+  const discount=order.discount||"0";
+  const billNotes=order.billNotes||"";
+
+  const subTotal=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
+  const totalGst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
+  const discAmt=parseFloat(discount||0);
+  const finalAmt=subTotal+totalGst-discAmt;
+
+  return `
+    <div style="overflow-x:auto;margin-bottom:10px">
+      <table style="width:100%;border-collapse:collapse;min-width:500px">
+        <thead><tr style="background:#111">
+          ${["#","Description","Color","Unit","Qty","Price","GST%","HSN",""].map(h=>`<th style="padding:6px 8px;color:#888;font-size:10px;font-weight:700;letter-spacing:1px;text-align:left;border-bottom:1px solid #222">${h}</th>`).join("")}
+        </tr></thead>
+        <tbody id="bill-rows-${tok}">
+          ${items.map((it,i)=>buildBillRow(tok,it,i)).join("")}
+        </tbody>
+      </table>
+    </div>
+    <button onclick="addBillRow('${tok}')" style="background:transparent;border:1px dashed #333;color:#666;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-bottom:14px">＋ Add Item</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div><label class="flabel">Discount (₹)</label><input class="finput" id="bill-discount-${tok}" type="number" min="0" value="${discount}" oninput="recalcBill('${tok}')" style="padding:8px 10px;font-size:13px"/></div>
+      <div><label class="flabel">Special Notes</label><input class="finput" id="bill-notes-${tok}" value="${billNotes}" placeholder="e.g. Alterations included" style="padding:8px 10px;font-size:13px"/></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+      <div id="bill-total-${tok}" style="color:#f4c060;font-weight:800;font-size:18px">Final: ₹${finalAmt.toFixed(2)}</div>
+      <button class="btn btn-gold" onclick="saveBill('${tok}')">💾 Save Bill</button>
+    </div>
+    ${buildBillPreview(order)}
+    <div style="margin-top:14px">
+      <a href="${waURL(order.mobile, buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Send Bill on WhatsApp</a>
+    </div>`;
+}
+
+function buildBillRow(tok,it,i){
+  const iStyle="background:#0d0d0d;border:1px solid #1e1e1e;color:#eee;padding:5px 6px;border-radius:6px;font-size:12px;width:100%";
+  return `<tr id="bill-row-${tok}-${i}">
+    <td style="padding:5px 6px;color:#666;font-size:12px">${it.sl}</td>
+    <td style="padding:3px 4px"><input style="${iStyle}" value="${it.desc||""}" onchange="updateBillItem('${tok}',${i},'desc',this.value)" placeholder="Blouse Stitching"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:80px" value="${it.color||""}" onchange="updateBillItem('${tok}',${i},'color',this.value)" placeholder="Red Silk"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:52px" value="${it.unit||"Pcs"}" onchange="updateBillItem('${tok}',${i},'unit',this.value)"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:44px;text-align:center" type="number" min="1" value="${it.qty||1}" onchange="updateBillItem('${tok}',${i},'qty',this.value)"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:72px;text-align:right" type="number" min="0" step="0.01" value="${it.price||""}" onchange="updateBillItem('${tok}',${i},'price',this.value)" oninput="recalcBill('${tok}')" placeholder="0.00"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:44px;text-align:center" type="number" min="0" max="28" value="${it.gstPct??GST_RATE}" onchange="updateBillItem('${tok}',${i},'gstPct',this.value)" oninput="recalcBill('${tok}')"/></td>
+    <td style="padding:3px 4px"><input style="${iStyle};width:54px" value="${it.hsn||"9988"}" onchange="updateBillItem('${tok}',${i},'hsn',this.value)"/></td>
+    <td style="padding:3px 4px"><button onclick="delBillRow('${tok}',${i})" style="background:transparent;border:none;color:#f46060;cursor:pointer;font-size:15px">✕</button></td>
+  </tr>`;
+}
+
+let _billItems={};
+function getBillItems(tok){
+  const o=orders.find(x=>x.token===tok);
+  if(!_billItems[tok]) _billItems[tok]=JSON.parse(JSON.stringify(o?.billItems||[{sl:1,desc:o?.design?.name||"Blouse Stitching",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}]));
+  return _billItems[tok];
+}
+function updateBillItem(tok,idx,field,val){
+  const items=getBillItems(tok);
+  if(items[idx]) items[idx][field]=val;
+  recalcBill(tok);
+}
+function addBillRow(tok){
+  const items=getBillItems(tok);
+  items.push({sl:items.length+1,desc:"",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"});
+  const tbody=document.getElementById(`bill-rows-${tok}`);
+  if(tbody) tbody.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");
+  recalcBill(tok);
+}
+function delBillRow(tok,idx){
+  const items=getBillItems(tok);
+  items.splice(idx,1);
+  items.forEach((it,i)=>it.sl=i+1);
+  const tbody=document.getElementById(`bill-rows-${tok}`);
+  if(tbody) tbody.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");
+  recalcBill(tok);
+}
+function recalcBill(tok){
+  const items=getBillItems(tok);
+  const discount=parseFloat(document.getElementById(`bill-discount-${tok}`)?.value||0);
+  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
+  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
+  const final=sub+gst-discount;
+  const el=document.getElementById(`bill-total-${tok}`);
+  if(el) el.textContent=`Final: ₹${final.toFixed(2)}`;
+}
+function saveBill(tok){
+  const items=getBillItems(tok);
+  if(items.some(it=>!it.desc||!it.price)){ toast("Fill description & price for all items","error"); return; }
+  const discount=document.getElementById(`bill-discount-${tok}`)?.value||"0";
+  const billNotes=document.getElementById(`bill-notes-${tok}`)?.value||"";
+  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
+  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
+  const final=sub+gst-parseFloat(discount||0);
+  updateOrder(tok,{billItems:items,amount:final.toFixed(2),discount,billNotes,billSaved:true});
+  _billItems[tok]=null;
+  toast("Bill saved ✅");
+  const fresh=orders.find(o=>o.token===tok);
+  activeOrder=fresh;
+  renderDetailPage(fresh,true);
+}
+
+// Bill preview (print style inside page)
+function buildBillPreview(order){
+  const items=order.billItems||[];
+  if(!items.length) return "";
+  const meas=order.measurements||{};
+  const measKeys=Object.keys(meas);
+  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
+  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
+  const disc=parseFloat(order.discount||0);
+  const final=sub+gst-disc;
+  const billNo=`GSF/${new Date(order.createdAt).getFullYear()}/${order.token}`;
+  const billDate=new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+
+  return `<div id="print-bill-content" style="background:#fff;border:2px solid #222;border-radius:4px;font-family:Arial,sans-serif;color:#111;font-size:12px;margin-top:14px;overflow:hidden">
+    <div style="background:#111;color:#fff;text-align:center;padding:7px 0;font-weight:800;font-size:15px;letter-spacing:1px">Boutique Bill Book</div>
+    <div style="background:#ffe600;color:#111;text-align:center;padding:6px 0;font-weight:900;font-size:17px;letter-spacing:1px;border-bottom:2px solid #222">${SHOP.name}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ccc">
+      <div style="padding:10px 14px;border-right:1px solid #ccc">
+        <div><b>Address:</b> ${SHOP.addr}</div>
+        <div><b>Phone:</b> ${SHOP.phone}</div>
+        <div><b>Email:</b> ${SHOP.email}</div>
+        <div><b>GSTIN:</b> ${SHOP.gst}</div>
+      </div>
+      <div style="padding:10px 14px">
+        <table style="width:100%;font-size:11px;border-collapse:collapse">
+          ${[["Bill No.",billNo],["Date:",billDate],["Due Date:",order.dueDate?fmtShort(order.dueDate):"—"],["Payment Mode:",order.paymentMethod||"—"]].map(([l,v])=>`<tr><td style="color:#555;padding-right:8px;padding-bottom:3px;white-space:nowrap">${l}</td><td style="font-weight:700">${v}</td></tr>`).join("")}
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ccc">
+      <div style="padding:10px 14px;border-right:1px solid #ccc">
+        <div style="background:#333;color:#fff;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:11px">Bill To:</div>
+        <div><b>Name:</b> ${order.name}</div>
+        <div><b>Phone:</b> ${order.mobile}</div>
+        <div><b>Token:</b> #${order.token}</div>
+        <div><b>Design:</b> ${order.design?.name||"Custom"}</div>
+      </div>
+      <div style="padding:10px 14px">
+        <div style="background:#333;color:#fff;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:11px">Bill Details:</div>
+        <div><b>Bill No:</b> ${billNo}</div>
+        <div><b>Date:</b> ${billDate}</div>
+      </div>
+    </div>
+    ${measKeys.length?`<div style="background:#ffe600;color:#111;text-align:center;font-weight:700;padding:4px 0;font-size:11px;letter-spacing:1px;border-bottom:1px solid #ccc">Measurement Details</div>
+    <table class="bill-table" style="border-bottom:1px solid #ccc"><thead><tr style="background:#f5f5f5"><th style="padding:5px 8px;border:1px solid #ccc;font-size:10px">Item</th>${measKeys.map(k=>`<th style="padding:5px 8px;border:1px solid #ccc;font-size:10px">${k}</th>`).join("")}</tr></thead>
+    <tbody><tr><td style="padding:5px 8px;border:1px solid #eee">${order.design?.name||"Blouse"}</td>${measKeys.map(k=>`<td style="padding:5px 8px;border:1px solid #eee;text-align:center">${meas[k]}"</td>`).join("")}</tr></tbody></table>`:""}
+    <table class="bill-table">
+      <thead><tr>${["Sl.","Description","Color","Unit","Qty","Price/Unit","GST%","Amount"].map(h=>`<th style="padding:6px 8px;text-align:${["Qty","Price/Unit","GST%","Amount"].includes(h)?"right":"left"};border:1px solid #444">${h}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${items.map((it,i)=>{
+          const amt=(parseFloat(it.price||0)*parseInt(it.qty||1))*(1+(parseFloat(it.gstPct||0)/100));
+          return `<tr style="background:${i%2===0?"#fff":"#fafafa"}">
+            <td style="padding:5px 8px;border:1px solid #eee">${it.sl}</td>
+            <td style="padding:5px 8px;border:1px solid #eee;font-weight:600">${it.desc}</td>
+            <td style="padding:5px 8px;border:1px solid #eee">${it.color||"—"}</td>
+            <td style="padding:5px 8px;border:1px solid #eee">${it.unit}</td>
+            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">${it.qty}</td>
+            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">₹${parseFloat(it.price||0).toFixed(2)}</td>
+            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">${it.gstPct}%</td>
+            <td style="padding:5px 8px;border:1px solid #eee;text-align:right;font-weight:700">₹${amt.toFixed(2)}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #ccc">
+      <div style="padding:10px 14px;border-right:1px solid #ccc;font-size:11px;color:#666">${order.billNotes||""}</div>
+      <div>
+        ${[["Sub Total",`₹${sub.toFixed(2)}`],["GST Total",`₹${gst.toFixed(2)}`],["Discount",`₹${disc.toFixed(2)}`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid #eee"><span style="color:#555">${l}</span><span style="font-weight:700">${v}</span></div>`).join("")}
+        <div style="display:flex;justify-content:space-between;padding:8px 14px;background:#ffe600;font-weight:900;font-size:14px"><span>Final Amount:</span><span>₹${final.toFixed(2)}</span></div>
+        ${order.paidAt?`<div style="text-align:center;padding:6px"><span style="border:3px solid #4caf50;border-radius:4px;padding:3px 14px;color:#4caf50;font-weight:900;font-size:16px;letter-spacing:3px;display:inline-block;transform:rotate(-6deg)">PAID ✓</span></div>`:""}
+      </div>
+    </div>
+    <div style="background:#ffe600;color:#111;text-align:center;padding:7px 0;font-weight:800;font-size:12px">Thanks for business with us!!! Please visit us again !!!</div>
+  </div>
+  <button onclick="printBill('${order.token}')" class="btn btn-ghost" style="margin-top:10px;font-size:13px">🖨️ Print Bill</button>`;
+}
+
+function printBill(tok){
+  const o=orders.find(x=>x.token===tok);
+  if(!o) return;
+  const w=window.open("","_blank");
+  const el=document.getElementById("print-bill-content");
+  if(!el){ toast("Save bill first","error"); return; }
+  w.document.write(`<html><head><title>Bill #${tok}</title></head><body>${el.outerHTML}</body></html>`);
+  w.document.close(); w.print();
+}
+
+function buildPaymentStage(order,isStaff){
+  const tok=order.token;
+  if(order.paidAt) return buildBillPreview(order)+`<div style="margin-top:14px"><a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Resend Bill</a></div>`;
+  if(!isStaff) return `
+    <p style="color:#888;font-size:13px;margin-bottom:10px">Choose payment method:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      ${["GPay","PhonePe","Cash"].map(m=>`<button class="pay-btn${order.paymentMethod===m?" selected":""}" onclick="selectPayMode('${tok}','${m}')">${m==="GPay"?"💙 GPay":m==="PhonePe"?"💜 PhonePe":"💵 Cash"}</button>`).join("")}
+    </div>
+    ${order.paymentMethod&&order.paymentMethod!=="Cash"?`<div style="margin-bottom:12px"><a href="upi://pay?pa=${order.paymentMethod==="GPay"?"gsquarefashion@okaxis":"gsquarefashion@ybl"}&pn=G+Square+Fashion&am=${order.amount}&tn=Token+${tok}" class="btn" style="background:${order.paymentMethod==="GPay"?"#1a73e8":"#6739b7"};color:#fff;display:inline-block">${order.paymentMethod==="GPay"?"💙 Open GPay":"💜 Open PhonePe"}</a></div>`:""}
+    ${order.paymentMethod?`<button class="btn btn-gold" onclick="confirmPayment('${tok}')">✅ Confirm Payment & Send Bill →</button><p style="color:#555;font-size:11px;margin-top:6px">📲 Bill will be sent to ${order.mobile}</p>`:""}
+  `;
+  return `<div style="background:#0a0a0a;border:1px solid #111;border-radius:12px;padding:16px;color:#555;font-size:13px;text-align:center;margin-bottom:12px">⏳ Waiting for customer payment.</div>
+    <a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Send Bill on WhatsApp</a>`;
+}
+
+function selectPayMode(tok,mode){
+  updateOrder(tok,{paymentMethod:mode});
+  const fresh=orders.find(o=>o.token===tok); activeOrder=fresh;
+  renderDetailPage(fresh,false);
+}
+function confirmPayment(tok){
+  const o=orders.find(x=>x.token===tok);
+  if(!o?.paymentMethod){ toast("Select payment method","error"); return; }
+  advanceOrder(tok,10,{paidAt:Date.now(),billSent:true});
+  window.open(waURL(o.mobile,buildWAMsg({...o,paidAt:Date.now()})),"_blank");
+}
+
+function buildWAMsg(order){
+  const items=order.billItems||[];
+  const meas=order.measurements||{};
+  const measKeys=Object.keys(meas);
+  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
+  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
+  const disc=parseFloat(order.discount||0);
+  const final=sub+gst-disc;
+  const billNo=`GSF/${new Date(order.createdAt).getFullYear()}/${order.token}`;
+  return `🧾 *BOUTIQUE BILL*
+✂️ *${SHOP.name}*
+📍 ${SHOP.addr}
+📞 ${SHOP.phone}
+GSTIN: ${SHOP.gst}
+━━━━━━━━━━━━━━━━━━━━
+*Bill No :* ${billNo}
+*Date:* ${new Date().toLocaleDateString("en-IN")}
+*Due Date:* ${order.dueDate?fmtShort(order.dueDate):"—"}
+━━━━━━━━━━━━━━━━━━━━
+*BILL TO*
+Name  : ${order.name}
+Phone : ${order.mobile}
+Token : #${order.token}
+Design: ${order.design?.name||"Custom"}
+━━━━━━━━━━━━━━━━━━━━
+${measKeys.length?`*MEASUREMENTS*\n${measKeys.map(k=>`${k}: ${meas[k]}"`).join(" | ")}\n━━━━━━━━━━━━━━━━━━━━\n`:""}*ITEMS*
+${items.map(it=>`${it.sl}. ${it.desc}${it.color?` [${it.color}]`:""} | Qty:${it.qty} × ₹${parseFloat(it.price||0).toFixed(2)} | GST:${it.gstPct}%`).join("\n")}
+━━━━━━━━━━━━━━━━━━━━
+Sub Total : ₹${sub.toFixed(2)}
+GST       : ₹${gst.toFixed(2)}
+Discount  : ₹${disc.toFixed(2)}
+━━━━━━━━━━━━━━━━━━━━
+*TOTAL: ₹${final.toFixed(2)}*
+Payment: ${order.paymentMethod||"—"}
+${order.paidAt?"✅ PAID":"⏳ Pending"}
+━━━━━━━━━━━━━━━━━━━━
+Thanks for business with us!!!
+_${SHOP.name}_`;
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+// Init
+document.addEventListener("DOMContentLoaded",()=>{
+  orders = loadOrders();
+  const nd=document.getElementById("new-due");
+  if(nd) nd.min=todayStr();
+});
+</script>
+</body>
+</html>
