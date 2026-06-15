@@ -3,1183 +3,993 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>G Square Fashion</title>
+<title>G Square CustomFit</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#080808;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100vh}
-input,button,select,textarea{font-family:inherit}
+body{background:#0a0005;color:#eee;font-family:'Segoe UI',sans-serif;min-height:100vh;font-size:15px}
+input,button,select,textarea{font-family:inherit;font-size:15px}
 button{cursor:pointer}
 a{text-decoration:none}
 
+/* STAGE BG IMAGES */
+.stage-bg{position:relative;min-height:100vh;transition:all .8s ease}
+.stage-bg::before{content:'';position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(3px) brightness(0.18) saturate(1.2);z-index:0;transition:all .8s ease}
+.stage-bg > *{position:relative;z-index:1}
+.sbg-0::before{background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=60')}
+.sbg-1::before{background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=60')}
+.sbg-2::before{background-image:url('https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1400&q=60')}
+.sbg-3::before{background-image:url('https://images.unsplash.com/photo-1416339306562-f3d12fefd36f?w=1400&q=60')}
+.sbg-4::before{background-image:url('https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?w=1400&q=60')}
+.sbg-5::before{background-image:url('https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?w=1400&q=60')}
+.sbg-6::before{background-image:url('https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=1400&q=60')}
+.sbg-7::before{background-image:url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1400&q=60')}
+.sbg-8::before{background-image:url('https://images.unsplash.com/photo-1585559700398-1385b3a8aeb6?w=1400&q=60')}
+.sbg-9::before{background-image:url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&q=60')}
+.sbg-10::before{background-image:url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1400&q=60')}
+.sbg-11::before{background-image:url('https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1400&q=60')}
+
+/* ANIMATIONS */
+@keyframes zipFill{0%{width:0%;opacity:0}100%{width:100%;opacity:1}}
+@keyframes stagePop{0%{transform:scale(0.6) rotate(-10deg);opacity:0}60%{transform:scale(1.2) rotate(3deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes slideZip{0%{clip-path:polygon(0 0,0 0,0 100%,0 100%);opacity:0}100%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes needleSew{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(8px) rotate(10deg)}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px currentColor}50%{box-shadow:0 0 28px currentColor,0 0 50px currentColor}}
+@keyframes zipLine{from{transform:scaleX(0);transform-origin:left}to{transform:scaleX(1);transform-origin:left}}
+@keyframes dotPop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%{background-position:-200%}100%{background-position:200%}}
+
+.zip-enter{animation:slideZip .55s cubic-bezier(.23,1,.32,1) forwards}
+.fade-up{animation:fadeUp .4s ease forwards}
+.dot-pop{animation:dotPop .5s cubic-bezier(.23,1,.32,1) forwards}
+
 /* NAV */
-.nav{display:flex;align-items:center;gap:12px;padding:14px 32px;background:#0a0a0a;border-bottom:1px solid #111;position:sticky;top:0;z-index:100;flex-wrap:wrap}
-.nav-brand{font-weight:800;font-size:18px;color:#f4c060;letter-spacing:1px;margin-right:8px}
-.nav-btn{background:transparent;border:1px solid transparent;color:#666;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;transition:all .2s}
-.nav-btn.active{background:rgba(244,192,96,0.12);border-color:rgba(244,192,96,0.3);color:#f4c060}
-.nav-btn:hover{background:#111}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav{display:flex;align-items:center;gap:12px;padding:14px 28px;background:rgba(10,0,15,0.96);border-bottom:1px solid #2a1a3a;position:sticky;top:0;z-index:200;flex-wrap:wrap;backdrop-filter:blur(12px)}
+.nav-brand{font-weight:900;font-size:18px;background:linear-gradient(135deg,#f4c060,#e040fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.5px}
+.nav-btn{background:transparent;border:1px solid transparent;color:#888;padding:8px 18px;border-radius:22px;font-size:14px;font-weight:600;transition:all .3s}
+.nav-btn.active{background:rgba(244,192,96,.15);border-color:rgba(244,192,96,.4);color:#f4c060}
+.nav-btn:hover{background:rgba(255,255,255,.05)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
 /* TOAST */
-#toast{position:fixed;top:20px;right:20px;padding:12px 22px;border-radius:10px;color:#fff;font-weight:700;z-index:9999;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.5);display:none;max-width:300px}
+#toast{position:fixed;top:22px;right:22px;padding:13px 24px;border-radius:14px;color:#fff;font-weight:700;z-index:9999;font-size:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;max-width:320px;animation:fadeUp .3s ease}
 
-/* CARD */
-.card{background:#0a0a0a;border:1px solid #161616;border-radius:18px;overflow:hidden;margin-bottom:18px}
-.card-header{padding:16px 22px;border-bottom:1px solid #111;display:flex;align-items:center;gap:10px}
-.card-body{padding:20px 22px}
+/* CARDS */
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:22px;overflow:hidden;margin-bottom:20px;transition:all .3s}
+.card:hover{border-color:rgba(244,192,96,.2)}
+.glass{background:rgba(255,255,255,.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12)}
 
 /* FORM */
-.flabel{display:block;color:#666;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
-.finput{width:100%;background:#111;border:1px solid #1e1e1e;color:#eee;padding:10px 13px;border-radius:10px;font-size:14px;transition:all .2s}
-.finput:focus{outline:none;border-color:#f4c060;box-shadow:0 0 0 3px rgba(244,192,96,.12)}
-.fgroup{margin-bottom:14px}
+.flabel{display:block;color:#999;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}
+.finput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eee;padding:12px 15px;border-radius:13px;font-size:15px;transition:all .3s}
+.finput:focus{outline:none;border-color:#f4c060;box-shadow:0 0 0 3px rgba(244,192,96,.15);background:rgba(255,255,255,.1)}
+.fgroup{margin-bottom:17px}
+select.finput option{background:#1a0a2a;color:#eee}
 
 /* BUTTONS */
-.btn{border:none;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;transition:all .2s}
-.btn-gold{background:linear-gradient(135deg,#f4c060,#c87820);color:#000}
-.btn-gold:hover{opacity:.9}
-.btn-red{background:#c0392b;color:#fff}
-.btn-green{background:#25d366;color:#fff}
-.btn-ghost{background:transparent;border:1px solid #222;color:#888}
-.btn-ghost:hover{background:#111}
+.btn{border:none;padding:12px 22px;border-radius:13px;font-size:14px;font-weight:700;transition:all .3s;letter-spacing:.3px}
+.btn-gold{background:linear-gradient(135deg,#f4c060,#c87820);color:#000;box-shadow:0 4px 18px rgba(244,192,96,.3)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,192,96,.45)}
+.btn-purple{background:linear-gradient(135deg,#9c27b0,#673ab7);color:#fff;box-shadow:0 4px 18px rgba(156,39,176,.3)}
+.btn-red{background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff}
+.btn-green{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);color:#aaa}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-blue{background:linear-gradient(135deg,#2196f3,#1565c0);color:#fff}
 
 /* BADGE */
-.badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:22px;padding:5px 14px;font-size:12px;font-weight:700}
 
-/* TABLE ROW */
-.order-row{display:grid;grid-template-columns:80px 1fr 140px 150px 90px 80px 30px;align-items:center;gap:10px;padding:12px 24px;border-bottom:1px solid #0f0f0f;cursor:pointer;transition:background .15s}
-.order-row:hover{background:#0f0f0f}
+/* PIPELINE */
+.pip-wrap{display:flex;align-items:flex-start;overflow-x:auto;padding:8px 0 16px;gap:0}
+.pip-node{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;position:relative}
+.pip-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:3px solid rgba(255,255,255,.1);transition:all .5s;position:relative;z-index:2}
+.pip-dot.done{background:linear-gradient(135deg,#4caf50,#1b5e20);border-color:#4caf50;box-shadow:0 0 18px rgba(76,175,80,.5)}
+.pip-dot.active{border-color:var(--sc);box-shadow:0 0 22px var(--sc);animation:glow 2s ease-in-out infinite}
+.pip-dot.wait{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+.pip-label{font-size:11px;font-weight:700;white-space:nowrap;text-align:center;max-width:60px;line-height:1.3;letter-spacing:.3px}
+.pip-line{height:4px;flex:1;min-width:14px;border-radius:2px;margin-top:20px;position:relative;overflow:hidden;background:rgba(255,255,255,.07)}
+.pip-line-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#4caf50,#81c784);animation:zipLine .6s ease forwards}
 
-/* GRID */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.kpi-card{background:#0f0f0f;border:1px solid #161616;border-radius:16px;padding:18px 20px}
+/* ORDER ROW */
+.order-row{display:grid;grid-template-columns:82px 1fr 160px 165px 95px 85px 32px;align-items:center;gap:10px;padding:14px 26px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .2s}
+.order-row:hover{background:rgba(244,192,96,.05)}
 
-/* PROGRESS BAR */
-.stage-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s;border:2px solid #222}
-.stage-line{height:3px;flex:1;min-width:6px;background:#1a1a1a;transition:all .3s}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:15px;margin-bottom:26px}
+.kpi-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:22px;transition:all .3s;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,#f4c060)}
+.kpi-card:hover{transform:translateY(-4px);border-color:rgba(244,192,96,.3)}
 
-/* DESIGN GRID */
-.design-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-.design-card{background:#111;border:2px solid #1a1a1a;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
-.design-card.selected{border-color:#f4c060;transform:scale(1.03)}
-.design-card img{width:100%;height:84px;object-fit:cover;display:block}
-.design-card-info{padding:7px 9px}
+/* DESIGN */
+.design-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:13px;margin-bottom:16px}
+.design-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative}
+.design-card:hover{transform:translateY(-4px);border-color:rgba(244,192,96,.4)}
+.design-card.selected{border-color:#f4c060;box-shadow:0 0 24px rgba(244,192,96,.35);transform:scale(1.04)}
+.design-card img{width:100%;height:92px;object-fit:cover;display:block}
+.design-sel-check{position:absolute;top:6px;right:6px;background:#f4c060;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
 
-/* MEAS GRID */
-.meas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.meas-box{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:10px 12px}
-
-/* TIMELINE */
-.timeline-item{display:flex;gap:10px;align-items:flex-start;padding-bottom:14px}
-.timeline-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.timeline-line{width:1px;flex:1;background:#161616;min-height:10px;margin-top:3px;margin-left:13px}
-
-/* BILL TABLE */
-.bill-table{width:100%;border-collapse:collapse;font-size:12px}
-.bill-table th{background:#222;color:#fff;padding:6px 8px;text-align:left;border:1px solid #444;font-size:10px;letter-spacing:.5px}
-.bill-table td{padding:6px 8px;border:1px solid #eee;font-size:12px}
+/* PIECE CARD */
+.piece-card{background:rgba(192,96,244,.06);border:1px solid rgba(192,96,244,.2);border-radius:16px;padding:18px;margin-bottom:12px;transition:all .3s}
+.piece-card.open{border-color:#c060f4;background:rgba(192,96,244,.1)}
 
 /* STARS */
-.star{font-size:38px;cursor:pointer;color:#2a2a2a;transition:color .15s}
-.star.lit{color:#ffd700}
+.star{font-size:40px;cursor:pointer;color:rgba(255,255,255,.12);transition:all .25s}
+.star.lit{color:#ffd700;text-shadow:0 0 14px rgba(255,215,0,.6)}
+.star:hover{transform:scale(1.25)}
 
-/* REMINDER BANNER */
-.reminder-banner{background:linear-gradient(135deg,#1a0f00,#0f1a00);border-bottom:1px solid #f4c06033;padding:14px 32px}
+/* ADVANCE */
+.advance-banner{background:rgba(96,224,160,.08);border:1px solid rgba(96,224,160,.25);border-radius:16px;padding:16px 20px;margin-bottom:16px}
 
-/* LANDING HERO */
-.hero{position:relative;background:linear-gradient(135deg,#050010,#100a00 55%,#001005);overflow:hidden;min-height:92vh;display:flex;align-items:center;justify-content:center}
-.hero-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(244,192,96,0.09),transparent 65%);top:-20%;right:-5%;pointer-events:none}
-
-/* PAYMENT METHODS */
-.pay-btn{background:#111;border:1px solid #222;color:#888;padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px;transition:all .2s}
-.pay-btn.selected{background:#ffe600;border-color:#ffe600;color:#111}
+/* UPLOAD */
+.upload-zone{border:2px dashed rgba(244,192,96,.4);border-radius:16px;padding:28px;text-align:center;cursor:pointer;transition:all .3s;background:rgba(244,192,96,.04)}
+.upload-zone:hover{border-color:#f4c060;background:rgba(244,192,96,.08)}
 
 /* UTIL */
-.flex{display:flex}.flex-wrap{flex-wrap:wrap}.gap-8{gap:8px}.gap-10{gap:10px}.gap-12{gap:12px}.gap-16{gap:16px}
-.center{text-align:center}.w-full{width:100%}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.w-full{width:100%}.mt-8{margin-top:8px}.mt-16{margin-top:16px}
 .hidden{display:none!important}
 .page{display:none;min-height:100vh}.page.active{display:block}
+.pay-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#aaa;padding:12px 22px;border-radius:13px;font-weight:700;font-size:14px;transition:all .3s;cursor:pointer}
+.pay-btn.selected{background:#ffe600;border-color:#ffe600;color:#111}
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
-
-/* BILL PRINT */
-@media print{
-  body *{visibility:hidden}
-  #print-bill,#print-bill *{visibility:visible}
-  #print-bill{position:fixed;left:0;top:0;width:100%;background:#fff!important;color:#111!important}
-}
-
-/* RESPONSIVE */
-@media(max-width:700px){
-  .order-row{grid-template-columns:70px 1fr 100px 30px;gap:6px}
-  .order-row .hide-mobile{display:none}
-  .nav{padding:10px 16px}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:#0a0005}::-webkit-scrollbar-thumb{background:#3a1a4a;border-radius:3px}
+@media(max-width:700px){.order-row{grid-template-columns:72px 1fr 110px 32px;gap:6px}.order-row .hm{display:none}.nav{padding:10px 16px}.kpi-grid{grid-template-columns:repeat(2,1fr)}#dg{grid-template-columns:1fr!important}.pip-dot{width:36px;height:36px;font-size:16px}.pip-label{font-size:9px;max-width:48px}}
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- PAGE: LANDING -->
-<!-- ══════════════════════════════════════════════════════ -->
+<!-- ══════ LANDING ══════ -->
 <div id="page-landing" class="page active">
-  <div style="background:#080808;min-height:100vh">
-    <div style="text-align:center;padding:80px 24px 60px">
-      <div style="font-size:64px;margin-bottom:16px">✂️</div>
-      <h1 style="font-size:clamp(32px,6vw,64px);font-weight:900;color:#fff;margin-bottom:10px">G Square <span style="color:#f4c060">Fashion</span></h1>
-      <p style="color:#555;font-size:16px;margin-bottom:48px">Premium Blouse Boutique · Track Every Stitch</p>
-      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
-        <button class="btn" style="background:#0f0f0f;border:1px solid rgba(244,192,96,.4);color:#eee;padding:28px 40px;border-radius:20px;font-size:18px;line-height:2" onclick="goStaff()">
-          🧵<br/><b>Staff Portal</b><br/><small style="color:#666;font-size:12px">Manage Orders</small>
-        </button>
-        <button class="btn" style="background:#0f0f0f;border:1px solid rgba(76,175,80,.4);color:#eee;padding:28px 40px;border-radius:20px;font-size:18px;line-height:2" onclick="showPage('customer')">
-          👗<br/><b>Customer Portal</b><br/><small style="color:#666;font-size:12px">Track Your Order</small>
-        </button>
-      </div>
+<div style="background:linear-gradient(135deg,#0a0015 0%,#15000a 35%,#000a15 70%,#0a0015 100%);min-height:100vh;position:relative;overflow:hidden">
+  <div style="position:absolute;width:700px;height:700px;border-radius:50%;background:rgba(244,192,96,.1);filter:blur(80px);top:-200px;right:-200px;pointer-events:none"></div>
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:rgba(192,96,244,.08);filter:blur(80px);bottom:-100px;left:-100px;pointer-events:none"></div>
+  <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:.25" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <path d="M0,200 Q200,100 400,300 T800,200 T1200,300 T1440,200" fill="none" stroke="#f4c060" stroke-width="2" stroke-dasharray="8,6"><animate attributeName="stroke-dashoffset" from="0" to="-100" dur="3s" repeatCount="indefinite"/></path>
+    <path d="M0,600 Q300,500 600,700 T1200,600 T1440,700" fill="none" stroke="#c060f4" stroke-width="1.5" stroke-dasharray="6,8"><animate attributeName="stroke-dashoffset" from="0" to="100" dur="4s" repeatCount="indefinite"/></path>
+  </svg>
+  <div style="position:absolute;right:8%;top:12%;font-size:56px;animation:needleSew 2s ease-in-out infinite;opacity:.55">🪡</div>
+  <div style="position:absolute;left:5%;top:22%;font-size:44px;animation:float 4s ease-in-out infinite;opacity:.45">✂️</div>
+  <div style="position:absolute;right:14%;bottom:18%;font-size:38px;animation:float 3.5s ease-in-out infinite .5s;opacity:.4">🧵</div>
+  <div style="position:absolute;left:10%;bottom:28%;font-size:32px;animation:float 5s ease-in-out infinite 1s;opacity:.35">📐</div>
+  <nav style="display:flex;justify-content:space-between;align-items:center;padding:20px 48px;position:relative;z-index:10">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:48px;height:48px;background:linear-gradient(135deg,#f4c060,#c87820);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#000;box-shadow:0 4px 18px rgba(244,192,96,.4)">G</div>
+      <div><div style="font-weight:900;font-size:17px;background:linear-gradient(135deg,#f4c060,#e040fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent">G Square CustomFit</div><div style="color:#555;font-size:11px;letter-spacing:2.5px">CUSTOMIZED DESIGNER BOUTIQUE</div></div>
+    </div>
+    <a href="https://instagram.com/g_square_customfit" target="_blank" style="background:linear-gradient(135deg,#e1306c,#833ab4);color:#fff;padding:9px 18px;border-radius:22px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px">📸 @g_square_customfit</a>
+  </nav>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px 20px;text-align:center;position:relative;z-index:10">
+    <div style="width:108px;height:108px;background:linear-gradient(135deg,#f4c060,#c87820);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:900;color:#000;margin-bottom:22px;box-shadow:0 0 70px rgba(244,192,96,.45);animation:pulse 3s ease-in-out infinite">G</div>
+    <h1 style="font-size:clamp(30px,5vw,64px);font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-1px">G Square <span style="background:linear-gradient(135deg,#f4c060,#e040fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent">CustomFit</span></h1>
+    <p style="color:#777;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Customized Designer Boutique</p>
+    <p style="color:#f4c060;font-size:16px;font-style:italic;margin-bottom:44px">"Perfect Fit, Elegant Finish"</p>
+    <div style="display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-bottom:44px">
+      <button onclick="goStaff()" style="background:linear-gradient(135deg,rgba(244,192,96,.15),rgba(244,192,96,.05));border:2px solid rgba(244,192,96,.5);color:#eee;padding:26px 40px;border-radius:22px;font-size:17px;line-height:1.9;transition:all .3s;min-width:190px" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        🧵<br/><b style="font-size:20px;color:#f4c060">Staff Portal</b><br/><small style="color:#666;font-size:12px">Manage Orders</small>
+      </button>
+      <button onclick="goCustomer()" style="background:linear-gradient(135deg,rgba(192,96,244,.15),rgba(192,96,244,.05));border:2px solid rgba(192,96,244,.5);color:#eee;padding:26px 40px;border-radius:22px;font-size:17px;line-height:1.9;transition:all .3s;min-width:190px" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        👗<br/><b style="font-size:20px;color:#c060f4">Customer Portal</b><br/><small style="color:#666;font-size:12px">Track Your Order</small>
+      </button>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin-bottom:44px">
+      ${[["✂️","12 Stages","Full pipeline"],["⭐","5-Star","Quality assured"],["📲","WhatsApp","Instant updates"],["💎","GST Billing","Professional"]].map(([i,t,d])=>`<div style="text-align:center"><div style="font-size:28px">${i}</div><div style="color:#f4c060;font-weight:700;font-size:14px;margin-top:5px">${t}</div><div style="color:#444;font-size:12px">${d}</div></div>`).join("")}
     </div>
   </div>
+  <div style="position:relative;z-index:10;padding:0 24px 50px;max-width:960px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-bottom:30px">
+      <div class="glass" style="border-radius:22px;padding:22px"><div style="font-size:28px;margin-bottom:10px">📍</div><h4 style="color:#f4c060;font-weight:700;font-size:16px;margin-bottom:8px">Find Us</h4><p style="color:#777;font-size:14px;line-height:1.8">Seetharam Nagar, Auto Stand Opposite,<br/>Nearby Idhayam Supermarket,<br/>Pudupalayam, Cuddalore – 607001</p><a href="https://maps.google.com?q=Seetharam+Nagar+Pudupalayam+Cuddalore" target="_blank" style="display:inline-block;margin-top:12px;background:rgba(244,192,96,.15);border:1px solid rgba(244,192,96,.35);color:#f4c060;padding:7px 16px;border-radius:22px;font-size:13px;font-weight:700">🗺️ Open Maps</a></div>
+      <div class="glass" style="border-radius:22px;padding:22px"><div style="font-size:28px;margin-bottom:10px">🧭</div><h4 style="color:#c060f4;font-weight:700;font-size:16px;margin-bottom:8px">How to Reach</h4><p style="color:#777;font-size:14px;line-height:1.8">From <b style="color:#eee">New Cinema Theater</b><br/>→ Head towards Pudupalayam<br/>→ Near Idhayam Supermarket<br/>→ Auto Stand, Seetharam Nagar</p><a href="https://www.google.com/maps/dir/New+Cinema+Theater+Cuddalore/Seetharam+Nagar+Pudupalayam+Cuddalore" target="_blank" style="display:inline-block;margin-top:12px;background:rgba(192,96,244,.15);border:1px solid rgba(192,96,244,.35);color:#c060f4;padding:7px 16px;border-radius:22px;font-size:13px;font-weight:700">🚗 Get Directions</a></div>
+      <div class="glass" style="border-radius:22px;padding:22px"><div style="font-size:28px;margin-bottom:10px">📸</div><h4 style="color:#e040fb;font-weight:700;font-size:16px;margin-bottom:8px">Follow Us</h4><p style="color:#777;font-size:14px;line-height:1.8">Latest designs, bridal collections & customer transformations on Instagram</p><a href="https://instagram.com/g_square_customfit" target="_blank" style="display:inline-block;margin-top:12px;background:linear-gradient(135deg,rgba(225,48,108,.2),rgba(131,58,180,.2));border:1px solid rgba(225,48,108,.4);color:#e1306c;padding:7px 16px;border-radius:22px;font-size:13px;font-weight:700">@g_square_customfit</a></div>
+    </div>
+    <div style="border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.1)"><iframe src="https://maps.google.com/maps?q=Pudupalayam+Cuddalore+607001&output=embed&z=15" width="100%" height="220" style="border:none;display:block" loading="lazy"></iframe></div>
+    <p style="text-align:center;color:#333;font-size:13px;margin-top:20px">© 2026 G Square CustomFit · S. Manjula (Proprietor) · Cuddalore, TN</p>
+  </div>
+</div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- PAGE: STAFF LOGIN -->
-<!-- ══════════════════════════════════════════════════════ -->
+<!-- ══════ STAFF LOGIN ══════ -->
 <div id="page-stafflogin" class="page">
-  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px">
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(244,192,96,.18);border-radius:24px;overflow:hidden;width:100%;max-width:380px">
-      <div style="background:linear-gradient(135deg,rgba(244,192,96,.09),rgba(244,192,96,.02));padding:32px 36px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05)">
-        <div style="font-size:52px">🔐</div>
-        <h2 style="color:#fff;font-weight:800;font-size:22px;margin:12px 0 6px">Staff Login</h2>
-        <p style="color:#555;font-size:13px">G Square Fashion · Management</p>
-      </div>
-      <div style="padding:28px 36px 32px">
-        <div class="fgroup">
-          <label class="flabel">PIN Code</label>
-          <input class="finput" id="staff-pin" type="password" maxlength="6" placeholder="••••" style="font-size:24px;font-weight:700;letter-spacing:12px;text-align:center" onkeydown="if(event.key==='Enter')staffLogin()"/>
-        </div>
-        <div id="pin-err" style="color:#f46060;font-size:13px;text-align:center;margin-bottom:8px;display:none">Incorrect PIN</div>
-        <button class="btn btn-gold w-full" style="font-size:16px;padding:14px" onclick="staffLogin()">Unlock Dashboard →</button>
-        <p style="color:#333;font-size:11px;text-align:center;margin-top:12px">Demo PIN: <b style="color:#555">1234</b></p>
-        <button class="btn btn-ghost w-full mt-8" onclick="showPage('landing')">← Back</button>
+<div style="min-height:100vh;background:linear-gradient(135deg,#0a0015,#15000a);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden">
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:rgba(244,192,96,.08);filter:blur(80px);top:-100px;right:-100px;pointer-events:none"></div>
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(244,192,96,.22);border-radius:30px;overflow:hidden;width:100%;max-width:410px;position:relative;z-index:2">
+    <div style="background:linear-gradient(135deg,rgba(244,192,96,.12),rgba(192,96,244,.06));padding:38px 38px 28px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="font-size:60px;margin-bottom:10px">🔐</div>
+      <h2 style="color:#fff;font-weight:900;font-size:26px;margin-bottom:6px">Staff Login</h2>
+      <p style="color:#555;font-size:14px">G Square CustomFit · Management</p>
+    </div>
+    <div style="padding:34px 38px">
+      <div class="fgroup"><label class="flabel">PIN Code</label><input class="finput" id="staff-pin" type="password" maxlength="6" placeholder="••••" style="font-size:28px;font-weight:700;letter-spacing:14px;text-align:center" onkeydown="if(event.key==='Enter')staffLogin()"/></div>
+      <div id="pin-err" style="color:#f46060;font-size:14px;text-align:center;margin-bottom:12px;display:none">❌ Incorrect PIN</div>
+      <button class="btn btn-gold w-full" style="font-size:17px;padding:16px;margin-bottom:12px" onclick="staffLogin()">Unlock Dashboard →</button>
+      <button class="btn btn-ghost w-full" style="margin-bottom:10px" onclick="showPinReset()">🔑 Forgot PIN?</button>
+      <button class="btn btn-ghost w-full" onclick="showPage('landing')">← Back</button>
+    </div>
+    <div id="pin-reset-box" style="display:none;padding:0 38px 34px">
+      <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:22px">
+        <h4 style="color:#f4c060;font-weight:700;margin-bottom:16px;font-size:16px">🔑 Reset PIN</h4>
+        <div class="fgroup"><label class="flabel">Security Question</label><div style="color:#888;font-size:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:12px 15px;border-radius:12px;margin-bottom:12px" id="rq-display">—</div></div>
+        <div class="fgroup"><label class="flabel">Your Answer</label><input class="finput" id="r-answer" placeholder="Enter your answer"/></div>
+        <div class="fgroup"><label class="flabel">New PIN</label><input class="finput" id="r-newpin" type="password" maxlength="6" placeholder="New PIN" style="letter-spacing:10px;text-align:center"/></div>
+        <button class="btn btn-gold w-full" onclick="doResetPin()">Set New PIN</button>
       </div>
     </div>
   </div>
 </div>
+</div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- PAGE: STAFF DASHBOARD -->
-<!-- ══════════════════════════════════════════════════════ -->
+<!-- ══════ STAFF PORTAL ══════ -->
 <div id="page-staff" class="page">
   <nav class="nav">
     <span class="nav-brand">✂️ G Square</span>
     <button class="nav-btn active" id="nav-orders" onclick="staffTab('dashboard')">📋 Orders</button>
-    <button class="nav-btn" id="nav-new" onclick="staffTab('new')">➕ New Order</button>
-    <button class="nav-btn hidden" id="nav-order-detail" onclick="staffTab('detail')">📄 <span id="nav-token-label">#—</span></button>
+    <button class="nav-btn" id="nav-new" onclick="staffTab('new')">➕ New</button>
+    <button class="nav-btn hidden" id="nav-detail" onclick="staffTab('detail')">📄 <span id="nav-tok">#—</span></button>
     <div class="nav-right">
-      <span id="overdue-badge" class="badge hidden" style="background:#ff444422;border:1px solid #ff444466;color:#ff6666"></span>
-      <span id="staff-order-count" style="color:#555;font-size:13px"></span>
-      <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px" onclick="staffLogout()">🔒 Logout</button>
+      <span id="ov-badge" class="badge hidden" style="background:#ff444422;border:1px solid #ff4444;color:#ff6666"></span>
+      <span id="staff-cnt" style="color:#555;font-size:13px"></span>
+      <button class="btn" style="background:rgba(192,96,244,.15);border:1px solid rgba(192,96,244,.4);color:#c060f4;font-size:13px;padding:8px 16px;border-radius:22px" onclick="switchToCustomer()">👗 Customer</button>
+      <button class="btn btn-ghost" style="font-size:13px;padding:8px 16px" onclick="staffLogout()">🔒 Logout</button>
     </div>
   </nav>
-
-  <!-- REMINDER BANNER -->
-  <div id="reminder-banner" class="reminder-banner hidden">
-    <div style="max-width:1200px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:18px">🔔</span>
-        <span style="color:#f4c060;font-weight:700;font-size:14px">Upcoming Due Dates — Action Required</span>
-        <span id="reminder-count" style="color:#666;font-size:12px"></span>
-      </div>
-      <div id="reminder-items" class="flex flex-wrap gap-10"></div>
-    </div>
+  <div id="rem-banner" style="display:none;background:linear-gradient(135deg,#1a0f00,#0f1500);border-bottom:1px solid rgba(244,192,96,.2);padding:14px 32px">
+    <div style="max-width:1200px;margin:0 auto"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:20px">🔔</span><span style="color:#f4c060;font-weight:700;font-size:15px">Due Date Reminders</span><span id="rem-cnt" style="color:#666;font-size:13px"></span></div><div id="rem-items" style="display:flex;flex-wrap:wrap;gap:10px"></div></div>
   </div>
-
-  <!-- TAB: DASHBOARD -->
   <div id="tab-dashboard" style="max-width:1200px;margin:0 auto;padding:28px 32px">
-    <!-- KPIs -->
     <div class="kpi-grid" id="kpi-grid"></div>
-    <!-- Stage pills -->
-    <div class="card" style="margin-bottom:24px">
-      <div style="padding:16px 22px">
-        <p style="color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:700">Orders by Stage</p>
-        <div id="stage-pills" class="flex flex-wrap gap-8"></div>
-      </div>
-    </div>
-    <!-- Orders Table -->
+    <div class="card" style="margin-bottom:26px"><div style="padding:18px 24px"><p style="color:#555;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:16px;font-weight:700">Pipeline Overview</p><div id="stage-pills" style="display:flex;flex-wrap:wrap;gap:9px"></div></div></div>
     <div class="card">
-      <div style="display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid #111;flex-wrap:wrap">
-        <h3 style="color:#eee;font-weight:700;font-size:16px;flex:1;margin:0">All Orders</h3>
-        <input class="finput" id="search-input" style="width:210px;padding:8px 14px;font-size:13px" placeholder="🔍 Name, token, mobile…" oninput="renderTable()"/>
-        <button class="btn btn-gold" style="font-size:13px;padding:9px 18px" onclick="staffTab('new')">➕ New</button>
+      <div style="display:flex;align-items:center;gap:12px;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap">
+        <h3 style="color:#eee;font-weight:700;font-size:18px;flex:1;margin:0">All Orders</h3>
+        <input class="finput" id="srch" style="width:220px;padding:9px 15px;font-size:14px" placeholder="🔍 Name, token, mobile…" oninput="renderTable()"/>
+        <button class="btn btn-gold" style="font-size:14px;padding:10px 20px" onclick="staffTab('new')">➕ New Order</button>
       </div>
       <div id="orders-table"></div>
     </div>
   </div>
-
-  <!-- TAB: NEW ORDER -->
-  <div id="tab-new" class="hidden" style="max-width:600px;margin:48px auto;padding:0 24px">
-    <button class="btn btn-ghost" style="margin-bottom:24px;font-size:13px;padding:8px 16px" onclick="staffTab('dashboard')">← Back</button>
+  <div id="tab-new" class="hidden" style="max-width:680px;margin:40px auto;padding:0 24px">
+    <button class="btn btn-ghost" style="margin-bottom:24px" onclick="staffTab('dashboard')">← Back</button>
     <div class="card">
-      <div style="background:linear-gradient(135deg,rgba(244,192,96,.07),transparent);padding:26px 32px;border-bottom:1px solid #111">
-        <h2 style="color:#f4c060;font-weight:800;font-size:22px;margin:0">➕ New Customer Intake</h2>
-        <p style="color:#555;font-size:14px;margin:6px 0 0">Register a new customer and set their order due date</p>
+      <div style="background:linear-gradient(135deg,rgba(244,192,96,.08),transparent);padding:30px 34px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <h2 style="color:#f4c060;font-weight:900;font-size:24px;margin:0">➕ New Customer Intake</h2>
+        <p style="color:#555;font-size:14px;margin:7px 0 0">Register customer · Assign token · Set due date</p>
       </div>
-      <div style="padding:26px 32px">
-        <div class="fgroup"><label class="flabel">Customer Name</label><input class="finput" id="new-name" placeholder="e.g. Priya Sharma"/></div>
-        <div class="fgroup"><label class="flabel">Mobile Number</label><input class="finput" id="new-mobile" type="tel" maxlength="10" placeholder="10-digit number"/></div>
-        <div class="fgroup">
-          <label class="flabel">📅 Due Date <span style="color:#f46060">*</span></label>
-          <input class="finput" id="new-due" type="date"/>
-          <p style="color:#555;font-size:11px;margin-top:5px">Staff alerted 2 days before · Customer alerted 1 day before</p>
+      <div style="padding:30px 34px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><div class="fgroup"><label class="flabel">Customer Name</label><input class="finput" id="n-name" placeholder="e.g. Priya Sharma"/></div><div class="fgroup"><label class="flabel">Mobile Number</label><input class="finput" id="n-mobile" type="tel" maxlength="10" placeholder="10-digit"/></div></div>
+        <div class="fgroup"><label class="flabel">📅 Due Date <span style="color:#f46060">*</span></label><input class="finput" id="n-due" type="date"/></div>
+        <div class="fgroup"><label class="flabel">Source of Knowing Us</label><select class="finput" id="n-src" onchange="toggleSrc()"><option value="">Select…</option><option value="online">Online</option><option value="offline">Offline / Referral</option></select></div>
+        <div id="src-online" class="fgroup hidden"><label class="flabel">Which Platform?</label><select class="finput" id="n-platform"><option value="">Select…</option><option>Instagram</option><option>Facebook</option><option>Google Search</option><option>YouTube</option><option>WhatsApp</option><option>Other</option></select></div>
+        <div id="src-offline" class="fgroup hidden"><label class="flabel">Referred By (Name)</label><input class="finput" id="n-ref" placeholder="Who referred?"/></div>
+        <div style="background:rgba(96,224,160,.08);border:1px solid rgba(96,224,160,.2);border-radius:16px;padding:18px;margin-bottom:18px">
+          <div style="color:#60e0a0;font-weight:700;font-size:14px;margin-bottom:14px">💰 Advance Payment (Optional)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fgroup" style="margin:0"><label class="flabel">Amount (₹)</label><input class="finput" id="n-adv" type="number" min="0" placeholder="0"/></div>
+            <div class="fgroup" style="margin:0"><label class="flabel">Mode</label><select class="finput" id="n-amode"><option value="">Select…</option><option>Cash</option><option>GPay</option><option>PhonePe</option><option>Bank Transfer</option></select></div>
+          </div>
         </div>
-        <div class="fgroup"><label class="flabel">Notes (optional)</label><input class="finput" id="new-notes" placeholder="Special requirements…"/></div>
-        <button class="btn btn-gold w-full" style="font-size:16px;padding:14px;margin-top:8px" onclick="createOrder()">Generate Token & Start Order 🎟️</button>
+        <div class="fgroup"><label class="flabel">Notes (optional)</label><input class="finput" id="n-notes" placeholder="Special requirements…"/></div>
+        <button class="btn btn-gold w-full" style="font-size:17px;padding:16px;margin-top:10px" onclick="createOrder()">Generate Token & Start Order 🎟️</button>
       </div>
     </div>
   </div>
-
-  <!-- TAB: ORDER DETAIL -->
   <div id="tab-detail" class="hidden"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- PAGE: CUSTOMER PORTAL -->
-<!-- ══════════════════════════════════════════════════════ -->
+<!-- ══════ CUSTOMER PORTAL ══════ -->
 <div id="page-customer" class="page">
-  <div id="customer-lookup">
-    <div style="background:#0d0d0d;min-height:100vh">
-      <nav style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid #111">
-        <span style="font-size:18px;font-weight:700;color:#f4c060">✂️ G Square Fashion</span>
-        <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px" onclick="showPage('landing')">← Home</button>
-      </nav>
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center">
-        <div style="font-size:76px;margin-bottom:20px">👗</div>
-        <h1 style="font-size:clamp(32px,6vw,56px);font-weight:800;color:#fff;margin-bottom:14px">Track Your Blouse</h1>
-        <p style="color:#777;max-width:480px;line-height:1.6;margin-bottom:40px;font-size:16px">Enter your token for live updates — from design to delivery.</p>
-        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(244,192,96,.2);border-radius:20px;padding:26px 34px;width:100%;max-width:420px">
-          <p style="color:#f4c060;font-weight:700;font-size:14px;margin-bottom:14px">🎟️ Your Order Token</p>
-          <div style="display:flex;gap:10px">
-            <input class="finput" id="cust-token-input" maxlength="5" placeholder="48291" style="font-size:20px;font-weight:700;letter-spacing:6px;text-align:center;flex:1" onkeydown="if(event.key==='Enter')lookupOrder()"/>
-            <button class="btn btn-gold" style="white-space:nowrap;padding:13px 20px" onclick="lookupOrder()">Track →</button>
-          </div>
-          <p style="color:#444;font-size:12px;margin-top:10px">Token given at the shop counter</p>
+  <nav class="nav">
+    <span class="nav-brand">✂️ G Square CustomFit</span>
+    <div class="nav-right">
+      <button class="btn" style="background:rgba(244,192,96,.12);border:1px solid rgba(244,192,96,.3);color:#f4c060;font-size:13px;padding:8px 16px;border-radius:22px" onclick="switchToStaff()">🧵 Staff</button>
+      <button class="btn btn-ghost" style="font-size:13px;padding:8px 16px" onclick="showPage('landing')">← Home</button>
+    </div>
+  </nav>
+  <div id="cust-lookup">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center">
+      <div style="font-size:88px;margin-bottom:22px;animation:float 3s ease-in-out infinite">👗</div>
+      <h1 style="font-size:clamp(28px,5vw,54px);font-weight:900;color:#fff;margin-bottom:12px">Track Your Order</h1>
+      <p style="color:#666;font-size:16px;max-width:440px;line-height:1.7;margin-bottom:44px">Enter your token number for live updates on your blouse order</p>
+      <div class="glass" style="border-radius:26px;padding:30px 38px;width:100%;max-width:440px">
+        <p style="color:#f4c060;font-weight:700;font-size:15px;margin-bottom:16px">🎟️ Enter Your Token</p>
+        <div style="display:flex;gap:10px">
+          <input class="finput" id="cust-tok" maxlength="5" placeholder="48291" style="font-size:24px;font-weight:700;letter-spacing:10px;text-align:center;flex:1" onkeydown="if(event.key==='Enter')lookupOrder()"/>
+          <button class="btn btn-purple" style="white-space:nowrap;padding:14px 22px;font-size:15px" onclick="lookupOrder()">Track →</button>
         </div>
-      </div>
-      <!-- How it works -->
-      <div style="padding:40px;max-width:900px;margin:0 auto">
-        <h2 style="text-align:center;font-size:28px;font-weight:800;margin-bottom:32px">How It Works</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px">
-          ${[["👤","01","Intake","Staff registers you and gives a token."],["🎨","02","Design","Choose from 6 signature blouse styles."],["📏","03","Measurements","Precise measurements by our staff."],["🧵","04","Tailoring","Expert tailors craft your blouse."],["🔍","05","Quality Check","Senior review before notifying you."],["👗","06","Trial & Pay","Try on, approve, pay securely."]].map(([ic,n,t,d])=>`<div style="background:#111;border:1px solid #1a1a1a;border-radius:14px;padding:18px;text-align:center"><div style="color:#f4c060;font-size:10px;font-weight:700;letter-spacing:3px;margin-bottom:8px">${n}</div><div style="font-size:26px;margin-bottom:8px">${ic}</div><h4 style="color:#fff;font-size:13px;margin-bottom:5px">${t}</h4><p style="color:#555;font-size:11px;line-height:1.5">${d}</p></div>`).join("")}
-        </div>
+        <p style="color:#444;font-size:13px;margin-top:12px">Token was given at the shop counter</p>
       </div>
     </div>
   </div>
-  <div id="customer-detail" class="hidden"></div>
+  <div id="cust-detail" class="hidden"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- PRINT BILL AREA -->
-<!-- ══════════════════════════════════════════════════════ -->
-<div id="print-bill" style="display:none"></div>
-
 <script>
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // CONSTANTS
-// ══════════════════════════════════════════════════════════
-const STAFF_PIN  = "1234";
-const DB_KEY     = "gsf_orders_v2";
-const SHOP       = { name:"G Square Fashion", addr:"No. 12, Silk Street, T. Nagar, Chennai – 600017", phone:"+91 98765 43210", email:"gsquarefashion@gmail.com", gst:"29AABCG1234F1Z5" };
-const GST_RATE   = 5;
+// ══════════════════════════════════════════════
+const DB_KEY="gsf_v5", CFG_KEY="gsf_cfg5", DESIGNS_KEY="gsf_designs5";
+const OWNER_WA="9600966894";
+const GOOGLE_REVIEW="https://www.google.com/search?q=gsquare+custom+fit+cuddalore+reviews#ebo=3";
+const SHOP={name:"G Square CustomFit",tag:"Customized Designer Boutique",motive:"Perfect Fit, Elegant Finish",addr:"Seetharam Nagar, Auto Stand Opposite, Nearby Idhayam Supermarket, Pudupalayam, Cuddalore – 607001",phone:"+91 96009 66894",gst:"29AABCG1234F1Z5",owner:"S. Manjula"};
+const GST_RATE=5;
 
-const STAGES = [
-  {id:0,  key:"intake",       label:"Customer Intake",  icon:"👤", color:"#888"},
-  {id:1,  key:"design",       label:"Design Selection", icon:"🎨", color:"#f4c060"},
-  {id:2,  key:"measurement",  label:"Measurements",     icon:"📏", color:"#60b4f4"},
-  {id:3,  key:"tailor_queue", label:"Tailor Queue",     icon:"🧵", color:"#a0e080"},
-  {id:4,  key:"senior",       label:"Senior Review",    icon:"🔍", color:"#e0a060"},
-  {id:5,  key:"notify",       label:"Notified",         icon:"📲", color:"#f4c060"},
-  {id:6,  key:"trial",        label:"Trial Room",       icon:"👗", color:"#c060f4"},
-  {id:7,  key:"billing",      label:"Billing",          icon:"🧾", color:"#e06060"},
-  {id:8,  key:"correction",   label:"Correction",       icon:"✂️", color:"#f46060"},
-  {id:9,  key:"payment",      label:"Payment",          icon:"💳", color:"#60e0a0"},
-  {id:10, key:"review",       label:"Review",           icon:"⭐", color:"#ffd700"},
-  {id:11, key:"completed",    label:"Completed",        icon:"✅", color:"#4caf50"},
+const STAGES=[
+  {id:0,label:"Customer Intake",    icon:"👤",color:"#888",    desc:"Customer meets owner"},
+  {id:1,label:"Design Selection",   icon:"🎨",color:"#f4c060", desc:"Choose your design"},
+  {id:2,label:"Measurements",       icon:"📏",color:"#60b4f4", desc:"Taking measurements"},
+  {id:3,label:"Tailor Queue",       icon:"🧵",color:"#a0e080", desc:"Tailoring in progress"},
+  {id:4,label:"Senior Review",      icon:"🔍",color:"#e0a060", desc:"Quality check"},
+  {id:5,label:"Ready & Notified",   icon:"📲",color:"#f4d060", desc:"Blouse is ready"},
+  {id:6,label:"Trial Room",         icon:"👗",color:"#c060f4", desc:"Try on & approve"},
+  {id:7,label:"Billing",            icon:"🧾",color:"#e06060", desc:"Bill generation"},
+  {id:8,label:"Correction",         icon:"✂️",color:"#f46060", desc:"Making corrections"},
+  {id:9,label:"Payment",            icon:"💳",color:"#60e0a0", desc:"Payment collection"},
+  {id:10,label:"Review",            icon:"⭐",color:"#ffd700", desc:"Customer review"},
+  {id:11,label:"Completed",         icon:"✅",color:"#4caf50", desc:"Order complete"},
 ];
 
-const DESIGNS = [
-  {id:"D1",name:"Classic Katan Silk", style:"Traditional",img:"https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&q=80",desc:"Elegant boat neck with zari work"},
-  {id:"D2",name:"Princess Cut",       style:"Modern",      img:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=300&q=80",desc:"Structured seams, contemporary silhouette"},
-  {id:"D3",name:"Peplum Style",       style:"Fusion",      img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?w=300&q=80",desc:"Flared bottom with mirror embroidery"},
-  {id:"D4",name:"Deep Back Blouse",   style:"Bridal",      img:"https://images.unsplash.com/photo-1617627143233-5e8f7fc2e7a7?w=300&q=80",desc:"Intricate back with tassel strings"},
-  {id:"D5",name:"Halter Neck",        style:"Party",       img:"https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80",desc:"Open shoulder with bead work"},
-  {id:"D6",name:"High Neck Victorian",style:"Heritage",    img:"https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80",desc:"High collar with lace trim"},
+const PRESET_DESIGNS=[
+  {id:"D1",name:"Classic Katan Silk",style:"Traditional",img:"https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&q=80",desc:"Elegant boat neck with zari work",preset:true},
+  {id:"D2",name:"Princess Cut",style:"Modern",img:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=300&q=80",desc:"Structured seams, contemporary silhouette",preset:true},
+  {id:"D3",name:"Peplum Style",style:"Fusion",img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?w=300&q=80",desc:"Flared bottom with mirror embroidery",preset:true},
+  {id:"D4",name:"Deep Back Blouse",style:"Bridal",img:"https://images.unsplash.com/photo-1617627143233-5e8f7fc2e7a7?w=300&q=80",desc:"Intricate back with tassel strings",preset:true},
+  {id:"D5",name:"Halter Neck",style:"Party",img:"https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80",desc:"Open shoulder with bead work",preset:true},
+  {id:"D6",name:"High Neck Victorian",style:"Heritage",img:"https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80",desc:"High collar with lace trim",preset:true},
 ];
 
-const MEAS_FIELDS = ["Bust","Waist","Hip","Shoulder","Sleeve Length","Back Length","Front Length","Neck Depth"];
+const MEAS_FIELDS=["Bust","Waist","Hip","Shoulder","Sleeve Length","Back Length","Front Length","Neck Depth"];
+const GARMENT_TYPES=["Blouse","Saree Blouse","Churidar","Salwar","Frock","Shirt","Trouser","Skirt","Other"];
+const GENDERS=["Female","Male","Kids"];
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════════════════
-let orders       = [];
-let staffAuthed  = false;
-let currentPage  = "landing";
-let activeOrder  = null;
-let staffTabView = "dashboard";
+// ══════════════════════════════════════════════
+let orders=[],staffAuthed=false,activeOrder=null,staffTabView="dashboard",currentPage="landing",custActiveToken=null,syncInt=null;
+let customDesigns=[];
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // STORAGE
-// ══════════════════════════════════════════════════════════
-function loadOrders(){ try{ return JSON.parse(localStorage.getItem(DB_KEY)||"[]"); }catch{ return []; } }
-function saveOrders(){ localStorage.setItem(DB_KEY, JSON.stringify(orders)); }
+// ══════════════════════════════════════════════
+function loadOrders(){try{return JSON.parse(localStorage.getItem(DB_KEY)||"[]")}catch{return[]}}
+function saveOrders(){localStorage.setItem(DB_KEY,JSON.stringify(orders))}
+function getCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY)||"{}")}catch{return{}}}
+function saveCfg(c){localStorage.setItem(CFG_KEY,JSON.stringify(c))}
+function getPin(){return getCfg().pin||"1234"}
+function loadDesigns(){try{return JSON.parse(localStorage.getItem(DESIGNS_KEY)||"[]")}catch{return[]}}
+function saveDesigns(){localStorage.setItem(DESIGNS_KEY,JSON.stringify(customDesigns))}
+function getAllDesigns(){return[...PRESET_DESIGNS,...customDesigns]}
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// SYNC
+// ══════════════════════════════════════════════
+function startSync(){
+  if(syncInt)clearInterval(syncInt);
+  syncInt=setInterval(()=>{
+    const fresh=loadOrders();
+    if(JSON.stringify(fresh)!==JSON.stringify(orders)){
+      orders=fresh;
+      if(activeOrder)activeOrder=orders.find(o=>o.token===activeOrder.token)||activeOrder;
+      if(currentPage==="staff"){renderStaff();if(staffTabView==="detail"&&activeOrder)renderDetailPage(activeOrder,true);}
+      if(currentPage==="customer"&&custActiveToken){const o=orders.find(x=>x.token===custActiveToken);if(o){activeOrder=o;renderDetailPage(o,false);}}
+    }
+  },2000);
+}
+window.addEventListener("storage",e=>{
+  if(e.key!==DB_KEY||!e.newValue)return;
+  try{orders=JSON.parse(e.newValue);if(activeOrder)activeOrder=orders.find(o=>o.token===activeOrder.token)||activeOrder;if(currentPage==="staff"){renderStaff();if(staffTabView==="detail"&&activeOrder)renderDetailPage(activeOrder,true);}if(currentPage==="customer"&&custActiveToken){const o=orders.find(x=>x.token===custActiveToken);if(o){activeOrder=o;renderDetailPage(o,false);}}}catch{}
+});
+
+// ══════════════════════════════════════════════
 // TOAST
-// ══════════════════════════════════════════════════════════
-let _toastTimer;
-function toast(msg, type="success"){
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.style.background = type==="error" ? "#c0392b" : "#2c7";
-  el.style.display = "block";
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(()=>el.style.display="none", 3500);
-}
+// ══════════════════════════════════════════════
+let _tt;
+function toast(msg,type="success"){const el=document.getElementById("toast");el.textContent=msg;el.style.background=type==="error"?"linear-gradient(135deg,#c0392b,#922b21)":type==="warn"?"linear-gradient(135deg,#e67e22,#d35400)":"linear-gradient(135deg,#27ae60,#1e8449)";el.style.display="block";clearTimeout(_tt);_tt=setTimeout(()=>el.style.display="none",3500);}
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // DATE HELPERS
-// ══════════════════════════════════════════════════════════
-function daysUntilDue(dueDate){
-  if(!dueDate) return null;
-  const now=new Date(); now.setHours(0,0,0,0);
-  const due=new Date(dueDate); due.setHours(0,0,0,0);
-  return Math.round((due-now)/86400000);
-}
-function dueBadge(dueDate, isStaff){
-  const d=daysUntilDue(dueDate);
-  if(d===null) return null;
-  if(d<0)  return {label:`Overdue by ${Math.abs(d)}d`, color:"#ff4444", bg:"#ff444422", icon:"🚨"};
-  if(d===0) return {label:"Due Today!", color:"#ff8800", bg:"#ff880022", icon:"⚠️"};
-  if(isStaff&&d<=2) return {label:`Due in ${d}d`, color:"#f4c060", bg:"#f4c06022", icon:"🔔"};
-  if(!isStaff&&d<=1) return {label:"Due Tomorrow", color:"#f4c060", bg:"#f4c06022", icon:"🔔"};
-  return {label:`Due ${fmtShort(dueDate)}`, color:"#4caf50", bg:"#4caf5015", icon:"📅"};
-}
-function fmtShort(d){ return new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
-function fmtFull(d){ return new Date(d).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}); }
-function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
-function genToken(){ return String(Math.floor(10000+Math.random()*90000)); }
-function stageInfo(id){ return STAGES[id]||STAGES[0]; }
-function waURL(mobile,msg){ return `https://wa.me/91${mobile}?text=${encodeURIComponent(msg)}`; }
+// ══════════════════════════════════════════════
+function dDue(d){if(!d)return null;const n=new Date();n.setHours(0,0,0,0);const du=new Date(d);du.setHours(0,0,0,0);return Math.round((du-n)/86400000);}
+function dueBadge(dd,iS){const d=dDue(dd);if(d===null)return null;if(d<0)return{label:`Overdue ${Math.abs(d)}d`,color:"#ff4444",bg:"rgba(255,68,68,.12)",icon:"🚨"};if(d===0)return{label:"Due Today!",color:"#ff8800",bg:"rgba(255,136,0,.12)",icon:"⚠️"};if(iS&&d<=2)return{label:`Due in ${d}d`,color:"#f4c060",bg:"rgba(244,192,96,.12)",icon:"🔔"};if(!iS&&d<=1)return{label:"Due Tomorrow",color:"#f4c060",bg:"rgba(244,192,96,.12)",icon:"🔔"};return{label:`Due ${fS(dd)}`,color:"#4caf50",bg:"rgba(76,175,80,.1)",icon:"📅"};}
+function fS(d){return new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});}
+function fF(d){return new Date(d).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});}
+function todayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function genToken(){return String(Math.floor(10000+Math.random()*90000));}
+function si(id){return STAGES[Math.min(id||0,11)]||STAGES[0];}
+function waURL(m,msg){return `https://wa.me/91${m}?text=${encodeURIComponent(msg)}`;}
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // NAVIGATION
-// ══════════════════════════════════════════════════════════
-function showPage(p){
-  currentPage=p;
-  document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));
-  document.getElementById("page-"+p).classList.add("active");
-}
-function goStaff(){
-  if(staffAuthed){ showPage("staff"); renderStaff(); }
-  else showPage("stafflogin");
-}
+// ══════════════════════════════════════════════
+function showPage(p){currentPage=p;document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));document.getElementById("page-"+p).classList.add("active");}
+function goStaff(){if(staffAuthed){showPage("staff");renderStaff();}else showPage("stafflogin");}
+function goCustomer(){showPage("customer");resetCust();}
+function switchToCustomer(){showPage("customer");resetCust();}
+function switchToStaff(){const msg=`🔔 *G Square Alert*\nStaff switched to Customer Portal.\nTime: ${new Date().toLocaleString("en-IN")}`;window.open(waURL(OWNER_WA,msg),"_blank");if(staffAuthed){showPage("staff");renderStaff();}else showPage("stafflogin");}
+function resetCust(){custActiveToken=null;document.getElementById("cust-detail").classList.add("hidden");document.getElementById("cust-lookup").classList.remove("hidden");const i=document.getElementById("cust-tok");if(i)i.value="";}
 
-// ══════════════════════════════════════════════════════════
-// STAFF LOGIN
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// STAFF LOGIN / PIN RESET
+// ══════════════════════════════════════════════
 function staffLogin(){
-  const pin = document.getElementById("staff-pin").value;
-  const err = document.getElementById("pin-err");
-  if(pin===STAFF_PIN){
-    staffAuthed=true; err.style.display="none";
-    document.getElementById("staff-pin").value="";
-    showPage("staff"); renderStaff();
-  } else {
-    err.style.display="block";
-    document.getElementById("staff-pin").value="";
-  }
+  const pin=document.getElementById("staff-pin").value;
+  if(pin===getPin()){
+    staffAuthed=true;document.getElementById("pin-err").style.display="none";document.getElementById("staff-pin").value="";
+    showPage("staff");renderStaff();
+    const cfg=getCfg();if(!cfg.secQ)setTimeout(()=>showSetupSecQ(),600);
+  }else{document.getElementById("pin-err").style.display="block";document.getElementById("staff-pin").value="";}
 }
-function staffLogout(){
-  staffAuthed=false; activeOrder=null;
-  showPage("landing");
+function showSetupSecQ(){const q=prompt("Set a security question for PIN reset\n(e.g. What is your shop name?):");if(!q)return;const a=prompt("Your answer:");if(!a)return;const cfg=getCfg();cfg.secQ=q;cfg.secA=a.toLowerCase().trim();saveCfg(cfg);toast("Security question saved ✅");}
+function showPinReset(){const q=getCfg().secQ;if(!q){toast("No security question set. Login first to set one.","warn");return;}document.getElementById("rq-display").textContent=q;document.getElementById("pin-reset-box").style.display="block";}
+function doResetPin(){const ans=document.getElementById("r-answer")?.value.toLowerCase().trim();const np=document.getElementById("r-newpin")?.value;if(ans!==getCfg().secA){toast("Wrong answer","error");return;}if(!np||np.length<4){toast("PIN must be 4+ digits","error");return;}const cfg=getCfg();cfg.pin=np;saveCfg(cfg);document.getElementById("pin-reset-box").style.display="none";toast("PIN reset ✅");}
+function staffLogout(){staffAuthed=false;activeOrder=null;showPage("landing");}
+
+// ══════════════════════════════════════════════
+// DESIGN UPLOAD
+// ══════════════════════════════════════════════
+function triggerDesignUpload(){document.getElementById("design-file-input").click();}
+function handleDesignUpload(input){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith("image/")){toast("Please select an image file","error");return;}
+  if(file.size>5*1024*1024){toast("Image too large. Max 5MB","error");return;}
+  const name=prompt("Design name:",file.name.replace(/\.[^.]+$/,""))||file.name;
+  const style=prompt("Design style (e.g. Bridal, Modern, Traditional):","Custom")||"Custom";
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const id="U"+Date.now();
+    const design={id,name,style,img:e.target.result,desc:"Custom uploaded design",preset:false};
+    customDesigns.push(design);
+    saveDesigns();
+    toast(`Design "${name}" uploaded ✅`);
+    // Refresh design UI if visible
+    const dg=document.getElementById("design-search-area");
+    if(dg){const q=document.getElementById("design-search")?.value||"";renderDesignGrid(activeOrder?.token,q,activeOrder?.design);}
+  };
+  reader.readAsDataURL(file);
+  input.value="";
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // STAFF TABS
-// ══════════════════════════════════════════════════════════
-function staffTab(tab){
-  staffTabView=tab;
-  ["dashboard","new","detail"].forEach(t=>{
-    const el=document.getElementById("tab-"+t);
-    if(el) el.classList.toggle("hidden", t!==tab);
-  });
-  document.getElementById("nav-orders").classList.toggle("active", tab==="dashboard");
-  document.getElementById("nav-new").classList.toggle("active", tab==="new");
-  document.getElementById("nav-order-detail").classList.toggle("active", tab==="detail");
-  if(tab==="dashboard") renderTable();
-  if(tab==="new"){ document.getElementById("new-due").min=todayStr(); }
-  if(tab==="detail"&&activeOrder) renderDetailPage(activeOrder,true);
-}
+// ══════════════════════════════════════════════
+function toggleSrc(){const v=document.getElementById("n-src").value;document.getElementById("src-online").classList.toggle("hidden",v!=="online");document.getElementById("src-offline").classList.toggle("hidden",v!=="offline");}
+function staffTab(tab){staffTabView=tab;["dashboard","new","detail"].forEach(t=>{const el=document.getElementById("tab-"+t);if(el)el.classList.toggle("hidden",t!==tab);});document.getElementById("nav-orders").classList.toggle("active",tab==="dashboard");document.getElementById("nav-new").classList.toggle("active",tab==="new");document.getElementById("nav-detail").classList.toggle("active",tab==="detail");if(tab==="dashboard")renderStaff();if(tab==="new")document.getElementById("n-due").min=todayStr();if(tab==="detail"&&activeOrder)renderDetailPage(activeOrder,true);}
 
-// ══════════════════════════════════════════════════════════
-// RENDER STAFF DASHBOARD
-// ══════════════════════════════════════════════════════════
-function renderStaff(){
-  renderKPIs();
-  renderStagePills();
-  renderTable();
-  renderReminderBanner();
-  const od=document.getElementById("nav-order-detail");
-  od.classList.toggle("hidden",!activeOrder);
-  if(activeOrder) document.getElementById("nav-token-label").textContent="#"+activeOrder.token;
-}
+// ══════════════════════════════════════════════
+// RENDER STAFF
+// ══════════════════════════════════════════════
+function renderStaff(){renderKPIs();renderStagePills();renderTable();renderRemBanner();const od=document.getElementById("nav-detail");od.classList.toggle("hidden",!activeOrder);if(activeOrder)document.getElementById("nav-tok").textContent="#"+activeOrder.token;}
 
 function renderKPIs(){
-  const totalRevenue=orders.filter(o=>o.amount).reduce((s,o)=>s+(parseFloat(o.amount)||0),0);
-  const overdue=orders.filter(o=>{ const d=daysUntilDue(o.dueDate); return d!==null&&d<0&&o.stage<11; }).length;
-  const kpis=[
-    {icon:"📦",label:"Total Orders",  value:orders.length,          color:"#f4c060"},
-    {icon:"🧵",label:"In Production", value:orders.filter(o=>o.stage>=2&&o.stage<=5).length, color:"#60b4f4"},
-    {icon:"👗",label:"Trial Pending", value:orders.filter(o=>o.stage===6).length, color:"#c060f4"},
-    {icon:"✅",label:"Completed",      value:orders.filter(o=>o.stage===11).length, color:"#4caf50"},
-    {icon:"💰",label:"Revenue",        value:`₹${totalRevenue.toLocaleString("en-IN")}`, color:"#ffd700"},
-    {icon:"🚨",label:"Overdue",        value:overdue, color:"#ff4444"},
-  ];
-  document.getElementById("kpi-grid").innerHTML=kpis.map(k=>`
-    <div class="kpi-card">
-      <div style="font-size:24px;margin-bottom:8px">${k.icon}</div>
-      <div style="font-size:24px;font-weight:800;color:${k.color};line-height:1">${k.value}</div>
-      <div style="font-size:12px;color:#555;margin-top:5px">${k.label}</div>
-    </div>`).join("");
-
-  const ob=document.getElementById("overdue-badge");
-  if(overdue>0){ ob.textContent=`🚨 ${overdue} Overdue`; ob.classList.remove("hidden"); }
-  else ob.classList.add("hidden");
-  document.getElementById("staff-order-count").textContent=orders.length+" orders";
+  const rev=orders.filter(o=>o.amount).reduce((s,o)=>s+(parseFloat(o.amount)||0),0);
+  const adv=orders.reduce((s,o)=>s+(parseFloat(o.advance||0)),0);
+  const pend=orders.filter(o=>o.stage<9).reduce((s,o)=>s+(parseFloat(o.amount||0)-parseFloat(o.advance||0)),0);
+  const ov=orders.filter(o=>{const d=dDue(o.dueDate);return d!==null&&d<0&&o.stage<11;}).length;
+  const kpis=[{icon:"📦",l:"Total Orders",v:orders.length,c:"#f4c060"},{icon:"🧵",l:"In Production",v:orders.filter(o=>o.stage>=2&&o.stage<=5).length,c:"#60b4f4"},{icon:"👗",l:"Trial Pending",v:orders.filter(o=>o.stage===6).length,c:"#c060f4"},{icon:"✅",l:"Completed",v:orders.filter(o=>o.stage===11).length,c:"#4caf50"},{icon:"💰",l:"Revenue",v:`₹${rev.toLocaleString("en-IN")}`,c:"#ffd700"},{icon:"💵",l:"Advance",v:`₹${adv.toLocaleString("en-IN")}`,c:"#60e0a0"},{icon:"⏳",l:"Pending",v:`₹${Math.max(0,pend).toLocaleString("en-IN")}`,c:"#f46060"},{icon:"🚨",l:"Overdue",v:ov,c:"#ff4444"}];
+  document.getElementById("kpi-grid").innerHTML=kpis.map(k=>`<div class="kpi-card" style="--kc:${k.c}"><div style="font-size:28px;margin-bottom:10px">${k.icon}</div><div style="font-size:24px;font-weight:800;color:${k.c};line-height:1">${k.v}</div><div style="font-size:13px;color:#555;margin-top:6px">${k.l}</div></div>`).join("");
+  const ob=document.getElementById("ov-badge");if(ov>0){ob.textContent=`🚨 ${ov} Overdue`;ob.classList.remove("hidden");}else ob.classList.add("hidden");
+  document.getElementById("staff-cnt").textContent=orders.length+" orders";
 }
 
-function renderStagePills(){
-  const pills=STAGES.filter((_,i)=>i>0).map(st=>{
-    const cnt=orders.filter(o=>o.stage===st.id).length;
-    return `<div style="display:flex;align-items:center;gap:7px;background:#111;border:1px solid ${cnt>0?st.color+"44":"#161616"};border-radius:20px;padding:5px 13px">
-      <span style="font-size:13px">${st.icon}</span>
-      <span style="font-size:12px;color:${cnt>0?st.color:"#444"}">${st.label}</span>
-      <span style="background:${cnt>0?st.color:"#1a1a1a"};color:${cnt>0?"#000":"#333"};border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700">${cnt}</span>
-    </div>`;
-  }).join("");
-  document.getElementById("stage-pills").innerHTML=pills;
-}
+function renderStagePills(){document.getElementById("stage-pills").innerHTML=STAGES.filter((_,i)=>i>0).map(st=>{const c=orders.filter(o=>o.stage===st.id).length;return`<div style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04);border:1px solid ${c>0?st.color+"55":"rgba(255,255,255,.08)"};border-radius:22px;padding:7px 16px"><span style="font-size:15px">${st.icon}</span><span style="font-size:14px;font-weight:700;color:${c>0?st.color:"#444"}">${st.label}</span><span style="background:${c>0?st.color:"rgba(255,255,255,.08)"};color:${c>0?"#000":"#333"};border-radius:22px;padding:1px 9px;font-size:13px;font-weight:800">${c}</span></div>`;}).join("");}
 
-function renderReminderBanner(){
-  const reminders=orders.filter(o=>o.stage<11&&o.dueDate).filter(o=>{ const d=daysUntilDue(o.dueDate); return d!==null&&d<=2; }).sort((a,b)=>daysUntilDue(a.dueDate)-daysUntilDue(b.dueDate));
-  const banner=document.getElementById("reminder-banner");
-  if(reminders.length===0){ banner.classList.add("hidden"); return; }
-  banner.classList.remove("hidden");
-  document.getElementById("reminder-count").textContent=`(${reminders.length} order${reminders.length>1?"s":""})`;
-  document.getElementById("reminder-items").innerHTML=reminders.map(o=>{
-    const b=dueBadge(o.dueDate,true);
-    return `<div onclick="openOrder('${o.token}',true)" style="background:#111;border:1px solid ${b.color}44;border-radius:12px;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px">
-      <span style="font-size:16px">${b.icon}</span>
-      <div><div style="color:#eee;font-weight:700;font-size:13px">${o.name} <span style="color:#666;font-size:11px">#${o.token}</span></div>
-      <div style="color:${b.color};font-size:12px;font-weight:600">${b.label} · ${stageInfo(o.stage).label}</div></div>
-    </div>`;
-  }).join("");
-}
+function renderRemBanner(){const rem=orders.filter(o=>o.stage<11&&o.dueDate).filter(o=>{const d=dDue(o.dueDate);return d!==null&&d<=2;}).sort((a,b)=>dDue(a.dueDate)-dDue(b.dueDate));const b=document.getElementById("rem-banner");if(!rem.length){b.style.display="none";return;}b.style.display="block";document.getElementById("rem-cnt").textContent=`(${rem.length})`;document.getElementById("rem-items").innerHTML=rem.map(o=>{const db=dueBadge(o.dueDate,true);return`<div onclick="openOrder('${o.token}',true)" style="background:rgba(255,255,255,.04);border:1px solid ${db.color}55;border-radius:13px;padding:11px 17px;cursor:pointer;display:flex;align-items:center;gap:10px"><span>${db.icon}</span><div><div style="color:#eee;font-weight:700;font-size:14px">${o.name} <span style="color:#666;font-size:12px">#${o.token}</span></div><div style="color:${db.color};font-size:13px;font-weight:600">${db.label} · ${si(o.stage).label}</div></div></div>`;}).join("");}
 
 function renderTable(){
-  const q=(document.getElementById("search-input")||{value:""}).value.toLowerCase();
+  const q=(document.getElementById("srch")||{value:""}).value.toLowerCase();
   const filtered=orders.filter(o=>o.name.toLowerCase().includes(q)||o.token.includes(q)||o.mobile.includes(q));
-  const tb=document.getElementById("orders-table");
-  if(!tb) return;
-  if(filtered.length===0){ tb.innerHTML=`<p style="color:#444;text-align:center;padding:40px">No orders found.</p>`; return; }
-  tb.innerHTML=filtered.map(o=>{
-    const st=stageInfo(o.stage);
-    const db=dueBadge(o.dueDate,true);
-    const dbHtml=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}44">${db.icon} ${db.label}</span>`:`<span style="color:#333;font-size:12px">No due date</span>`;
-    return `<div class="order-row" onclick="openOrder('${o.token}',true)">
-      <span style="background:rgba(244,192,96,.1);color:#f4c060;border:1px solid rgba(244,192,96,.2);padding:3px 0;border-radius:8px;font-weight:700;font-size:12px;text-align:center">#${o.token}</span>
-      <div><div style="color:#eee;font-weight:600;font-size:14px">${o.name}</div><div style="color:#555;font-size:11px;margin-top:2px">📱 ${o.mobile}</div></div>
-      <div style="display:flex;align-items:center;gap:5px" class="hide-mobile"><span>${st.icon}</span><span style="font-size:11px;color:${st.color};font-weight:600">${st.label}</span></div>
-      <div class="hide-mobile">${dbHtml}</div>
-      <div style="color:${o.amount?"#4caf50":"#333"};font-size:13px;font-weight:700" class="hide-mobile">${o.amount?`₹${o.amount}`:"—"}</div>
-      <div style="color:#444;font-size:11px" class="hide-mobile">${fmtShort(o.updatedAt)}</div>
-      <div style="color:#555;font-size:18px">›</div>
-    </div>`;
-  }).join("");
+  const tb=document.getElementById("orders-table");if(!tb)return;
+  if(!filtered.length){tb.innerHTML=`<p style="color:#444;text-align:center;padding:44px;font-size:16px">No orders found.</p>`;return;}
+  tb.innerHTML=filtered.map(o=>{const st=si(o.stage);const db=dueBadge(o.dueDate,true);const dbH=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}44">${db.icon} ${db.label}</span>`:`<span style="color:#333;font-size:12px">—</span>`;const pend=o.amount?Math.max(0,parseFloat(o.amount)-parseFloat(o.advance||0)):null;return`<div class="order-row" onclick="openOrder('${o.token}',true)"><span style="background:rgba(244,192,96,.1);color:#f4c060;border:1px solid rgba(244,192,96,.2);padding:4px 0;border-radius:12px;font-weight:800;font-size:13px;text-align:center">#${o.token}</span><div><div style="color:#eee;font-weight:600;font-size:15px">${o.name}</div><div style="color:#555;font-size:12px;margin-top:3px">📱 ${o.mobile}${o.source?` · 📣 ${o.source}`:""}</div></div><div style="display:flex;align-items:center;gap:6px" class="hm"><span style="font-size:18px">${st.icon}</span><span style="font-size:13px;color:${st.color};font-weight:700">${st.label}</span></div><div class="hm">${dbH}</div><div style="color:${o.amount?"#4caf50":"#333"};font-size:14px;font-weight:700" class="hm">${o.amount?`₹${o.amount}`:"—"}${pend>0?`<div style="color:#f46060;font-size:11px">Pending ₹${pend.toFixed(0)}</div>`:""}</div><div style="color:#444;font-size:12px" class="hm">${fS(o.updatedAt)}</div><div style="color:#555;font-size:20px">›</div></div>`;}).join("");
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // CREATE ORDER
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 function createOrder(){
-  const name   = document.getElementById("new-name").value.trim();
-  const mobile = document.getElementById("new-mobile").value.trim();
-  const due    = document.getElementById("new-due").value;
-  const notes  = document.getElementById("new-notes").value.trim();
-  if(!name||mobile.length!==10){ toast("Enter valid name & 10-digit mobile","error"); return; }
-  if(!due){ toast("Please set a due date","error"); return; }
+  const name=document.getElementById("n-name").value.trim();
+  const mobile=document.getElementById("n-mobile").value.trim();
+  const due=document.getElementById("n-due").value;
+  const notes=document.getElementById("n-notes").value.trim();
+  const srcType=document.getElementById("n-src").value;
+  const srcDetail=srcType==="online"?document.getElementById("n-platform").value:srcType==="offline"?document.getElementById("n-ref").value:"";
+  const source=srcType?(srcType==="online"?`Online - ${srcDetail}`:srcType==="offline"?`Referral - ${srcDetail}`:""):"";
+  const advance=parseFloat(document.getElementById("n-adv").value||0);
+  const advanceMode=document.getElementById("n-amode").value;
+  if(!name||mobile.length!==10){toast("Enter valid name & 10-digit mobile","error");return;}
+  if(!due){toast("Please set a due date","error");return;}
   const token=genToken();
-  const order={token,name,mobile,dueDate:due,notes,stage:1,createdAt:Date.now(),updatedAt:Date.now(),
-    design:null,measurements:{},tailorNote:"",seniorNote:"",trialFeedback:"",correctionNote:"",
-    amount:"",paymentMethod:"",paidAt:null,rating:0,comment:"",billItems:null,discount:"0",billNotes:"",
-    history:[{stage:0,label:"Intake Created",at:Date.now()}]};
-  orders.unshift(order);
-  saveOrders();
-  document.getElementById("new-name").value="";
-  document.getElementById("new-mobile").value="";
-  document.getElementById("new-due").value="";
-  document.getElementById("new-notes").value="";
-  toast(`Token ${token} created · Due ${fmtShort(due)}`);
+  const order={token,name,mobile,dueDate:due,notes,source,advance,advanceMode,stage:1,createdAt:Date.now(),updatedAt:Date.now(),design:null,measurements:{},pieces:[],tailorNote:"",seniorNote:"",trialFeedback:"",correctionNote:"",amount:"",paymentMethod:"",paidAt:null,rating:0,comment:"",billItems:null,discount:"0",billNotes:"",billSaved:false,history:[{stage:0,label:"Intake Created",at:Date.now()}]};
+  orders.unshift(order);saveOrders();
+  ["n-name","n-mobile","n-due","n-notes","n-adv"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  document.getElementById("n-src").value="";toggleSrc();
+  toast(`Token ${token} created · Due ${fS(due)}${advance>0?` · Advance ₹${advance}`:""} ✅`);
   staffTab("dashboard");
-  renderStaff();
 }
 
-// ══════════════════════════════════════════════════════════
-// UPDATE ORDER
-// ══════════════════════════════════════════════════════════
-function updateOrder(token,patch){
-  orders=orders.map(o=>o.token===token?{...o,...patch,updatedAt:Date.now()}:o);
-  if(activeOrder?.token===token) activeOrder={...activeOrder,...patch,updatedAt:Date.now()};
-  saveOrders();
-  renderStaff();
-}
+// ══════════════════════════════════════════════
+// UPDATE / ADVANCE
+// ══════════════════════════════════════════════
+function updateOrder(token,patch){orders=orders.map(o=>o.token===token?{...o,...patch,updatedAt:Date.now()}:o);if(activeOrder?.token===token)activeOrder={...activeOrder,...patch,updatedAt:Date.now()};saveOrders();}
 function advanceOrder(token,nextStage,patch={}){
   const h={stage:nextStage,label:STAGES[nextStage]?.label||"",at:Date.now()};
   const o=orders.find(x=>x.token===token);
   const hist=[...(o?.history||[]),h];
   updateOrder(token,{stage:nextStage,history:hist,...patch});
-  toast(`Moved to: ${STAGES[nextStage]?.label}`);
-  const fresh=orders.find(x=>x.token===token);
-  activeOrder=fresh;
-  renderDetailPage(fresh, staffTabView==="detail"||currentPage==="staff");
+  toast(`✅ Moved to: ${STAGES[nextStage]?.label}`);
+  activeOrder=orders.find(x=>x.token===token);
+  setTimeout(()=>{if(currentPage==="staff")renderDetailPage(activeOrder,true);if(currentPage==="customer")renderDetailPage(activeOrder,false);renderStaff();},150);
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // OPEN ORDER
-// ══════════════════════════════════════════════════════════
-function openOrder(token, isStaff){
-  const o=orders.find(x=>x.token===token);
-  if(!o) return;
-  activeOrder=o;
-  if(isStaff){
-    document.getElementById("nav-order-detail").classList.remove("hidden");
-    document.getElementById("nav-token-label").textContent="#"+o.token;
-    staffTab("detail");
-  } else {
-    document.getElementById("customer-lookup").classList.add("hidden");
-    document.getElementById("customer-detail").classList.remove("hidden");
-    renderDetailPage(o,false);
-  }
-}
+// ══════════════════════════════════════════════
+function openOrder(token,isStaff){orders=loadOrders();const o=orders.find(x=>x.token===token);if(!o)return;activeOrder=o;if(isStaff){document.getElementById("nav-detail").classList.remove("hidden");document.getElementById("nav-tok").textContent="#"+o.token;staffTab("detail");}else{custActiveToken=token;document.getElementById("cust-lookup").classList.add("hidden");document.getElementById("cust-detail").classList.remove("hidden");renderDetailPage(o,false);}}
+function lookupOrder(){orders=loadOrders();const t=document.getElementById("cust-tok").value.trim();const o=orders.find(x=>x.token===t);if(o)openOrder(t,false);else toast("Token not found. Please check with shop staff.","error");}
 
-// ══════════════════════════════════════════════════════════
-// CUSTOMER LOOKUP
-// ══════════════════════════════════════════════════════════
-function lookupOrder(){
-  // Reload from storage fresh before searching
-  orders = loadOrders();
-  const t=document.getElementById("cust-token-input").value.trim();
-  const o=orders.find(x=>x.token===t);
-  if(o){ openOrder(t,false); }
-  else toast("Token not found. Check with shop staff.","error");
-}
-
-// ══════════════════════════════════════════════════════════
-// DETAIL PAGE RENDERER
-// ══════════════════════════════════════════════════════════
-function renderDetailPage(order, isStaff){
-  const container=isStaff?document.getElementById("tab-detail"):document.getElementById("customer-detail");
-  if(!container) return;
-  const st=stageInfo(order.stage);
+// ══════════════════════════════════════════════
+// DETAIL PAGE
+// ══════════════════════════════════════════════
+function renderDetailPage(order,isStaff){
+  const container=isStaff?document.getElementById("tab-detail"):document.getElementById("cust-detail");
+  if(!container)return;
+  const st=si(order.stage);
   const db=dueBadge(order.dueDate,isStaff);
-  const dbBadgeHtml=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}44">${db.icon} ${db.label}</span>`:"";
+  const d=dDue(order.dueDate);
+  const dbBadge=db?`<span class="badge" style="background:${db.bg};color:${db.color};border:1px solid ${db.color}55">${db.icon} ${db.label}</span>`:"";
+  const advance=parseFloat(order.advance||0);
+  const totalAmt=parseFloat(order.amount||0);
+  const pending=totalAmt>0?Math.max(0,totalAmt-advance):null;
+  const advBanner=advance>0?`<div class="advance-banner"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div style="color:#60e0a0;font-weight:700;font-size:14px;margin-bottom:5px">💰 Advance Paid</div><div style="color:#eee;font-size:14px">₹${advance.toFixed(2)} via ${order.advanceMode||"—"}</div></div>${totalAmt>0?`<div style="text-align:right"><div style="color:${pending>0?"#f46060":"#4caf50"};font-weight:900;font-size:20px">${pending>0?`₹${pending.toFixed(2)} Pending`:"✅ Fully Paid"}</div><div style="color:#555;font-size:13px">Bill: ₹${totalAmt.toFixed(2)}</div></div>`:""}</div></div>`:"";
 
-  // Due reminder banner
-  const d=daysUntilDue(order.dueDate);
-  let reminderHtml="";
-  if(db && order.stage<11 && d!==null && ((isStaff&&d<=2)||(!isStaff&&d<=1))){
-    const msg=d<0?`⚠️ This order is overdue! Due date was ${fmtShort(order.dueDate)}.`
-              :d===0?`⚠️ This order is due today (${fmtShort(order.dueDate)})!`
-              :isStaff?`🔔 Reminder: Due on ${fmtShort(order.dueDate)} — ensure it's completed in time.`
-              :`🔔 Your blouse is due tomorrow (${fmtShort(order.dueDate)}) — we'll have it ready!`;
-    reminderHtml=`<div style="background:linear-gradient(135deg,${db.color}14,transparent);border-bottom:1px solid ${db.color}33;padding:14px 32px;display:flex;align-items:center;gap:12px">
-      <span style="font-size:22px">${db.icon}</span>
-      <div><div style="color:${db.color};font-weight:700;font-size:14px">${msg}</div>
-      <div style="color:#666;font-size:12px;margin-top:2px">${isStaff?"Staff reminder: 2 days before due date":"Customer reminder: 1 day before due date"}</div></div>
-    </div>`;
+  let remBanner="";
+  if(db&&order.stage<11&&d!==null&&((isStaff&&d<=2)||(!isStaff&&d<=1))){
+    const msg=d<0?`⚠️ Overdue! Due was ${fS(order.dueDate)}.`:d===0?`⚠️ Due TODAY!`:isStaff?`🔔 Due ${fS(order.dueDate)} — complete in time.`:`🔔 Due tomorrow — we'll have it ready!`;
+    remBanner=`<div style="background:linear-gradient(135deg,${db.color}18,transparent);border-bottom:1px solid ${db.color}33;padding:13px 32px;display:flex;align-items:center;gap:12px"><span style="font-size:22px">${db.icon}</span><div style="color:${db.color};font-weight:700;font-size:14px">${msg}</div></div>`;
   }
 
-  // Progress bar
-  const progressHtml=`<div style="display:flex;align-items:center;overflow-x:auto;padding-bottom:4px">
-    ${STAGES.map((s,i)=>`
-      <div title="${s.label}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;padding:2px 0">
-        <div class="stage-dot" style="background:${s.id<order.stage?"#4caf50":s.id===order.stage?st.color:"#1a1a1a"};border-color:${s.id<order.stage?"#4caf50":s.id===order.stage?st.color:"#222"};transform:${s.id===order.stage?"scale(1.2)":"scale(1)"}">
-          ${s.id<order.stage?"✓":s.icon}
+  // PIPELINE with zip animation — all stages clickable by staff
+  const progress=`<div class="pip-wrap">
+    ${STAGES.map((s,i)=>{
+      const done=s.id<order.stage,active=s.id===order.stage;
+      const clickable=isStaff; // staff can revisit any stage
+      const cls=done?"done":active?"active":"wait";
+      return`<div class="pip-node" title="${s.label}${clickable?' — Click to view/edit':''}">
+        <div class="pip-dot ${cls}"
+          style="${active?`--sc:${st.color}`:""};background:${done?"linear-gradient(135deg,#4caf50,#2e7d32)":active?`${st.color}22`:"rgba(255,255,255,.04)"};cursor:${clickable?"pointer":"default"};${clickable?"transition:transform .2s":""}"
+          ${clickable?`onclick="jumpToStage('${order.token}',${s.id})" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"`:""}>
+          <span style="${active?"animation:stagePop .5s ease forwards":`font-size:${done?16:18}px`}">${done?"✓":s.icon}</span>
         </div>
-        ${s.id===order.stage?`<div style="font-size:9px;color:${st.color};font-weight:700;white-space:nowrap;margin-top:2px">${s.label}</div>`:""}
+        <div class="pip-label" style="color:${done?"#4caf50":active?st.color:"#555"};font-weight:${active?"800":"600"};font-size:${active?"12px":"11px"}">${s.label}</div>
+        ${clickable&&done?`<div style="font-size:9px;color:#444;margin-top:2px;cursor:pointer" onclick="jumpToStage('${order.token}',${s.id})">✏️ Edit</div>`:""}
       </div>
-      ${i<STAGES.length-1?`<div class="stage-line" style="background:${s.id<order.stage?"#4caf5055":"#1a1a1a"};margin-bottom:${s.id===order.stage?"14px":"0"}"></div>`:""}`).join("")}
+      ${i<STAGES.length-1?`<div class="pip-line">${done?`<div class="pip-line-fill"></div>`:""}${active?`<div style="width:50%;height:100%;border-radius:2px;background:linear-gradient(90deg,${st.color},transparent);animation:zipLine .8s ease forwards"></div>`:""}</div>`:""}`;}
+    ).join("")}
   </div>`;
 
-  // Measurements
   const measKeys=Object.keys(order.measurements||{});
-  const measHtml=measKeys.length>0?`<div class="card"><div class="card-body">
-    <h4 style="color:#f4c060;font-weight:700;margin-bottom:14px;font-size:14px">📏 Measurements</h4>
-    <div class="meas-grid">${measKeys.map(k=>`<div class="meas-box"><div style="color:#555;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase">${k}</div><div style="color:#f4c060;font-weight:800;font-size:18px;margin-top:3px">${order.measurements[k]}<span style="color:#666;font-size:11px;font-weight:400">"</span></div></div>`).join("")}
-    </div></div></div>`:"";
+  const measHtml=measKeys.length?`<div class="card"><div style="padding:20px 24px"><h4 style="color:#60b4f4;font-weight:700;margin-bottom:16px;font-size:17px">📏 Measurements</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px">${measKeys.map(k=>`<div style="background:rgba(96,180,244,.08);border:1px solid rgba(96,180,244,.2);border-radius:12px;padding:12px 14px"><div style="color:#555;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase">${k}</div><div style="color:#60b4f4;font-weight:800;font-size:22px;margin-top:4px">${order.measurements[k]}<span style="color:#555;font-size:13px">"</span></div></div>`).join("")}</div></div></div>`:"";
+  const designHtml=order.design?`<div class="card"><div style="padding:20px 24px"><h4 style="color:#f4c060;font-weight:700;margin-bottom:14px;font-size:17px">🎨 Main Design</h4><div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><img src="${order.design.img}" style="width:100px;height:70px;object-fit:cover;border-radius:12px" onerror="this.src='https://via.placeholder.com/100x70?text=Design'"/><div><div style="color:#fff;font-weight:700;font-size:16px">${order.design.name}</div><div style="color:#f4c060;font-size:13px;margin-top:4px">${order.design.style}</div><div style="color:#666;font-size:14px;margin-top:4px">${order.design.desc}</div></div></div></div></div>`:"";
 
-  // Design
-  const designHtml=order.design?`<div class="card"><div class="card-body">
-    <h4 style="color:#f4c060;font-weight:700;margin-bottom:12px;font-size:14px">🎨 Selected Design</h4>
-    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-      <img src="${order.design.img}" style="width:96px;height:66px;object-fit:cover;border-radius:10px" onerror="this.src='https://via.placeholder.com/96x66?text=Design'"/>
-      <div><div style="color:#fff;font-weight:700;font-size:15px">${order.design.name}</div>
-      <div style="color:#f4c060;font-size:12px;margin-top:3px">${order.design.style}</div>
-      <div style="color:#666;font-size:13px;margin-top:3px">${order.design.desc}</div></div>
-    </div></div></div>`:"";
+  const piecesHtml=order.pieces&&order.pieces.length?`<div class="card"><div style="padding:20px 24px"><h4 style="color:#c060f4;font-weight:700;margin-bottom:14px;font-size:17px">👗 Additional Pieces (${order.pieces.length})</h4>${order.pieces.map((p,i)=>`<div class="piece-card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><span style="color:#c060f4;font-weight:800;font-size:15px">Piece ${i+1}: ${p.type}</span><span style="background:rgba(192,96,244,.15);color:#c060f4;border-radius:22px;padding:3px 12px;font-size:12px;margin-left:8px">${p.gender}</span>${p.size?`<span style="background:rgba(244,192,96,.12);color:#f4c060;border-radius:22px;padding:3px 10px;font-size:12px;margin-left:6px">${p.size}</span>`:""}</div></div>${p.design?`<div style="margin-top:8px"><span style="color:#888;font-size:13px">Design: </span><span style="color:#f4c060;font-size:13px;font-weight:600">${p.design}</span></div>`:""}${p.notes?`<div style="color:#555;font-size:13px;margin-top:5px">📝 ${p.notes}</div>`:""}</div>`).join("")}</div></div>`:"";
 
-  // Timeline
-  const timelineHtml=`<div class="card"><div class="card-body">
-    <h4 style="color:#eee;font-weight:700;margin-bottom:14px;font-size:14px">📜 Timeline</h4>
-    ${(order.history||[]).map((h,i)=>{
-      const hs=stageInfo(h.stage);
-      return `<div class="timeline-item">
-        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
-          <div class="timeline-dot" style="background:${hs.color}1a;border:1px solid ${hs.color}44">${hs.icon}</div>
-          ${i<order.history.length-1?`<div class="timeline-line"></div>`:""}
-        </div>
-        <div style="padding-top:3px"><div style="color:${hs.color};font-weight:600;font-size:12px">${h.label}</div>
-        <div style="color:#444;font-size:11px;margin-top:1px">${fmtFull(h.at)}</div></div>
-      </div>`;
-    }).join("")}
-  </div></div>`;
+  const timelineHtml=`<div class="card"><div style="padding:20px 22px"><h4 style="color:#eee;font-weight:700;margin-bottom:16px;font-size:17px">📜 Timeline</h4>${(order.history||[]).map((h,i)=>{const hs=si(h.stage);return`<div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:16px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:28px;height:28px;border-radius:50%;background:${hs.color}22;border:1px solid ${hs.color}55;display:flex;align-items:center;justify-content:center;font-size:13px">${hs.icon}</div>${i<order.history.length-1?`<div style="width:1px;flex:1;background:rgba(255,255,255,.06);min-height:12px;margin-top:4px"></div>`:""}</div><div style="padding-top:4px"><div style="color:${hs.color};font-weight:700;font-size:14px">${h.label}</div><div style="color:#444;font-size:12px;margin-top:2px">${fF(h.at)}</div></div></div>`;}).join("")}</div></div>`;
 
-  // Summary card
-  const editDueHtml=isStaff?`<button onclick="toggleDueEdit()" style="background:transparent;border:1px solid #333;color:#888;padding:2px 8px;border-radius:6px;font-size:10px;margin-left:6px">✏️</button>`:"";
-  const summaryRows=[
-    ["Token",`#${order.token}`],["Customer",order.name],["Mobile",order.mobile],
-    ["Created",fmtFull(order.createdAt)],
-    ["Due Date", order.dueDate?`<span style="color:${db?db.color:"#eee"}">${fmtShort(order.dueDate)}</span>`+"<span id='due-edit-btn'>"+editDueHtml+"</span>"+"<div id='due-edit-form' style='display:none;margin-top:6px'><div style='display:flex;gap:6px;align-items:center'><input type='date' id='new-due-val' value='"+order.dueDate+"' min='"+todayStr()+"' style='background:#111;border:1px solid #333;color:#eee;padding:4px 8px;border-radius:6px;font-size:12px'/><button onclick='saveDue()' style='background:#f4c060;color:#000;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer'>Save</button><button onclick='toggleDueEdit()' style='background:transparent;border:1px solid #333;color:#888;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer'>✕</button></div></div>":`Not set${editDueHtml}`],
-    ["Stage",st.label],["Amount",order.amount?`₹${order.amount}`:"Not billed"],
-    ["Payment",order.paymentMethod||"Pending"],["Bill",order.billSaved?"✅ Saved":"Not yet"],
-    ["Rating",order.rating?`${order.rating}/5 ⭐`:"Not rated"],
-  ];
-  const summaryHtml=`<div class="card" style="margin-bottom:16px"><div class="card-body">
-    <h4 style="color:#eee;font-weight:700;margin-bottom:14px;font-size:14px">📋 Order Summary</h4>
-    ${summaryRows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #0f0f0f">
-      <span style="color:#555;font-size:12px;flex-shrink:0">${l}</span>
-      <span style="color:#eee;font-size:12px;font-weight:600;text-align:right;max-width:200px">${v}</span>
-    </div>`).join("")}
-    ${order.notes?`<div style="margin-top:10px;background:#111;border-radius:8px;padding:9px 11px"><div style="color:#555;font-size:10px;margin-bottom:3px">NOTES</div><div style="color:#aaa;font-size:12px">${order.notes}</div></div>`:""}
-  </div></div>`;
+  const summaryHtml=`<div class="card" style="margin-bottom:18px"><div style="padding:20px 22px"><h4 style="color:#eee;font-weight:700;margin-bottom:16px;font-size:17px">📋 Summary</h4>${[["Token",`#${order.token}`],["Customer",order.name],["Mobile",order.mobile],["Due Date",order.dueDate?`<span style="color:${db?db.color:"#eee"}">${fS(order.dueDate)}</span>`:"Not set"],["Stage",`<span style="color:${st.color}">${st.icon} ${st.label}</span>`],["Amount",order.amount?`₹${order.amount}`:"Pending"],["Advance",order.advance?`₹${order.advance} (${order.advanceMode||"—"})`:"None"],["Pending",pending!==null?(pending>0?`<span style="color:#f46060;font-weight:800">₹${pending.toFixed(2)}</span>`:`<span style="color:#4caf50">✅ Paid</span>`):"—"],["Rating",order.rating?`${order.rating}/5 ⭐`:"Not yet"]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#666;font-size:14px">${l}</span><span style="color:#eee;font-size:14px;font-weight:600;text-align:right;max-width:200px">${v}</span></div>`).join("")}${order.source?`<div style="margin-top:10px;color:#60b4f4;font-size:13px">📣 Source: ${order.source}</div>`:""}${order.notes?`<div style="margin-top:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px 13px"><div style="color:#555;font-size:11px;margin-bottom:3px">NOTES</div><div style="color:#aaa;font-size:14px">${order.notes}</div></div>`:""}</div></div>`;
 
-  // Stage action
-  const stageHtml=buildStageActions(order,isStaff);
-
-  const backBtn=isStaff
-    ?`<button class="btn btn-ghost" style="font-size:13px;padding:7px 15px" onclick="staffTab('dashboard')">← All Orders</button>`
-    :`<button class="btn btn-ghost" style="font-size:13px;padding:7px 15px" onclick="custBack()">← Track Another</button>`;
+  const backBtn=isStaff?`<button class="btn btn-ghost" style="font-size:14px;padding:8px 17px" onclick="staffTab('dashboard')">← All Orders</button>`:`<button class="btn btn-ghost" style="font-size:14px;padding:8px 17px" onclick="custBack()">← Back</button>`;
 
   container.innerHTML=`
-    <!-- Sticky nav -->
-    <div style="background:#0a0a0a;border-bottom:1px solid #111;padding:13px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50">
-      ${backBtn}
-      <span class="badge" style="background:rgba(244,192,96,.1);color:#f4c060;border:1px solid rgba(244,192,96,.25);font-size:14px;font-weight:800">#${order.token}</span>
-      <span style="color:#eee;font-weight:700;font-size:15px">${order.name}</span>
-      ${dbBadgeHtml}
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;background:${st.color}18;border:1px solid ${st.color}44;border-radius:20px;padding:6px 14px">
-        <span style="font-size:15px">${st.icon}</span>
-        <span style="color:${st.color};font-weight:700;font-size:13px">${st.label}</span>
+    <div class="stage-bg sbg-${order.stage}">
+      <div style="background:rgba(10,0,15,.72);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:56px;z-index:49;backdrop-filter:blur(12px)">
+        ${backBtn}
+        <span class="badge" style="background:rgba(244,192,96,.12);color:#f4c060;border:1px solid rgba(244,192,96,.3);font-size:15px;font-weight:800">#${order.token}</span>
+        <span style="color:#eee;font-weight:700;font-size:16px">${order.name}</span>
+        ${dbBadge}
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;background:${st.color}22;border:1px solid ${st.color}55;border-radius:22px;padding:7px 18px">
+          <span style="font-size:18px">${st.icon}</span><span style="color:${st.color};font-weight:800;font-size:15px">${st.label}</span>
+        </div>
       </div>
-    </div>
-
-    ${reminderHtml}
-
-    <div style="max-width:1100px;margin:0 auto;padding:28px 32px">
-      <!-- Hero card -->
-      <div style="background:linear-gradient(135deg,${st.color}0e,#0a0a0a);border:1px solid ${st.color}28;border-radius:20px;padding:26px 30px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
-        <div>
-          <div style="font-size:11px;color:#555;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Order Details</div>
-          <h2 style="color:#fff;font-weight:900;font-size:26px;margin-bottom:6px">${order.name}</h2>
-          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:10px">
-            ${[["Token","#"+order.token],["Mobile",order.mobile],["Created",fmtShort(order.createdAt)],["Design",order.design?.name||"Pending"],["Amount",order.amount?`₹${order.amount}`:"Pending"]].map(([l,v])=>`<div><div style="color:#555;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase">${l}</div><div style="color:#eee;font-weight:700;font-size:13px;margin-top:2px">${v}</div></div>`).join("")}
+      ${remBanner}
+      <div style="max-width:1100px;margin:0 auto;padding:28px 32px">
+        ${advBanner}
+        <!-- Hero -->
+        <div style="background:linear-gradient(135deg,${st.color}16,rgba(255,255,255,.03));border:1px solid ${st.color}33;border-radius:24px;padding:28px 32px;margin-bottom:26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px">
+          <div>
+            <h2 style="color:#fff;font-weight:900;font-size:28px;margin-bottom:10px">${order.name}</h2>
+            <div style="display:flex;gap:20px;flex-wrap:wrap">${[["Token","#"+order.token],["Mobile",order.mobile],["Created",fS(order.createdAt)],["Pieces",`${(order.pieces?.length||0)+1} item${((order.pieces?.length||0)+1)>1?"s":""}`],["Amount",order.amount?`₹${order.amount}`:"Pending"]].map(([l,v])=>`<div><div style="color:#555;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase">${l}</div><div style="color:#eee;font-weight:700;font-size:14px;margin-top:3px">${v}</div></div>`).join("")}</div>
           </div>
+          <div style="text-align:right"><div style="font-size:52px;animation:float 3s ease-in-out infinite">${st.icon}</div><div style="color:${st.color};font-weight:800;font-size:16px">${st.label}</div><div style="color:#555;font-size:13px">Stage ${order.stage} of 11</div></div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <div style="font-size:44px">${st.icon}</div>
-          <div style="color:${st.color};font-weight:800;font-size:15px">${st.label}</div>
-          <div style="color:#555;font-size:12px">Stage ${order.stage} of 11</div>
-        </div>
-      </div>
-
-      <!-- Progress -->
-      <div class="card" style="margin-bottom:24px"><div style="padding:18px 22px">
-        <p style="color:#555;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Order Progress</p>
-        ${progressHtml}
-      </div></div>
-
-      <!-- 2-col layout -->
-      <div style="display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start">
-        <div>
-          <!-- Stage action -->
-          <div class="card" style="border-color:${st.color}28">
-            <div style="background:linear-gradient(135deg,${st.color}0d,transparent);padding:16px 22px;border-bottom:1px solid ${st.color}18;display:flex;align-items:center;gap:10px">
-              <span style="font-size:20px">${st.icon}</span>
-              <div>
-                <h3 style="color:${st.color};font-weight:800;font-size:15px;margin:0">Current Stage: ${st.label}</h3>
-                <p style="color:#555;font-size:12px;margin:3px 0 0">${isStaff?"Staff action required":"Awaiting your action"}</p>
+        <!-- Pipeline -->
+        <div class="card" style="margin-bottom:26px"><div style="padding:20px 24px"><p style="color:#555;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:18px">Order Pipeline</p>${progress}</div></div>
+        <!-- 2-col -->
+        <div id="dg" style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+          <div>
+            <div class="card zip-enter" style="border-color:${st.color}33">
+              <div style="background:linear-gradient(135deg,${st.color}16,transparent);padding:18px 24px;border-bottom:1px solid ${st.color}22;display:flex;align-items:center;gap:12px">
+                <span style="font-size:26px">${st.icon}</span>
+                <div><h3 style="color:${st.color};font-weight:800;font-size:18px;margin:0">${st.label}</h3><p style="color:#666;font-size:13px;margin:4px 0 0">${st.desc}</p></div>
               </div>
+              <div id="stage-action" style="padding:24px">${buildStageActions(order,isStaff)}</div>
             </div>
-            <div id="stage-action" style="padding:20px 22px">${stageHtml}</div>
+            ${measHtml}${piecesHtml}${designHtml}
           </div>
-          ${measHtml}
-          ${designHtml}
-        </div>
-        <div>
-          ${summaryHtml}
-          ${timelineHtml}
+          <div>${summaryHtml}${timelineHtml}</div>
         </div>
       </div>
     </div>`;
 }
+function custBack(){custActiveToken=null;document.getElementById("cust-detail").classList.add("hidden");document.getElementById("cust-lookup").classList.remove("hidden");}
 
-function toggleDueEdit(){
-  const form=document.getElementById("due-edit-form");
-  const btn=document.getElementById("due-edit-btn");
-  if(form) form.style.display=form.style.display==="none"?"block":"none";
-}
-function saveDue(){
-  const v=document.getElementById("new-due-val")?.value;
-  if(!v||!activeOrder) return;
-  updateOrder(activeOrder.token,{dueDate:v});
-  toast("Due date updated ✅");
-  const fresh=orders.find(o=>o.token===activeOrder.token);
-  activeOrder=fresh;
-  renderDetailPage(fresh, staffTabView==="detail");
-}
-function custBack(){
-  document.getElementById("customer-detail").classList.add("hidden");
-  document.getElementById("customer-lookup").classList.remove("hidden");
-  document.getElementById("cust-token-input").value="";
-  activeOrder=null;
+// Staff can jump to any stage to view/edit — does NOT change the saved stage
+let previewStage=null;
+function jumpToStage(token,stageId){
+  const o=orders.find(x=>x.token===token);
+  if(!o)return;
+  // Temporarily render that stage's action panel without saving
+  previewStage=stageId;
+  const stageEl=document.getElementById("stage-action");
+  if(!stageEl)return;
+  const st=si(stageId);
+  // Update stage action panel header
+  const header=stageEl.parentElement?.previousElementSibling;
+  if(header){
+    const title=header.querySelector("h3");
+    const sub=header.querySelector("p");
+    if(title){title.textContent=`${st.icon} ${st.label}`;title.style.color=st.color;}
+    if(sub)sub.textContent=stageId===o.stage?"Staff action required":`Viewing Stage ${stageId} (Current: Stage ${o.stage})`;
+  }
+  stageEl.innerHTML=`
+    ${stageId!==o.stage?`<div style="background:rgba(244,192,96,.1);border:1px solid rgba(244,192,96,.3);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:18px">✏️</span>
+      <div style="flex:1"><div style="color:#f4c060;font-weight:700;font-size:14px">Revisiting: ${st.label}</div>
+      <div style="color:#666;font-size:13px">Current stage is <b style="color:${si(o.stage).color}">${si(o.stage).icon} ${si(o.stage).label}</b></div></div>
+      <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px" onclick="renderDetailPage(activeOrder,true)">↩ Back to Current</button>
+    </div>`:""}
+    ${buildStageActions({...o,stage:stageId},true)}`;
+  toast(`Viewing: ${st.label}`,"warn");
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// DESIGN SEARCH & GRID
+// ══════════════════════════════════════════════
+function renderDesignGrid(token,query,selectedDesign){
+  const all=getAllDesigns();
+  const q=(query||"").toLowerCase();
+  const filtered=q?all.filter(d=>d.name.toLowerCase().includes(q)||d.style.toLowerCase().includes(q)):all;
+  return`<div class="design-grid">${filtered.map(d=>`<div class="design-card${selectedDesign?.id===d.id?" selected":""}" onclick="selectDesign('${token}','${d.id}')">
+    <img src="${d.img}" onerror="this.src='https://via.placeholder.com/148x92?text=Design'" style="width:100%;height:92px;object-fit:cover;display:block"/>
+    ${selectedDesign?.id===d.id?`<div class="design-sel-check">✓</div>`:""}
+    <div style="padding:9px 11px"><div style="color:#eee;font-weight:700;font-size:13px">${d.name}</div><div style="color:#888;font-size:11px;margin-top:2px">${d.style}${!d.preset?` · <span style="color:#60b4f4">Uploaded</span>`:""}</div></div>
+  </div>`).join("")}${filtered.length===0?`<div style="grid-column:1/-1;text-align:center;color:#555;padding:30px;font-size:15px">No designs found for "${query}"</div>`:""}</div>`;
+}
+
+// ══════════════════════════════════════════════
 // STAGE ACTIONS
-// ══════════════════════════════════════════════════════════
-function buildStageActions(order, isStaff){
-  const stage=order.stage;
+// ══════════════════════════════════════════════
+function buildStageActions(order,isStaff){
   const tok=order.token;
-  const waitBox=(icon,msg)=>`<div style="background:#060606;border:1px solid #161616;border-radius:12px;padding:22px;text-align:center;color:#555;font-size:13px"><div style="font-size:34px;margin-bottom:8px">${icon}</div>${msg}</div>`;
-  const aBtn=(label,style,fn)=>`<button class="btn ${style}" style="margin-top:4px" onclick="${fn}">${label}</button>`;
+  const wait=(icon,msg,color="#555")=>`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center"><div style="font-size:48px;margin-bottom:12px;animation:float 3s ease-in-out infinite">${icon}</div><p style="color:${color};font-size:16px;line-height:1.7">${msg}</p></div>`;
+  const btn=(label,cls,fn)=>`<button class="btn ${cls}" style="margin-top:10px;margin-right:10px" onclick="${fn}">${label}</button>`;
 
-  if(stage===1) return `
-    <p style="color:#888;font-size:13px;margin-bottom:14px">${isStaff?"Help the customer pick a design:":"Choose your blouse design:"}</p>
-    <div class="design-grid" id="design-grid-${tok}">
-      ${DESIGNS.map(d=>`<div class="design-card${order.design?.id===d.id?" selected":""}" onclick="selectDesign('${tok}','${d.id}')">
-        <img src="${d.img}" onerror="this.src='https://via.placeholder.com/130x84?text=Design'"/>
-        <div class="design-card-info">
-          <div style="color:#eee;font-weight:600;font-size:11px">${d.name}</div>
-          <div style="color:#888;font-size:10px">${d.style}</div>
-        </div>
-        ${order.design?.id===d.id?`<div style="position:relative"><div style="position:absolute;top:-84px;right:5px;background:#f4c060;color:#000;border-radius:20px;padding:1px 6px;font-size:9px;font-weight:800">✓</div></div>`:""}
-      </div>`).join("")}
+  if(order.stage===1) return`
+    <!-- PIECES MANAGER -->
+    <div style="background:rgba(192,96,244,.07);border:1px solid rgba(192,96,244,.2);border-radius:16px;padding:18px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="color:#c060f4;font-weight:700;font-size:15px">👗 Garment Pieces</span>
+        ${isStaff?`<button onclick="addPiece('${tok}')" style="background:rgba(192,96,244,.15);border:1px solid rgba(192,96,244,.35);color:#c060f4;padding:7px 16px;border-radius:22px;font-size:13px;font-weight:700;cursor:pointer">＋ Add Piece</button>`:""}
+      </div>
+      <div id="pieces-list-${tok}">${renderPiecesList(order,isStaff)}</div>
     </div>
-    ${order.design?aBtn(`Confirm: ${order.design.name} →`,"btn-gold",`confirmDesign('${tok}')`):""}`;
-
-  if(stage===2) return isStaff?`
-    <div class="meas-grid" style="margin-bottom:14px">
-      ${MEAS_FIELDS.map(f=>`<div>
-        <label class="flabel">${f}</label>
-        <input class="finput" id="meas-${f.replace(/ /g,'_')}" type="number" step="0.5" placeholder='0.0"' value="${order.measurements?.[f]||""}" style="padding:8px 10px;font-size:13px"/>
-      </div>`).join("")}
+    <!-- DESIGN SEARCH & UPLOAD -->
+    <p style="color:#aaa;font-size:15px;margin-bottom:14px;font-weight:600">${isStaff?"🎨 Select Main Design:":"🎨 Choose Your Blouse Design:"}</p>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap" id="design-search-area">
+      <input class="finput" id="design-search" placeholder="🔍 Search designs by name or style…" style="flex:1;min-width:200px;padding:10px 15px;font-size:14px" oninput="refreshDesignGrid('${tok}')"/>
+      ${isStaff?`<label onclick="triggerDesignUpload()" style="background:rgba(96,180,244,.15);border:1px solid rgba(96,180,244,.3);color:#60b4f4;padding:10px 18px;border-radius:13px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap">📁 Upload Design</label><input type="file" id="design-file-input" accept="image/*" style="display:none" onchange="handleDesignUpload(this)"/>`:""}
     </div>
-    <div class="fgroup"><label class="flabel">Tailor Notes</label><input class="finput" id="tailor-note" value="${order.tailorNote||""}" placeholder="Notes…"/></div>
-    ${aBtn("Save & Queue →","btn-gold",`saveMeasurements('${tok}')`)}
-  `:waitBox("⏳","Staff is taking your measurements.");
+    <div id="design-grid-wrap">${renderDesignGrid(tok,"",order.design)}</div>
+    ${order.design?btn(`Confirm: ${order.design.name} →`,"btn-gold",`confirmDesign('${tok}')`):""}`;
 
-  if(stage===3) return isStaff?`
-    <div class="fgroup"><label class="flabel">Tailor Notes</label><input class="finput" id="tailor-note2" value="${order.tailorNote||""}" placeholder="Progress notes…"/></div>
-    ${aBtn("Done — Senior Review →","btn-gold",`advanceOrder('${tok}',4,{tailorNote:document.getElementById('tailor-note2').value})`)}
-  `:waitBox("🧵","Our tailor is crafting your blouse with care.");
+  if(order.stage===2) return isStaff?`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:16px">
+      ${MEAS_FIELDS.map(f=>`<div><label class="flabel">${f}</label><input class="finput" id="meas-${f.replace(/ /g,'_')}" type="number" step="0.5" placeholder='0.0"' value="${order.measurements?.[f]||""}" style="padding:9px 11px;font-size:15px"/></div>`).join("")}
+    </div>
+    <div class="fgroup"><label class="flabel">Tailor Notes</label><input class="finput" id="tailor-note" value="${order.tailorNote||""}" placeholder="Notes for tailor…"/></div>
+    ${btn("Save & Queue for Tailoring →","btn-gold",`saveMeasurements('${tok}')`)}`:wait("⏳","Staff is carefully taking your measurements.","#60b4f4");
 
-  if(stage===4) return isStaff?`
+  if(order.stage===3) return isStaff?`
+    <div class="fgroup"><label class="flabel">Tailor Progress Notes</label><input class="finput" id="tailor-note2" value="${order.tailorNote||""}" placeholder="Progress notes…"/></div>
+    ${btn("Done — Send for Senior Review →","btn-gold",`advanceOrder('${tok}',4,{tailorNote:document.getElementById('tailor-note2').value})`)}`:wait("🧵","Our expert tailor is crafting your blouse with care.","#a0e080");
+
+  if(order.stage===4) return isStaff?`
     <div class="fgroup"><label class="flabel">Review Comments</label><input class="finput" id="senior-note" value="${order.seniorNote||""}" placeholder="Quality observations…"/></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
-      ${aBtn("✅ Approve & Notify","btn-gold",`seniorApprove('${tok}')`)}
-      ${aBtn("✂️ Send for Correction","btn-red",`seniorReject('${tok}')`)}
-    </div>
-  `:waitBox("🔍","Senior tailor reviewing your blouse for quality.");
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${btn("✅ Approve — Notify Customer","btn-gold","seniorApprove('"+tok+"')")}
+      ${btn("✂️ Needs Correction","btn-red","seniorReject('"+tok+"')")}
+    </div>`:wait("🔍","Senior tailor is reviewing your blouse quality.","#e0a060");
 
-  if(stage===5) return isStaff?`
-    <div style="background:#0d1a0d;border:1px solid #2c4;border-radius:10px;padding:11px 14px;margin-bottom:12px;color:#aaa;font-size:13px">Blouse approved! Send WhatsApp to customer.</div>
-    <a href="${waURL(order.mobile,`Dear ${order.name}, 🎉 Your blouse (Token #${order.token}) is ready for trial at G Square Fashion! Due: ${fmtShort(order.dueDate)}. Please visit us soon.`)}" target="_blank" class="btn btn-green" style="display:inline-block;margin-bottom:10px">📲 Send WhatsApp</a><br/>
-    ${aBtn("Mark Notified →","btn-gold",`advanceOrder('${tok}',6)`)}
-  `:waitBox("📲","We're sending you a WhatsApp notification — check your phone!");
+  if(order.stage===5) return isStaff?`
+    <div style="background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.22);border-radius:14px;padding:16px;margin-bottom:16px;color:#aaa;font-size:15px">✅ Blouse quality approved! Notify the customer.</div>
+    ${btn("📲 Send WhatsApp Notification","btn-green",`sendWANotify('${tok}')`)}
+    <div style="margin-top:12px">${btn("Mark as Notified →","btn-gold",`advanceOrder('${tok}',6)`)}</div>`:wait("📲","We're notifying you — check your WhatsApp!","#f4c060");
 
-  if(stage===6) return !isStaff?`
-    <div class="fgroup"><label class="flabel">Feedback</label><input class="finput" id="trial-fb" value="${order.trialFeedback||""}" placeholder="How does it fit?"/></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
-      ${aBtn("✅ Happy — Billing","btn-gold",`trialApprove('${tok}')`)}
-      ${aBtn("✂️ Needs Correction","btn-red",`trialReject('${tok}')`)}
-    </div>
-  `:waitBox("👗","Customer is in the trial room.");
+  if(order.stage===6) return !isStaff?`
+    <div class="fgroup"><label class="flabel">Your Feedback</label><input class="finput" id="trial-fb" value="${order.trialFeedback||""}" placeholder="How does it fit?"/></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      ${btn("✅ Perfect Fit — Billing","btn-gold","trialApprove('"+tok+"')")}
+      ${btn("✂️ Needs Correction","btn-red","trialReject('"+tok+"')")}
+    </div>`:wait("👗","Customer is trying on the blouse.","#c060f4");
 
-  if(stage===7) return isStaff?`
-    <div style="background:#0d1a0d;border:1px solid #2c4;border-radius:10px;padding:11px 14px;margin-bottom:12px;color:#aaa;font-size:13px">Customer approved ✅ · Feedback: ${order.trialFeedback||"All good!"}</div>
-    ${buildBillingEditor(order)}
-  `:waitBox("🧾","Generating your bill at the counter.");
+  if(order.stage===7) return isStaff?`
+    <div style="background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.22);border-radius:14px;padding:14px;margin-bottom:16px;color:#aaa;font-size:15px">✅ Customer approved · Feedback: ${order.trialFeedback||"All good!"}</div>
+    ${buildBillingEditor(order)}`:wait("🧾","Staff is generating your bill.","#e06060");
 
-  if(stage===8) return isStaff?`
-    <div style="background:#1a0d0d;border:1px solid #c44;border-radius:10px;padding:11px 14px;margin-bottom:12px">
-      <div style="color:#888;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:3px">CORRECTION NEEDED</div>
-      <div style="color:#f46060;font-weight:600;font-size:13px">${order.correctionNote||order.trialFeedback||"Correction required"}</div>
+  if(order.stage===8) return isStaff?`
+    <div style="background:rgba(244,96,96,.1);border:1px solid rgba(244,96,96,.3);border-radius:14px;padding:14px;margin-bottom:16px">
+      <div style="color:#999;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:5px">CORRECTION REQUIRED</div>
+      <div style="color:#f46060;font-weight:600;font-size:15px">${order.correctionNote||order.trialFeedback||"Correction needed"}</div>
     </div>
     <div class="fgroup"><label class="flabel">Correction Notes</label><input class="finput" id="corr-note" value="${order.correctionNote||""}" placeholder="What was corrected…"/></div>
-    ${aBtn("Done — Back to Review →","btn-gold",`advanceOrder('${tok}',4,{correctionNote:document.getElementById('corr-note').value})`)}
-  `:waitBox("✂️","Our tailor is making the corrections you requested.");
+    ${btn("Done — Back to Review →","btn-gold",`advanceOrder('${tok}',4,{correctionNote:document.getElementById('corr-note').value})`)}`:wait("✂️","Making the requested corrections.","#f46060");
 
-  if(stage===9) return buildPaymentStage(order,isStaff);
+  if(order.stage===9) return buildPaymentStage(order,isStaff);
 
-  if(stage===10) return !isStaff?`
-    <p style="color:#888;font-size:13px;margin-bottom:12px">How was your experience at G Square Fashion?</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px" id="stars-${tok}">
-      ${[1,2,3,4,5].map(n=>`<span class="star${order.rating>=n?" lit":""}" onclick="setRating('${tok}',${n})">★</span>`).join("")}
+  if(order.stage===10) return !isStaff?`
+    <p style="color:#aaa;font-size:16px;margin-bottom:16px">How was your experience at G Square CustomFit?</p>
+    <div style="display:flex;gap:12px;margin-bottom:20px" id="stars-${tok}">${[1,2,3,4,5].map(n=>`<span class="star${order.rating>=n?" lit":""}" onclick="setRating('${tok}',${n})">★</span>`).join("")}</div>
+    <div class="fgroup"><label class="flabel">Comments (optional)</label><input class="finput" id="review-comment" value="${order.comment||""}" placeholder="Share your experience…"/></div>
+    ${btn("Submit Review 🎉","btn-gold",`submitReview('${tok}')`)}
+    <p style="color:#555;font-size:13px;margin-top:10px">⭐ 4–5 star reviews will open our Google page!</p>`:wait("⭐","Customer is sharing their review.","#ffd700");
+
+  if(order.stage===11) return`
+    <div style="text-align:center;padding:22px 0 16px">
+      <div style="font-size:72px;margin-bottom:14px;animation:float 3s ease-in-out infinite">🎉</div>
+      <h3 style="color:#4caf50;font-weight:900;font-size:26px;margin-bottom:10px">Order Complete!</h3>
+      <p style="color:#888;font-size:16px;margin-bottom:18px">Thank you, ${order.name}!<br/><i style="color:#f4c060">"Perfect Fit, Elegant Finish"</i></p>
+      ${order.rating>0?`<div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:18px;padding:18px 22px;display:inline-block;margin-bottom:18px"><div style="color:#ffd700;font-size:32px;margin-bottom:5px">${"★".repeat(order.rating)}${"☆".repeat(5-order.rating)}</div>${order.comment?`<p style="color:#aaa;font-style:italic;font-size:15px;margin:0">"${order.comment}"</p>`:""}</div>`:""}
     </div>
-    <div class="fgroup"><label class="flabel">Comments (optional)</label><input class="finput" id="review-comment" value="${order.comment||""}" placeholder="Share your thoughts…"/></div>
-    ${aBtn("Submit Review 🎉","btn-gold",`submitReview('${tok}')`)}
-  `:waitBox("⭐","Customer is leaving a review.");
-
-  if(stage===11) return `
-    <div style="text-align:center;padding:18px 0">
-      <div style="font-size:60px;margin-bottom:10px">🎉</div>
-      <h3 style="color:#4caf50;font-weight:800;font-size:22px;margin-bottom:6px">Order Complete!</h3>
-      <p style="color:#888;font-size:14px;margin-bottom:14px">Thank you, ${order.name}!</p>
-      ${order.rating>0?`<div style="background:#0f0f0f;border:1px solid #1a1a1a;border-radius:12px;padding:14px 18px;display:inline-block">
-        <div style="color:#ffd700;font-size:26px;margin-bottom:3px">${"★".repeat(order.rating)}${"☆".repeat(5-order.rating)}</div>
-        ${order.comment?`<p style="color:#aaa;font-style:italic;font-size:13px;margin:0">"${order.comment}"</p>`:""}
-      </div>`:""}
-    </div>`;
-  return "";
+    ${order.billSaved?`
+      <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;margin-top:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <h4 style="color:#f4c060;font-weight:700;font-size:16px;margin:0">🧾 Final Bill</h4>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block;font-size:13px;padding:9px 16px">📲 Resend Bill</a>
+            <button onclick="printBill('${order.token}')" class="btn btn-ghost" style="font-size:13px;padding:9px 16px">🖨️ Print</button>
+          </div>
+        </div>
+        ${buildBillPreview(order)}
+      </div>`:"<div style='color:#555;font-size:14px;margin-top:10px;text-align:center'>No bill saved for this order.</div>"}
+    ${isStaff?`<div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)"><p style="color:#555;font-size:13px;margin-bottom:8px">Need to edit? Click any stage in the pipeline above.</p></div>`:""}`;
+  return"";
 }
 
-// ══════════════════════════════════════════════════════════
-// STAGE HANDLERS
-// ══════════════════════════════════════════════════════════
-function selectDesign(token,designId){
-  const d=DESIGNS.find(x=>x.id===designId);
-  updateOrder(token,{design:d});
-  const fresh=orders.find(o=>o.token===token); activeOrder=fresh;
-  renderDetailPage(fresh, staffTabView==="detail"||currentPage==="staff");
+// ══════════════════════════════════════════════
+// PIECES MANAGER — with per-piece design & measurements
+// ══════════════════════════════════════════════
+function renderPiecesList(order,isStaff){
+  const pieces=order.pieces||[];
+  if(!pieces.length)return`<div style="color:#666;font-size:14px;font-style:italic;padding:6px 0">No extra pieces. Click ＋ Add Piece to add more garments to this order.</div>`;
+  return pieces.map((p,i)=>`
+    <div class="piece-card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <span style="color:#c060f4;font-weight:800;font-size:15px">Piece ${i+1}: ${p.type}</span>
+          <span style="background:rgba(192,96,244,.15);color:#c060f4;border-radius:22px;padding:3px 12px;font-size:12px;margin-left:8px">${p.gender}</span>
+          ${p.size?`<span style="background:rgba(244,192,96,.12);color:#f4c060;border-radius:22px;padding:3px 10px;font-size:12px;margin-left:6px">${p.size}</span>`:""}
+        </div>
+        ${isStaff?`<div style="display:flex;gap:6px">
+          <button onclick="editPieceDesign('${order.token}',${i})" style="background:rgba(244,192,96,.12);border:1px solid rgba(244,192,96,.3);color:#f4c060;padding:4px 10px;border-radius:8px;font-size:12px;cursor:pointer">🎨 Design</button>
+          <button onclick="editPieceMeas('${order.token}',${i})" style="background:rgba(96,180,244,.12);border:1px solid rgba(96,180,244,.3);color:#60b4f4;padding:4px 10px;border-radius:8px;font-size:12px;cursor:pointer">📏 Meas</button>
+          <button onclick="removePiece('${order.token}',${i})" style="background:transparent;border:none;color:#f46060;cursor:pointer;font-size:15px">✕</button>
+        </div>`:""}
+      </div>
+      ${p.design?`<div style="margin-top:8px;font-size:14px"><span style="color:#888">Design: </span><span style="color:#f4c060;font-weight:600">${p.design}</span></div>`:""}
+      ${p.measurements&&Object.keys(p.measurements).length?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">${Object.entries(p.measurements).map(([k,v])=>`<span style="background:rgba(96,180,244,.1);border:1px solid rgba(96,180,244,.2);color:#60b4f4;border-radius:8px;padding:2px 8px;font-size:12px">${k}: ${v}"</span>`).join("")}</div>`:""}
+      ${p.notes?`<div style="color:#555;font-size:13px;margin-top:6px">📝 ${p.notes}</div>`:""}
+    </div>`).join("");
 }
-function confirmDesign(token){
+
+function addPiece(token){
+  const type=prompt("Garment type?\n(Blouse / Saree Blouse / Churidar / Salwar / Frock / Shirt / Trouser / Skirt / Other)","Blouse");
+  if(!type)return;
+  const gender=prompt("Gender?\n(Female / Male / Kids)","Female");if(!gender)return;
+  const size=prompt("Size/Measurement note (e.g. 36, M, or custom):","");
+  const notes=prompt("Special notes (or press OK to skip):","");
   const o=orders.find(x=>x.token===token);
-  if(!o?.design){ toast("Select a design first","error"); return; }
-  advanceOrder(token,2,{design:o.design});
-}
-function saveMeasurements(token){
-  const meas={};
-  MEAS_FIELDS.forEach(f=>{ const v=document.getElementById("meas-"+f.replace(/ /g,"_"))?.value; if(v) meas[f]=v; });
-  const tn=document.getElementById("tailor-note")?.value||"";
-  advanceOrder(token,3,{measurements:meas,tailorNote:tn});
-}
-function seniorApprove(token){
-  const sn=document.getElementById("senior-note")?.value||"";
-  advanceOrder(token,5,{seniorNote:sn});
-}
-function seniorReject(token){
-  const sn=document.getElementById("senior-note")?.value||"";
-  advanceOrder(token,8,{seniorNote:sn,correctionNote:sn});
-}
-function trialApprove(token){
-  const fb=document.getElementById("trial-fb")?.value||"All good!";
-  advanceOrder(token,7,{trialFeedback:fb,customerApproved:true});
-}
-function trialReject(token){
-  const fb=document.getElementById("trial-fb")?.value||"";
-  if(!fb){ toast("Describe the correction needed","error"); return; }
-  advanceOrder(token,8,{trialFeedback:fb,correctionNote:fb,customerApproved:false});
-}
-function setRating(token,n){
-  updateOrder(token,{rating:n});
-  document.querySelectorAll(`#stars-${token} .star`).forEach((s,i)=>s.classList.toggle("lit",i<n));
-}
-function submitReview(token){
-  const r=orders.find(o=>o.token===token)?.rating||0;
-  if(!r){ toast("Please select a rating","error"); return; }
-  const c=document.getElementById("review-comment")?.value||"";
-  advanceOrder(token,11,{rating:r,comment:c});
+  const pieces=[...(o?.pieces||[]),{type,gender,size,notes,design:"",measurements:{}}];
+  updateOrder(token,{pieces});activeOrder=orders.find(x=>x.token===token);
+  const pl=document.getElementById(`pieces-list-${token}`);if(pl)pl.innerHTML=renderPiecesList(activeOrder,true);
+  toast(`Piece added: ${type} (${gender}) ✅`);
 }
 
-// ══════════════════════════════════════════════════════════
+function editPieceDesign(token,idx){
+  const all=getAllDesigns();
+  const names=all.map((d,i)=>`${i+1}. ${d.name} (${d.style})`).join("\n");
+  const choice=prompt(`Select design for Piece ${idx+1}:\n\n${names}\n\nEnter number:`);
+  if(!choice)return;
+  const n=parseInt(choice)-1;
+  if(n<0||n>=all.length)return;
+  const o=orders.find(x=>x.token===token);
+  const pieces=(o?.pieces||[]).map((p,i)=>i===idx?{...p,design:all[n].name}:p);
+  updateOrder(token,{pieces});activeOrder=orders.find(x=>x.token===token);
+  const pl=document.getElementById(`pieces-list-${token}`);if(pl)pl.innerHTML=renderPiecesList(activeOrder,true);
+  toast(`Design set: ${all[n].name} ✅`);
+}
+
+function editPieceMeas(token,idx){
+  const o=orders.find(x=>x.token===token);
+  const cur=(o?.pieces||[])[idx]?.measurements||{};
+  const meas={...cur};
+  for(const f of MEAS_FIELDS){
+    const v=prompt(`Piece ${idx+1} — ${f} (inches):`,cur[f]||"");
+    if(v===null)break;
+    if(v.trim())meas[f]=v.trim();
+  }
+  const pieces=(o?.pieces||[]).map((p,i)=>i===idx?{...p,measurements:meas}:p);
+  updateOrder(token,{pieces});activeOrder=orders.find(x=>x.token===token);
+  const pl=document.getElementById(`pieces-list-${token}`);if(pl)pl.innerHTML=renderPiecesList(activeOrder,true);
+  toast(`Measurements saved for Piece ${idx+1} ✅`);
+}
+
+function removePiece(token,idx){const o=orders.find(x=>x.token===token);const pieces=(o?.pieces||[]).filter((_,i)=>i!==idx);updateOrder(token,{pieces});activeOrder=orders.find(x=>x.token===token);const pl=document.getElementById(`pieces-list-${token}`);if(pl)pl.innerHTML=renderPiecesList(activeOrder,true);toast("Piece removed");}
+
+// ══════════════════════════════════════════════
+// DESIGN HANDLERS
+// ══════════════════════════════════════════════
+function refreshDesignGrid(token){const q=document.getElementById("design-search")?.value||"";const o=orders.find(x=>x.token===token);const wrap=document.getElementById("design-grid-wrap");if(wrap)wrap.innerHTML=renderDesignGrid(token,q,o?.design);}
+function selectDesign(token,designId){const d=getAllDesigns().find(x=>x.id===designId);updateOrder(token,{design:d});activeOrder=orders.find(o=>o.token===token);const q=document.getElementById("design-search")?.value||"";const wrap=document.getElementById("design-grid-wrap");if(wrap)wrap.innerHTML=renderDesignGrid(token,q,d);}
+function confirmDesign(token){const o=orders.find(x=>x.token===token);if(!o?.design){toast("Select a design first","error");return;}advanceOrder(token,2,{design:o.design});}
+
+// ══════════════════════════════════════════════
+// HANDLERS
+// ══════════════════════════════════════════════
+function saveMeasurements(token){const meas={};MEAS_FIELDS.forEach(f=>{const v=document.getElementById("meas-"+f.replace(/ /g,"_"))?.value;if(v)meas[f]=v;});const tn=document.getElementById("tailor-note")?.value||"";advanceOrder(token,3,{measurements:meas,tailorNote:tn});}
+function seniorApprove(token){const sn=document.getElementById("senior-note")?.value||"";advanceOrder(token,5,{seniorNote:sn});}
+function seniorReject(token){const sn=document.getElementById("senior-note")?.value||"";advanceOrder(token,8,{seniorNote:sn,correctionNote:sn});}
+function trialApprove(token){const fb=document.getElementById("trial-fb")?.value||"All good!";advanceOrder(token,7,{trialFeedback:fb,customerApproved:true});}
+function trialReject(token){const fb=document.getElementById("trial-fb")?.value||"";if(!fb){toast("Describe the correction needed","error");return;}advanceOrder(token,8,{trialFeedback:fb,correctionNote:fb,customerApproved:false});}
+function setRating(token,n){updateOrder(token,{rating:n});document.querySelectorAll(`#stars-${token} .star`).forEach((s,i)=>s.classList.toggle("lit",i<n));}
+function submitReview(token){const r=orders.find(o=>o.token===token)?.rating||0;if(!r){toast("Please select a rating","error");return;}const c=document.getElementById("review-comment")?.value||"";advanceOrder(token,11,{rating:r,comment:c});if(r>=4)setTimeout(()=>window.open(GOOGLE_REVIEW,"_blank"),1200);}
+function sendWANotify(token){const o=orders.find(x=>x.token===token);const msg=`Dear ${o.name},\n\n🎉 *Great News!*\n\nYour blouse (Token #${o.token}) is *ready for trial* at G Square CustomFit!\n\n📍 ${SHOP.addr}\n📞 ${SHOP.phone}\n\n_"${SHOP.motive}"_\n✂️ *${SHOP.name}*`;window.open(waURL(o.mobile,msg),"_blank");}
+
+// ══════════════════════════════════════════════
 // BILLING
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+let _bi={};
+function getBI(tok){const o=orders.find(x=>x.token===tok);if(!_bi[tok])_bi[tok]=JSON.parse(JSON.stringify(o?.billItems||[{sl:1,desc:o?.design?.name||"Blouse Stitching",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}]));return _bi[tok];}
+function calcBill(items,discount){const s=items.reduce((x,it)=>x+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);const g=items.reduce((x,it)=>x+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);const d=parseFloat(discount||0);return{sub:s,gst:g,disc:d,final:s+g-d};}
+
 function buildBillingEditor(order){
-  const tok=order.token;
-  const items=order.billItems||[{sl:1,desc:order.design?.name||"Blouse Stitching",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}];
-  const discount=order.discount||"0";
-  const billNotes=order.billNotes||"";
-
-  const subTotal=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
-  const totalGst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
-  const discAmt=parseFloat(discount||0);
-  const finalAmt=subTotal+totalGst-discAmt;
-
-  return `
-    <div style="overflow-x:auto;margin-bottom:10px">
-      <table style="width:100%;border-collapse:collapse;min-width:500px">
-        <thead><tr style="background:#111">
-          ${["#","Description","Color","Unit","Qty","Price","GST%","HSN",""].map(h=>`<th style="padding:6px 8px;color:#888;font-size:10px;font-weight:700;letter-spacing:1px;text-align:left;border-bottom:1px solid #222">${h}</th>`).join("")}
-        </tr></thead>
-        <tbody id="bill-rows-${tok}">
-          ${items.map((it,i)=>buildBillRow(tok,it,i)).join("")}
-        </tbody>
-      </table>
+  const tok=order.token;const items=getBI(tok);const {sub,gst,disc,final}=calcBill(items,order.discount||"0");const adv=parseFloat(order.advance||0);
+  return`<div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;min-width:480px"><thead><tr style="background:rgba(255,255,255,.06)">${["#","Description","Color","Unit","Qty","Price","GST%","HSN",""].map(h=>`<th style="padding:7px 9px;color:#888;font-size:11px;font-weight:700;letter-spacing:1px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08)">${h}</th>`).join("")}</tr></thead><tbody id="br-${tok}">${items.map((it,i)=>buildBillRow(tok,it,i)).join("")}</tbody></table></div>
+  <button onclick="addBR('${tok}')" style="background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.2);color:#666;padding:7px 16px;border-radius:10px;cursor:pointer;font-size:14px;margin-bottom:16px">＋ Add Item</button>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div><label class="flabel">Discount (₹)</label><input class="finput" id="bd-${tok}" type="number" min="0" value="${order.discount||"0"}" oninput="recalcBI('${tok}')" style="padding:9px 12px"/></div>
+    <div><label class="flabel">Notes</label><input class="finput" id="bn-${tok}" value="${order.billNotes||""}" placeholder="e.g. Alterations included" style="padding:9px 12px"/></div>
+  </div>
+  <div style="background:rgba(244,192,96,.08);border:1px solid rgba(244,192,96,.2);border-radius:14px;padding:14px 18px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center">
+      <div id="bt-${tok}" style="color:#f4c060;font-weight:900;font-size:22px">Final: ₹${final.toFixed(2)}</div>
+      ${adv>0?`<div style="color:#60e0a0;font-size:14px">Advance: ₹${adv.toFixed(2)} · <span style="color:#f46060;font-weight:800">Pending: ₹${Math.max(0,final-adv).toFixed(2)}</span></div>`:""}
     </div>
-    <button onclick="addBillRow('${tok}')" style="background:transparent;border:1px dashed #333;color:#666;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12px;margin-bottom:14px">＋ Add Item</button>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-      <div><label class="flabel">Discount (₹)</label><input class="finput" id="bill-discount-${tok}" type="number" min="0" value="${discount}" oninput="recalcBill('${tok}')" style="padding:8px 10px;font-size:13px"/></div>
-      <div><label class="flabel">Special Notes</label><input class="finput" id="bill-notes-${tok}" value="${billNotes}" placeholder="e.g. Alterations included" style="padding:8px 10px;font-size:13px"/></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px">
-      <div id="bill-total-${tok}" style="color:#f4c060;font-weight:800;font-size:18px">Final: ₹${finalAmt.toFixed(2)}</div>
-      <button class="btn btn-gold" onclick="saveBill('${tok}')">💾 Save Bill</button>
-    </div>
-    ${buildBillPreview(order)}
-    <div style="margin-top:14px">
-      <a href="${waURL(order.mobile, buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Send Bill on WhatsApp</a>
-    </div>`;
+  </div>
+  <button class="btn btn-gold" style="font-size:15px;padding:14px 24px" onclick="saveBillAndNotify('${tok}')">💾 Save Bill & Send via WhatsApp</button>
+  ${order.billSaved?buildBillPreview(order):""}`;
 }
 
-function buildBillRow(tok,it,i){
-  const iStyle="background:#0d0d0d;border:1px solid #1e1e1e;color:#eee;padding:5px 6px;border-radius:6px;font-size:12px;width:100%";
-  return `<tr id="bill-row-${tok}-${i}">
-    <td style="padding:5px 6px;color:#666;font-size:12px">${it.sl}</td>
-    <td style="padding:3px 4px"><input style="${iStyle}" value="${it.desc||""}" onchange="updateBillItem('${tok}',${i},'desc',this.value)" placeholder="Blouse Stitching"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:80px" value="${it.color||""}" onchange="updateBillItem('${tok}',${i},'color',this.value)" placeholder="Red Silk"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:52px" value="${it.unit||"Pcs"}" onchange="updateBillItem('${tok}',${i},'unit',this.value)"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:44px;text-align:center" type="number" min="1" value="${it.qty||1}" onchange="updateBillItem('${tok}',${i},'qty',this.value)"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:72px;text-align:right" type="number" min="0" step="0.01" value="${it.price||""}" onchange="updateBillItem('${tok}',${i},'price',this.value)" oninput="recalcBill('${tok}')" placeholder="0.00"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:44px;text-align:center" type="number" min="0" max="28" value="${it.gstPct??GST_RATE}" onchange="updateBillItem('${tok}',${i},'gstPct',this.value)" oninput="recalcBill('${tok}')"/></td>
-    <td style="padding:3px 4px"><input style="${iStyle};width:54px" value="${it.hsn||"9988"}" onchange="updateBillItem('${tok}',${i},'hsn',this.value)"/></td>
-    <td style="padding:3px 4px"><button onclick="delBillRow('${tok}',${i})" style="background:transparent;border:none;color:#f46060;cursor:pointer;font-size:15px">✕</button></td>
-  </tr>`;
+function buildBillRow(tok,it,i){const s="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#eee;padding:6px 8px;border-radius:8px;font-size:14px;width:100%";return`<tr><td style="padding:5px 7px;color:#666;font-size:13px">${it.sl}</td><td style="padding:3px 4px"><input style="${s}" value="${it.desc||""}" onchange="updBI2('${tok}',${i},'desc',this.value)" placeholder="Blouse Stitching"/></td><td style="padding:3px 4px"><input style="${s};width:70px" value="${it.color||""}" onchange="updBI2('${tok}',${i},'color',this.value)" placeholder="Color"/></td><td style="padding:3px 4px"><input style="${s};width:50px" value="${it.unit||"Pcs"}" onchange="updBI2('${tok}',${i},'unit',this.value)"/></td><td style="padding:3px 4px"><input style="${s};width:42px;text-align:center" type="number" min="1" value="${it.qty||1}" onchange="updBI2('${tok}',${i},'qty',this.value)" oninput="recalcBI('${tok}')"/></td><td style="padding:3px 4px"><input style="${s};width:70px;text-align:right" type="number" min="0" step="0.01" value="${it.price||""}" onchange="updBI2('${tok}',${i},'price',this.value)" oninput="recalcBI('${tok}')" placeholder="0.00"/></td><td style="padding:3px 4px"><input style="${s};width:42px;text-align:center" type="number" min="0" max="28" value="${it.gstPct??GST_RATE}" onchange="updBI2('${tok}',${i},'gstPct',this.value)" oninput="recalcBI('${tok}')"/></td><td style="padding:3px 4px"><input style="${s};width:52px" value="${it.hsn||"9988"}" onchange="updBI2('${tok}',${i},'hsn',this.value)"/></td><td style="padding:3px 4px"><button onclick="delBR('${tok}',${i})" style="background:transparent;border:none;color:#f46060;cursor:pointer;font-size:16px">✕</button></td></tr>`;}
+function updBI2(tok,idx,f,v){const items=getBI(tok);if(items[idx])items[idx][f]=v;}
+function addBR(tok){const items=getBI(tok);items.push({sl:items.length+1,desc:"",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"});const tb=document.getElementById(`br-${tok}`);if(tb)tb.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");}
+function delBR(tok,idx){const items=getBI(tok);items.splice(idx,1);items.forEach((it,i)=>it.sl=i+1);const tb=document.getElementById(`br-${tok}`);if(tb)tb.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");recalcBI(tok);}
+function recalcBI(tok){const items=getBI(tok);const disc=document.getElementById(`bd-${tok}`)?.value||"0";const {final}=calcBill(items,disc);const adv=parseFloat(orders.find(x=>x.token===tok)?.advance||0);const el=document.getElementById(`bt-${tok}`);if(el)el.textContent=`Final: ₹${final.toFixed(2)}`;}
+
+function saveBillAndNotify(tok){
+  const items=getBI(tok);if(items.some(it=>!it.desc||!it.price)){toast("Fill description & price for all items","error");return;}
+  const discount=document.getElementById(`bd-${tok}`)?.value||"0";
+  const billNotes=document.getElementById(`bn-${tok}`)?.value||"";
+  const {final}=calcBill(items,discount);
+  advanceOrder(tok,9,{billItems:items,amount:final.toFixed(2),discount,billNotes,billSaved:true});
+  _bi[tok]=null;
+  const fresh=orders.find(x=>x.token===tok);
+  window.open(waURL(fresh.mobile,buildWAMsg(fresh)),"_blank");
+  toast("Bill saved & WhatsApp opened ✅");
 }
 
-let _billItems={};
-function getBillItems(tok){
-  const o=orders.find(x=>x.token===tok);
-  if(!_billItems[tok]) _billItems[tok]=JSON.parse(JSON.stringify(o?.billItems||[{sl:1,desc:o?.design?.name||"Blouse Stitching",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"}]));
-  return _billItems[tok];
+// ══════════════════════════════════════════════
+// PAYMENT STAGE
+// ══════════════════════════════════════════════
+function buildPaymentStage(order,isStaff){
+  const tok=order.token;const adv=parseFloat(order.advance||0);const total=parseFloat(order.amount||0);const pending=Math.max(0,total-adv);
+  if(order.paidAt)return`<div style="background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);border-radius:14px;padding:14px 18px;margin-bottom:16px;color:#4caf50;font-weight:700;font-size:15px">✅ Payment received via ${order.paymentMethod}</div>${buildBillPreview(order)}<a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block;margin-top:14px">📲 Resend Bill</a>`;
+  if(isStaff)return`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;color:#888;font-size:15px;text-align:center;margin-bottom:16px">⏳ Bill sent · Waiting for customer payment.</div>${adv>0?`<div class="advance-banner"><div style="color:#60e0a0;font-weight:700;font-size:14px">Advance: ₹${adv.toFixed(2)}</div><div style="color:#f46060;font-weight:900;font-size:20px;margin-top:4px">Pending: ₹${pending.toFixed(2)}</div></div>`:""}<br/>${buildBillPreview(order)}<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px"><a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Resend Bill</a><button class="btn btn-gold" onclick="staffConfirmPayment('${tok}')">✅ Confirm Cash Payment</button></div>`;
+  return`<div style="background:rgba(96,224,160,.08);border:1px solid rgba(96,224,160,.22);border-radius:14px;padding:16px;margin-bottom:18px"><div style="color:#60e0a0;font-weight:700;font-size:15px;margin-bottom:6px">💬 Your bill is ready!</div>${adv>0?`<div style="color:#eee;font-size:15px">Advance Paid: ₹${adv.toFixed(2)} · <span style="color:#f46060;font-weight:900">Amount Due: ₹${pending.toFixed(2)}</span></div>`:`<div style="color:#eee;font-size:15px">Total: ₹${total.toFixed(2)}</div>`}</div>${buildBillPreview(order)}<div style="margin-top:18px"><p style="color:#888;font-size:15px;margin-bottom:12px">Choose payment method:</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">${["GPay","PhonePe","Cash"].map(m=>`<button class="pay-btn${order.paymentMethod===m?" selected":""}" onclick="selectPayMode('${tok}','${m}')">${m==="GPay"?"💙 GPay":m==="PhonePe"?"💜 PhonePe":"💵 Cash"}</button>`).join("")}</div>${order.paymentMethod&&order.paymentMethod!=="Cash"?`<div style="margin-bottom:14px"><a href="upi://pay?pa=${order.paymentMethod==="GPay"?"gsquarecustomfit@okaxis":"gsquarecustomfit@ybl"}&pn=G+Square+CustomFit&am=${pending.toFixed(2)}&tn=Token+${tok}" class="btn btn-blue" style="display:inline-block;font-size:15px">${order.paymentMethod==="GPay"?"💙 Open GPay":"💜 Open PhonePe"}</a></div>`:""}${order.paymentMethod?`<button class="btn btn-gold" style="font-size:15px;padding:13px 24px" onclick="custConfirmPayment('${tok}')">✅ Confirm Payment →</button><p style="color:#555;font-size:13px;margin-top:8px">📲 Bill receipt sent to ${order.mobile}</p>`:""}</div>`;
 }
-function updateBillItem(tok,idx,field,val){
-  const items=getBillItems(tok);
-  if(items[idx]) items[idx][field]=val;
-  recalcBill(tok);
-}
-function addBillRow(tok){
-  const items=getBillItems(tok);
-  items.push({sl:items.length+1,desc:"",unit:"Pcs",color:"",qty:1,price:"",gstPct:GST_RATE,hsn:"9988"});
-  const tbody=document.getElementById(`bill-rows-${tok}`);
-  if(tbody) tbody.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");
-  recalcBill(tok);
-}
-function delBillRow(tok,idx){
-  const items=getBillItems(tok);
-  items.splice(idx,1);
-  items.forEach((it,i)=>it.sl=i+1);
-  const tbody=document.getElementById(`bill-rows-${tok}`);
-  if(tbody) tbody.innerHTML=items.map((it,i)=>buildBillRow(tok,it,i)).join("");
-  recalcBill(tok);
-}
-function recalcBill(tok){
-  const items=getBillItems(tok);
-  const discount=parseFloat(document.getElementById(`bill-discount-${tok}`)?.value||0);
-  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
-  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
-  const final=sub+gst-discount;
-  const el=document.getElementById(`bill-total-${tok}`);
-  if(el) el.textContent=`Final: ₹${final.toFixed(2)}`;
-}
-function saveBill(tok){
-  const items=getBillItems(tok);
-  if(items.some(it=>!it.desc||!it.price)){ toast("Fill description & price for all items","error"); return; }
-  const discount=document.getElementById(`bill-discount-${tok}`)?.value||"0";
-  const billNotes=document.getElementById(`bill-notes-${tok}`)?.value||"";
-  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
-  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
-  const final=sub+gst-parseFloat(discount||0);
-  updateOrder(tok,{billItems:items,amount:final.toFixed(2),discount,billNotes,billSaved:true});
-  _billItems[tok]=null;
-  toast("Bill saved ✅");
-  const fresh=orders.find(o=>o.token===tok);
-  activeOrder=fresh;
-  renderDetailPage(fresh,true);
-}
+function selectPayMode(tok,mode){updateOrder(tok,{paymentMethod:mode});activeOrder=orders.find(o=>o.token===tok);renderDetailPage(activeOrder,false);}
+function custConfirmPayment(tok){const o=orders.find(x=>x.token===tok);if(!o?.paymentMethod){toast("Select payment method","error");return;}advanceOrder(tok,10,{paidAt:Date.now(),billSent:true});window.open(waURL(o.mobile,buildWAMsg({...o,paidAt:Date.now()})),"_blank");toast("Payment confirmed! Bill sent ✅");}
+function staffConfirmPayment(tok){const o=orders.find(x=>x.token===tok);advanceOrder(tok,10,{paidAt:Date.now(),billSent:true,paymentMethod:o.paymentMethod||"Cash"});window.open(waURL(o.mobile,buildWAMsg({...o,paidAt:Date.now()})),"_blank");toast("Payment confirmed ✅");}
 
-// Bill preview (print style inside page)
+// ══════════════════════════════════════════════
+// BILL PREVIEW
+// ══════════════════════════════════════════════
 function buildBillPreview(order){
-  const items=order.billItems||[];
-  if(!items.length) return "";
-  const meas=order.measurements||{};
-  const measKeys=Object.keys(meas);
-  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
-  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
-  const disc=parseFloat(order.discount||0);
-  const final=sub+gst-disc;
+  const items=order.billItems||[];if(!items.length)return"";
+  const meas=order.measurements||{};const measKeys=Object.keys(meas);
+  const {sub,gst,disc,final}=calcBill(items,order.discount||"0");
+  const adv=parseFloat(order.advance||0);const pending=Math.max(0,final-adv);
   const billNo=`GSF/${new Date(order.createdAt).getFullYear()}/${order.token}`;
   const billDate=new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
-
-  return `<div id="print-bill-content" style="background:#fff;border:2px solid #222;border-radius:4px;font-family:Arial,sans-serif;color:#111;font-size:12px;margin-top:14px;overflow:hidden">
-    <div style="background:#111;color:#fff;text-align:center;padding:7px 0;font-weight:800;font-size:15px;letter-spacing:1px">Boutique Bill Book</div>
-    <div style="background:#ffe600;color:#111;text-align:center;padding:6px 0;font-weight:900;font-size:17px;letter-spacing:1px;border-bottom:2px solid #222">${SHOP.name}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ccc">
-      <div style="padding:10px 14px;border-right:1px solid #ccc">
-        <div><b>Address:</b> ${SHOP.addr}</div>
-        <div><b>Phone:</b> ${SHOP.phone}</div>
-        <div><b>Email:</b> ${SHOP.email}</div>
-        <div><b>GSTIN:</b> ${SHOP.gst}</div>
-      </div>
-      <div style="padding:10px 14px">
-        <table style="width:100%;font-size:11px;border-collapse:collapse">
-          ${[["Bill No.",billNo],["Date:",billDate],["Due Date:",order.dueDate?fmtShort(order.dueDate):"—"],["Payment Mode:",order.paymentMethod||"—"]].map(([l,v])=>`<tr><td style="color:#555;padding-right:8px;padding-bottom:3px;white-space:nowrap">${l}</td><td style="font-weight:700">${v}</td></tr>`).join("")}
-        </table>
-      </div>
+  return`<div style="background:#fff;border:2px solid #1a0a2a;border-radius:8px;font-family:Arial,sans-serif;color:#111;font-size:12px;overflow:hidden;margin-top:14px">
+    <div style="background:#1a0a2a;color:#f4c060;text-align:center;padding:8px 0;font-weight:900;font-size:16px;letter-spacing:1px">✂️ Boutique Bill Book</div>
+    <div style="background:linear-gradient(135deg,#f4c060,#c87820);color:#000;text-align:center;padding:7px 0;font-weight:900;font-size:18px;letter-spacing:1px;border-bottom:2px solid #1a0a2a">${SHOP.name}</div>
+    <div style="background:#fffbe6;text-align:center;padding:4px 0;font-size:11px;color:#666;letter-spacing:2px;border-bottom:1px solid #e0d0a0">${SHOP.tag} · "${SHOP.motive}"</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ddd">
+      <div style="padding:11px 15px;border-right:1px solid #ddd;font-size:11px"><div><b>Address:</b> ${SHOP.addr}</div><div><b>Phone:</b> ${SHOP.phone}</div><div><b>GSTIN:</b> ${SHOP.gst}</div><div><b>Owner:</b> ${SHOP.owner}</div></div>
+      <div style="padding:11px 15px;font-size:11px"><table style="width:100%;border-collapse:collapse">${[["Bill No.",billNo],["Date:",billDate],["Due:",order.dueDate?fS(order.dueDate):"—"],["Mode:",order.paymentMethod||"—"]].map(([l,v])=>`<tr><td style="color:#555;padding-right:8px;padding-bottom:3px;white-space:nowrap">${l}</td><td style="font-weight:700">${v}</td></tr>`).join("")}</table></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ccc">
-      <div style="padding:10px 14px;border-right:1px solid #ccc">
-        <div style="background:#333;color:#fff;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:11px">Bill To:</div>
-        <div><b>Name:</b> ${order.name}</div>
-        <div><b>Phone:</b> ${order.mobile}</div>
-        <div><b>Token:</b> #${order.token}</div>
-        <div><b>Design:</b> ${order.design?.name||"Custom"}</div>
-      </div>
-      <div style="padding:10px 14px">
-        <div style="background:#333;color:#fff;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:11px">Bill Details:</div>
-        <div><b>Bill No:</b> ${billNo}</div>
-        <div><b>Date:</b> ${billDate}</div>
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ddd">
+      <div style="padding:11px 15px;border-right:1px solid #ddd;font-size:11px"><div style="background:#1a0a2a;color:#f4c060;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:10px">Bill To:</div><div><b>${order.name}</b></div><div>${order.mobile}</div><div>Token: #${order.token}</div>${order.source?`<div style="color:#666;font-size:10px">Source: ${order.source}</div>`:""}</div>
+      <div style="padding:11px 15px;font-size:11px"><div style="background:#1a0a2a;color:#f4c060;font-weight:700;padding:3px 8px;margin-bottom:6px;font-size:10px">Pieces: ${(order.pieces?.length||0)+1}</div>${order.design?`<div>Main: ${order.design.name}</div>`:""}${order.pieces?.map((p,i)=>`<div>P${i+2}: ${p.type} (${p.gender}${p.size?", "+p.size:""})</div>`).join("")||""}</div>
     </div>
-    ${measKeys.length?`<div style="background:#ffe600;color:#111;text-align:center;font-weight:700;padding:4px 0;font-size:11px;letter-spacing:1px;border-bottom:1px solid #ccc">Measurement Details</div>
-    <table class="bill-table" style="border-bottom:1px solid #ccc"><thead><tr style="background:#f5f5f5"><th style="padding:5px 8px;border:1px solid #ccc;font-size:10px">Item</th>${measKeys.map(k=>`<th style="padding:5px 8px;border:1px solid #ccc;font-size:10px">${k}</th>`).join("")}</tr></thead>
-    <tbody><tr><td style="padding:5px 8px;border:1px solid #eee">${order.design?.name||"Blouse"}</td>${measKeys.map(k=>`<td style="padding:5px 8px;border:1px solid #eee;text-align:center">${meas[k]}"</td>`).join("")}</tr></tbody></table>`:""}
-    <table class="bill-table">
-      <thead><tr>${["Sl.","Description","Color","Unit","Qty","Price/Unit","GST%","Amount"].map(h=>`<th style="padding:6px 8px;text-align:${["Qty","Price/Unit","GST%","Amount"].includes(h)?"right":"left"};border:1px solid #444">${h}</th>`).join("")}</tr></thead>
-      <tbody>
-        ${items.map((it,i)=>{
-          const amt=(parseFloat(it.price||0)*parseInt(it.qty||1))*(1+(parseFloat(it.gstPct||0)/100));
-          return `<tr style="background:${i%2===0?"#fff":"#fafafa"}">
-            <td style="padding:5px 8px;border:1px solid #eee">${it.sl}</td>
-            <td style="padding:5px 8px;border:1px solid #eee;font-weight:600">${it.desc}</td>
-            <td style="padding:5px 8px;border:1px solid #eee">${it.color||"—"}</td>
-            <td style="padding:5px 8px;border:1px solid #eee">${it.unit}</td>
-            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">${it.qty}</td>
-            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">₹${parseFloat(it.price||0).toFixed(2)}</td>
-            <td style="padding:5px 8px;border:1px solid #eee;text-align:right">${it.gstPct}%</td>
-            <td style="padding:5px 8px;border:1px solid #eee;text-align:right;font-weight:700">₹${amt.toFixed(2)}</td>
-          </tr>`;
-        }).join("")}
-      </tbody>
-    </table>
-    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #ccc">
-      <div style="padding:10px 14px;border-right:1px solid #ccc;font-size:11px;color:#666">${order.billNotes||""}</div>
-      <div>
-        ${[["Sub Total",`₹${sub.toFixed(2)}`],["GST Total",`₹${gst.toFixed(2)}`],["Discount",`₹${disc.toFixed(2)}`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid #eee"><span style="color:#555">${l}</span><span style="font-weight:700">${v}</span></div>`).join("")}
-        <div style="display:flex;justify-content:space-between;padding:8px 14px;background:#ffe600;font-weight:900;font-size:14px"><span>Final Amount:</span><span>₹${final.toFixed(2)}</span></div>
-        ${order.paidAt?`<div style="text-align:center;padding:6px"><span style="border:3px solid #4caf50;border-radius:4px;padding:3px 14px;color:#4caf50;font-weight:900;font-size:16px;letter-spacing:3px;display:inline-block;transform:rotate(-6deg)">PAID ✓</span></div>`:""}
-      </div>
+    ${measKeys.length?`<div style="background:rgba(244,192,96,.15);text-align:center;font-weight:700;padding:4px 0;font-size:10px;letter-spacing:1px;border-bottom:1px solid #ddd">MEASUREMENTS</div><table style="width:100%;border-collapse:collapse;font-size:10px;border-bottom:1px solid #ddd"><thead><tr style="background:#f5f5f5"><th style="padding:4px 8px;border:1px solid #ddd">Item</th>${measKeys.map(k=>`<th style="padding:4px 8px;border:1px solid #ddd">${k}</th>`).join("")}</tr></thead><tbody><tr><td style="padding:4px 8px;border:1px solid #eee">${order.design?.name||"Blouse"}</td>${measKeys.map(k=>`<td style="padding:4px 8px;border:1px solid #eee;text-align:center">${meas[k]}"</td>`).join("")}</tr></tbody></table>`:""}
+    <table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="background:#1a0a2a;color:#f4c060">${["Sl.","Description","Color","Unit","Qty","Price/Unit","GST%","Amount"].map(h=>`<th style="padding:7px 9px;text-align:${["Qty","Price/Unit","GST%","Amount"].includes(h)?"right":"left"};border:1px solid #2a1a3a;font-size:10px">${h}</th>`).join("")}</tr></thead><tbody>${items.map((it,i)=>{const amt=(parseFloat(it.price||0)*parseInt(it.qty||1))*(1+(parseFloat(it.gstPct||0)/100));return`<tr style="background:${i%2===0?"#fff":"#fafaf5"}"><td style="padding:5px 9px;border:1px solid #eee">${it.sl}</td><td style="padding:5px 9px;border:1px solid #eee;font-weight:600">${it.desc}</td><td style="padding:5px 9px;border:1px solid #eee">${it.color||"—"}</td><td style="padding:5px 9px;border:1px solid #eee">${it.unit}</td><td style="padding:5px 9px;border:1px solid #eee;text-align:right">${it.qty}</td><td style="padding:5px 9px;border:1px solid #eee;text-align:right">₹${parseFloat(it.price||0).toFixed(2)}</td><td style="padding:5px 9px;border:1px solid #eee;text-align:right">${it.gstPct}%</td><td style="padding:5px 9px;border:1px solid #eee;text-align:right;font-weight:700">₹${amt.toFixed(2)}</td></tr>`;}).join("")}</tbody></table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #ddd">
+      <div style="padding:11px 15px;font-size:11px;color:#777;border-right:1px solid #ddd">${order.billNotes||""}</div>
+      <div>${[["Sub Total",`₹${sub.toFixed(2)}`],["GST Total",`₹${gst.toFixed(2)}`],["Discount",`₹${disc.toFixed(2)}`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 15px;border-bottom:1px solid #f0f0f0"><span style="color:#555">${l}</span><span style="font-weight:700">${v}</span></div>`).join("")}${adv>0?`<div style="display:flex;justify-content:space-between;padding:5px 15px;border-bottom:1px solid #f0f0f0"><span style="color:#555">Advance Paid</span><span style="font-weight:700;color:#27ae60">- ₹${adv.toFixed(2)}</span></div>`:""}<div style="display:flex;justify-content:space-between;padding:9px 15px;background:linear-gradient(135deg,#f4c060,#c87820);font-weight:900;font-size:15px"><span>TOTAL:</span><span>₹${final.toFixed(2)}</span></div>${adv>0?`<div style="display:flex;justify-content:space-between;padding:7px 15px;background:${pending>0?"#fff0f0":"#f0fff0"}"><span style="color:${pending>0?"#c0392b":"#27ae60"};font-weight:700">${pending>0?"Balance Due":"FULLY PAID"}</span><span style="font-weight:900;color:${pending>0?"#c0392b":"#27ae60"}">${pending>0?`₹${pending.toFixed(2)}`:"✅"}</span></div>`:""} ${order.paidAt?`<div style="text-align:center;padding:9px"><span style="border:3px solid #27ae60;border-radius:4px;padding:4px 18px;color:#27ae60;font-weight:900;font-size:17px;letter-spacing:3px;display:inline-block;transform:rotate(-5deg)">PAID ✓</span></div>`:""}</div>
     </div>
-    <div style="background:#ffe600;color:#111;text-align:center;padding:7px 0;font-weight:800;font-size:12px">Thanks for business with us!!! Please visit us again !!!</div>
+    <div style="background:linear-gradient(135deg,#f4c060,#c87820);color:#000;text-align:center;padding:8px 0;font-weight:800;font-size:13px">Thanks for business with us!!! Please visit us again !!!</div>
   </div>
-  <button onclick="printBill('${order.token}')" class="btn btn-ghost" style="margin-top:10px;font-size:13px">🖨️ Print Bill</button>`;
+  <div style="display:flex;gap:10px;margin-top:12px"><button onclick="printBill('${order.token}')" class="btn btn-ghost" style="font-size:14px">🖨️ Print Bill</button></div>`;
 }
+function printBill(tok){const o=orders.find(x=>x.token===tok);if(!o)return;const html=buildBillPreview(o);const w=window.open("","_blank");w.document.write(`<!DOCTYPE html><html><head><title>Bill #${tok}</title></head><body style="margin:0;padding:20px;background:#fff">${html}</body></html>`);w.document.close();setTimeout(()=>w.print(),600);}
 
-function printBill(tok){
-  const o=orders.find(x=>x.token===tok);
-  if(!o) return;
-  const w=window.open("","_blank");
-  const el=document.getElementById("print-bill-content");
-  if(!el){ toast("Save bill first","error"); return; }
-  w.document.write(`<html><head><title>Bill #${tok}</title></head><body>${el.outerHTML}</body></html>`);
-  w.document.close(); w.print();
-}
-
-function buildPaymentStage(order,isStaff){
-  const tok=order.token;
-  if(order.paidAt) return buildBillPreview(order)+`<div style="margin-top:14px"><a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Resend Bill</a></div>`;
-  if(!isStaff) return `
-    <p style="color:#888;font-size:13px;margin-bottom:10px">Choose payment method:</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-      ${["GPay","PhonePe","Cash"].map(m=>`<button class="pay-btn${order.paymentMethod===m?" selected":""}" onclick="selectPayMode('${tok}','${m}')">${m==="GPay"?"💙 GPay":m==="PhonePe"?"💜 PhonePe":"💵 Cash"}</button>`).join("")}
-    </div>
-    ${order.paymentMethod&&order.paymentMethod!=="Cash"?`<div style="margin-bottom:12px"><a href="upi://pay?pa=${order.paymentMethod==="GPay"?"gsquarefashion@okaxis":"gsquarefashion@ybl"}&pn=G+Square+Fashion&am=${order.amount}&tn=Token+${tok}" class="btn" style="background:${order.paymentMethod==="GPay"?"#1a73e8":"#6739b7"};color:#fff;display:inline-block">${order.paymentMethod==="GPay"?"💙 Open GPay":"💜 Open PhonePe"}</a></div>`:""}
-    ${order.paymentMethod?`<button class="btn btn-gold" onclick="confirmPayment('${tok}')">✅ Confirm Payment & Send Bill →</button><p style="color:#555;font-size:11px;margin-top:6px">📲 Bill will be sent to ${order.mobile}</p>`:""}
-  `;
-  return `<div style="background:#0a0a0a;border:1px solid #111;border-radius:12px;padding:16px;color:#555;font-size:13px;text-align:center;margin-bottom:12px">⏳ Waiting for customer payment.</div>
-    <a href="${waURL(order.mobile,buildWAMsg(order))}" target="_blank" class="btn btn-green" style="display:inline-block">📲 Send Bill on WhatsApp</a>`;
-}
-
-function selectPayMode(tok,mode){
-  updateOrder(tok,{paymentMethod:mode});
-  const fresh=orders.find(o=>o.token===tok); activeOrder=fresh;
-  renderDetailPage(fresh,false);
-}
-function confirmPayment(tok){
-  const o=orders.find(x=>x.token===tok);
-  if(!o?.paymentMethod){ toast("Select payment method","error"); return; }
-  advanceOrder(tok,10,{paidAt:Date.now(),billSent:true});
-  window.open(waURL(o.mobile,buildWAMsg({...o,paidAt:Date.now()})),"_blank");
-}
-
+// ══════════════════════════════════════════════
+// WHATSAPP
+// ══════════════════════════════════════════════
 function buildWAMsg(order){
-  const items=order.billItems||[];
-  const meas=order.measurements||{};
-  const measKeys=Object.keys(meas);
-  const sub=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1)),0);
-  const gst=items.reduce((s,it)=>s+(parseFloat(it.price||0)*parseInt(it.qty||1))*(parseFloat(it.gstPct||0)/100),0);
-  const disc=parseFloat(order.discount||0);
-  const final=sub+gst-disc;
+  const items=order.billItems||[];const {sub,gst,disc,final}=calcBill(items,order.discount||"0");
+  const adv=parseFloat(order.advance||0);const pending=Math.max(0,final-adv);
   const billNo=`GSF/${new Date(order.createdAt).getFullYear()}/${order.token}`;
-  return `🧾 *BOUTIQUE BILL*
+  const piecesLine=order.pieces?.length?`\n*PIECES:*\n${order.pieces.map((p,i)=>`P${i+2}. ${p.type} (${p.gender}${p.size?", "+p.size:""})`).join("\n")}`:"";
+  return`🧾 *BOUTIQUE BILL*
 ✂️ *${SHOP.name}*
+_${SHOP.tag}_
 📍 ${SHOP.addr}
-📞 ${SHOP.phone}
-GSTIN: ${SHOP.gst}
+📞 ${SHOP.phone} | GSTIN: ${SHOP.gst}
 ━━━━━━━━━━━━━━━━━━━━
 *Bill No :* ${billNo}
-*Date:* ${new Date().toLocaleDateString("en-IN")}
-*Due Date:* ${order.dueDate?fmtShort(order.dueDate):"—"}
+*Date    :* ${new Date().toLocaleDateString("en-IN")}
+*Due Date:* ${order.dueDate?fS(order.dueDate):"—"}
 ━━━━━━━━━━━━━━━━━━━━
-*BILL TO*
+*CUSTOMER*
 Name  : ${order.name}
 Phone : ${order.mobile}
 Token : #${order.token}
-Design: ${order.design?.name||"Custom"}
+Design: ${order.design?.name||"Custom"}${piecesLine}
 ━━━━━━━━━━━━━━━━━━━━
-${measKeys.length?`*MEASUREMENTS*\n${measKeys.map(k=>`${k}: ${meas[k]}"`).join(" | ")}\n━━━━━━━━━━━━━━━━━━━━\n`:""}*ITEMS*
-${items.map(it=>`${it.sl}. ${it.desc}${it.color?` [${it.color}]`:""} | Qty:${it.qty} × ₹${parseFloat(it.price||0).toFixed(2)} | GST:${it.gstPct}%`).join("\n")}
+*ITEMS*
+${items.map(it=>`${it.sl}. ${it.desc}${it.color?` [${it.color}]`:""}\n   Qty:${it.qty} × ₹${parseFloat(it.price||0).toFixed(2)} | GST:${it.gstPct}%`).join("\n")}
 ━━━━━━━━━━━━━━━━━━━━
 Sub Total : ₹${sub.toFixed(2)}
 GST       : ₹${gst.toFixed(2)}
 Discount  : ₹${disc.toFixed(2)}
+*TOTAL    : ₹${final.toFixed(2)}*
+${adv>0?`Advance   : ₹${adv.toFixed(2)}\n*Balance  : ₹${pending.toFixed(2)}*`:""}
 ━━━━━━━━━━━━━━━━━━━━
-*TOTAL: ₹${final.toFixed(2)}*
-Payment: ${order.paymentMethod||"—"}
-${order.paidAt?"✅ PAID":"⏳ Pending"}
-━━━━━━━━━━━━━━━━━━━━
-Thanks for business with us!!!
-_${SHOP.name}_`;
+Payment: ${order.paymentMethod||"Pending"}
+${order.paidAt?"✅ *PAID*":"⏳ Awaiting Payment"}
+_"${SHOP.motive}"_
+✂️ *${SHOP.name}*`;
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════════════════════
-// Init
+// ══════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded",()=>{
-  orders = loadOrders();
-  const nd=document.getElementById("new-due");
-  if(nd) nd.min=todayStr();
+  orders=loadOrders();
+  customDesigns=loadDesigns();
+  const nd=document.getElementById("n-due");if(nd)nd.min=todayStr();
+  startSync();
 });
 </script>
 </body>
